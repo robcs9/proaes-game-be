@@ -13,7 +13,7 @@ Parâmetros:
 
 - [Scraping](https://www.scrapehero.com/web-scraping-with-pandas/)
 - [Selenium](https://selenium-python.readthedocs.io/getting-started.html)
-- [LXML / BeautifulSoup] (Pending)
+- [LXML / BeautifulSoup](https://www.datacamp.com/tutorial/web-scraping-using-python)
 
 
 ### TO-DO
