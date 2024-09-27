@@ -65,11 +65,24 @@ url = "https://www.webquarto.com.br/busca/quartos/recife-pe/Cordeiro%7CV%C3%A1rz
 #wq_r = rq.get(url, headers=headers)
 #soup1 = BeautifulSoup(wq_r.text, 'lxml')
 
+def seleniumTest():
+    from selenium import webdriver
+    driver = webdriver.Firefox()
+    # driver.maximize_window()
+    driver.get(url_olx)
+    time.sleep(5)
+    content = driver.page_source.encode("utf-8").strip()
+    soup = BeautifulSoup(content, "html.parser")
+    print(soup.findAll(class_="olx-ad-card"))
+
+seleniumTest()
+
 def search_OLX():
     # class = olx-ad-card olx-ad-card--horizontal olx-ad-card--highlight
     html = rq.get("https://olx.com.br", headers=h)
-    # time.sleep(5) # sleep for JS full loading
-    soup = BeautifulSoup(html._content, 'lxml')
+    # time.sleep(20) # sleep for JS full loading
+    # html.content encodes proper
+    soup = BeautifulSoup(html.content, 'lxml')
     sections = soup.find_all("section")
     #section_search = soup.find_all("section", attrs={"data-ds-component": "DS-AdCard"})
     
@@ -81,12 +94,17 @@ def search_OLX():
     # test_result = test.find("section", class_="more")#.prettify()
     
     # strip().split('<section data-ds-component="DS-AdCard" class="olx-ad-card olx-ad-card--horizontal olx-ad-card--highlight">')
+    print(soup)
     result = ""
-    for sect in sections:
-        print("\n------:", sect.find("a")) #class_=""))
+    # for sect in sections:
+    #     print(f'\n\n${sect}\n\n')
+        #print("\n------:", sect.find(class_="olx-ad-card"))#.find("a")) #class_=""))
+        
+    # implement iteration through the many pages (o=1, o=2... o=n) until there are no more pages with olx-ad-cards
+    
     #print(result)
 
-search_OLX()
+# search_OLX()
 
 def search_WQ():
     html = urlopen(url)
