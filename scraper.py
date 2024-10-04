@@ -48,14 +48,6 @@ HEADERS = {
         "Cache-Control": "max-age=0",
     }
 
-# url = "http://www.hubertiming.com/results/2017GPTR10K"
-# html = urlopen(url)
-# 
-# soup = BeautifulSoup(html, 'lxml')
-# all_links = soup.find_all("a")
-# for link in all_links:
-    # print(f'link: ${link}')
-
 # OLX
 url_olx = "https://www.olx.com.br/imoveis/aluguel/estado-pe/grande-recife/recife?pe=2000&ret=1020&ret=1060&ret=1040&sd=3747&sd=3778&sd=3766&sd=3764&sd=3762"
 
@@ -65,18 +57,68 @@ url = "https://www.webquarto.com.br/busca/quartos/recife-pe/Cordeiro%7CV%C3%A1rz
 #wq_r = rq.get(url, headers=headers)
 #soup1 = BeautifulSoup(wq_r.text, 'lxml')
 
+from selenium import webdriver
+import math
 def seleniumTest():
-    from selenium import webdriver
     driver = webdriver.Firefox()
-    # driver.maximize_window()
     driver.get(url_olx)
-    time.sleep(5)
+    #time.sleep(5)
     content = driver.page_source.encode("utf-8").strip()
     soup = BeautifulSoup(content, "html.parser")
-    print(soup.findAll(class_="olx-ad-card"))
+    #driver.quit()
+    
+    total_results_str = soup.find("div", {"id": "total-of-ads"}).p.get_text().split(" ")[-2]
+    pages_count = math.ceil(int(total_results_str) / 50)
+    # print(f'pages_count = {pages_count}')
+    pages = []
+    
+    for i in range(1, pages_count + 1):
+    # for i in range(1,2):
+        page_url = f'{url_olx}&o={i}'
+        driver.get(page_url)
+        # time.sleep(10)
+        content = driver.page_source.encode("utf-8").strip()
+        soup = BeautifulSoup(content, "html.parser")
+        sections = soup.findAll(class_="olx-ad-card olx-ad-card--horizontal")
+        pages.append(sections)
+        print(f"Got Page {i}")
+        
+        import json
+        soup1 = BeautifulSoup(content, "lxml")
+        data_str = soup1.find("script", {"id": "__NEXT_DATA__"}).get_text()
+        
+        # fix text ENCODING here
+        
+        data = json.loads(data_str)['props']['pageProps']['ads']
+        # attrs:
+        # 'title', 'price', 'professionalAd', 'thumbnail', 'url', 'date', 'location',
+        # 'municipality', 'neighbourhood', 'uf', 'category'
+        print(data[0]['title'])
+        #driver.quit()
+    driver.quit()
+    
+    # for sections in pages:
+        # print(f'sections count: {len(sections)}')
+        # print(f'{sections[-1]}')
+        #for sect in sections:
+            
+        #print(pages[0][i])
+        #link = pages[0][0].a#['href']
+        #ads_data = page.findAll("div", )
+        #print(link)
+    
+    
+    # sections = soup.findAll(class_="olx-ad-card olx-ad-card--horizontal")
+    
+    
+    # Data Cleanup
+    
+    
+    # print(sections)
 
 seleniumTest()
 
+# broken due to cloudflare protection
 def search_OLX():
     # class = olx-ad-card olx-ad-card--horizontal olx-ad-card--highlight
     html = rq.get("https://olx.com.br", headers=h)
@@ -103,7 +145,6 @@ def search_OLX():
     # implement iteration through the many pages (o=1, o=2... o=n) until there are no more pages with olx-ad-cards
     
     #print(result)
-
 # search_OLX()
 
 def search_WQ():
@@ -127,5 +168,4 @@ def search_WQ():
 
     # Dados dos anúncios da busca no WebQuartos
     print(data_json["ads"])
-    
 # search_WQ()
