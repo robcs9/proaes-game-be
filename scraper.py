@@ -86,15 +86,12 @@ def seleniumTest():
         import json
         soup1 = BeautifulSoup(content, "lxml")
         data_str = soup1.find("script", {"id": "__NEXT_DATA__"}).get_text()
-        
-        # fix text ENCODING here
-        
         data = json.loads(data_str)['props']['pageProps']['ads']
         # attrs:
         # 'title', 'price', 'professionalAd', 'thumbnail', 'url', 'date', 'location',
         # 'municipality', 'neighbourhood', 'uf', 'category'
         print(data[0]['title'])
-        #driver.quit()
+    
     driver.quit()
     
     # for sections in pages:
