@@ -49,108 +49,82 @@ HEADERS = {
     }
 
 # OLX
-url_olx = "https://www.olx.com.br/imoveis/aluguel/estado-pe/grande-recife/recife?pe=2000&ret=1020&ret=1060&ret=1040&sd=3747&sd=3778&sd=3766&sd=3764&sd=3762"
+url_olx = "https://www.olx.com.br/imoveis/aluguel/estado-pe/grande-recife/recife?pe=1000&ret=1020&ret=1060&ret=1040&sd=3747&sd=3778&sd=3766&sd=3764&sd=3762"
 
 # WebQuartos
-url = "https://www.webquarto.com.br/busca/quartos/recife-pe/Cordeiro%7CV%C3%A1rzea%7CTorre%7CTorr%C3%B5es%7CMadalena%7CIputinga?price_range%5B%5D=0,2200&has_photo=0&smokers_allowed=0&children_allowed=0&pets_allowed=0&drinks_allowed=0&visitors_allowed=0&couples_allowed=0"
+url_wq = "https://www.webquarto.com.br/busca/quartos/recife-pe/Cordeiro%7CV%C3%A1rzea%7CTorre%7CTorr%C3%B5es%7CMadalena%7CIputinga?price_range%5B%5D=0,1000&has_photo=0&smokers_allowed=0&children_allowed=0&pets_allowed=0&drinks_allowed=0&visitors_allowed=0&couples_allowed=0"
 
-#wq_r = rq.get(url, headers=headers)
-#soup1 = BeautifulSoup(wq_r.text, 'lxml')
 
 from selenium import webdriver
 import math
-def seleniumTest():
+def search_OLX():
     driver = webdriver.Firefox()
     driver.get(url_olx)
-    #time.sleep(5)
     content = driver.page_source.encode("utf-8").strip()
-    soup = BeautifulSoup(content, "html.parser")
-    #driver.quit()
+    # soup = BeautifulSoup(content, "html.parser")
+    soup = BeautifulSoup(content, "lxml")
     
-    total_results_str = soup.find("div", {"id": "total-of-ads"}).p.get_text().split(" ")[-2]
-    pages_count = math.ceil(int(total_results_str) / 50)
+    # Quantidade de páginas
+    script_data = soup.find("script", {"id": "__NEXT_DATA__"}).get_text()
+    page_props = json.loads(script_data)['props']['pageProps']
+    pages_count = math.ceil(page_props['totalOfAds'] / page_props['pageSize'])
+    
+    # Calculando quantidade de páginas de resultados da busca
+    # total_results = soup.find("div", {"id": "total-of-ads"}).p.get_text().split(" ")[-2]
+    # pages_count = math.ceil(int(total_results) / 50)
     # print(f'pages_count = {pages_count}')
-    pages = []
+    
+    # Todos os anúncios extraídos de cada página
+    ads = []
     
     for i in range(1, pages_count + 1):
-    # for i in range(1,2):
-        page_url = f'{url_olx}&o={i}'
-        driver.get(page_url)
-        # time.sleep(10)
-        content = driver.page_source.encode("utf-8").strip()
-        soup = BeautifulSoup(content, "html.parser")
-        sections = soup.findAll(class_="olx-ad-card olx-ad-card--horizontal")
-        pages.append(sections)
-        print(f"Got Page {i}")
+        data = {}
         
-        import json
-        soup1 = BeautifulSoup(content, "lxml")
-        data_str = soup1.find("script", {"id": "__NEXT_DATA__"}).get_text()
-        data = json.loads(data_str)['props']['pageProps']['ads']
-        # attrs:
-        # 'title', 'price', 'professionalAd', 'thumbnail', 'url', 'date', 'location',
-        # 'municipality', 'neighbourhood', 'uf', 'category'
-        print(data[0]['title'])
-    
-    driver.quit()
-    
-    # for sections in pages:
-        # print(f'sections count: {len(sections)}')
-        # print(f'{sections[-1]}')
-        #for sect in sections:
+        # Evita a repetição do scrape na página inicial
+        if i == 1:
+            data = page_props['ads']
+        else:
+            page_url = f'{url_olx}&o={i}'
+            driver.get(page_url)
+            # time.sleep(10)
+            content = driver.page_source.encode("utf-8").strip()
+            soup = BeautifulSoup(content, "lxml")
+            data_str = soup.find("script", {"id": "__NEXT_DATA__"}).get_text()
+            data = json.loads(data_str)['props']['pageProps']['ads']
             
-        #print(pages[0][i])
-        #link = pages[0][0].a#['href']
-        #ads_data = page.findAll("div", )
-        #print(link)
-    
-    
-    # sections = soup.findAll(class_="olx-ad-card olx-ad-card--horizontal")
-    
-    
-    # Data Cleanup
-    
-    
-    # print(sections)
-
-seleniumTest()
-
-# broken due to cloudflare protection
-def search_OLX():
-    # class = olx-ad-card olx-ad-card--horizontal olx-ad-card--highlight
-    html = rq.get("https://olx.com.br", headers=h)
-    # time.sleep(20) # sleep for JS full loading
-    # html.content encodes proper
-    soup = BeautifulSoup(html.content, 'lxml')
-    sections = soup.find_all("section")
-    #section_search = soup.find_all("section", attrs={"data-ds-component": "DS-AdCard"})
-    
-    # filters don't work for now
-    #filtered = soup.find("section", class_="olx-ad-card")
-    
-    # html_test = '<div name="somediv">somediv</div><section class="another section">another<section id="1" class="olx-ad-card olx-ad-card--horizontal olx-ad-card--highlight" data-ds-component="DS-AdCard"></section><section class="one more section">more</section>'
-    # test = BeautifulSoup(html_test, 'lxml')
-    # test_result = test.find("section", class_="more")#.prettify()
-    
-    # strip().split('<section data-ds-component="DS-AdCard" class="olx-ad-card olx-ad-card--horizontal olx-ad-card--highlight">')
-    print(soup)
-    result = ""
-    # for sect in sections:
-    #     print(f'\n\n${sect}\n\n')
-        #print("\n------:", sect.find(class_="olx-ad-card"))#.find("a")) #class_=""))
+        for d in data:
+            # print(f'count: {count}')
+            if d.get("subject") is not None:
+                ad = {
+                   'title': d['subject'],
+                   'price': d['price'],
+                   'professionalAd': d['professionalAd'],
+                   'thumbnail': d['thumbnail'],
+                   'url': d['url'],
+                   'date': d['date'],
+                   'location': d['location'],
+                   'category': d['category'],
+                }
+                ads.append(ad)
+        print(f"Page {i} done")
         
-    # implement iteration through the many pages (o=1, o=2... o=n) until there are no more pages with olx-ad-cards
+    driver.quit()
+      
+    # Print the data from each ad
+    for i, ad in enumerate(ads):
+       print(f'\n---- begin ad {i + 1} ----\n{ad}\n---- end ad {i + 1} ----')
     
-    #print(result)
-# search_OLX()
+    print(f'\nTotal ads processed: {len(ads)}')
+
+# seleniumTest()
+
 
 def search_WQ():
-    html = urlopen(url)
+    html = urlopen(url_wq)
     soup = BeautifulSoup(html, 'lxml')
     result = soup.find_all("script")
-
+    
     data_str = ""
-
     # target between 'window.search' and 'window.search.city_name'
     for line in result:
         content = line.text.strip()
@@ -161,8 +135,35 @@ def search_WQ():
             end_idx = content.find(end)
             data_str = content[len(begin) - 1 : end_idx].strip()[:-1]
 
-    data_json = json.loads(data_str)
-
+    data = json.loads(data_str)['ads']
+    
+    ads = []
+    
+    for d in data:
+        # ad1 = d.fromkeys(d.keys())
+        ad = {
+            'active': d['active'],
+            'url': d['url'],
+            'title': d['title'],
+            'description': d['description'],
+            'main_photo': d['main_photo'],
+            # 'date': d['date'],
+            'rent_price': d['rent_price'],
+            'address': d['address'],
+            'location': d['location'],
+            'property_type': d['property_type'],
+            'room_type': d['room_type'],
+            'gender': d['gender'],
+            'min_age': d['min_age'],
+            'about_roommate': d['about_roommate'],
+            'lgbt_friendly': d['lgbt_friendly'],
+            'min_age': d['min_age'],
+            'max_age': d['max_age'],
+            'available_at': d['available_at']
+        }
+        ads.append(ad)
+    
     # Dados dos anúncios da busca no WebQuartos
-    print(data_json["ads"])
-# search_WQ()
+    for i, ad in enumerate(ads):
+        print(f'------ begin {i} -----\n{ad}\n------ end  {i} -----\n')
+search_WQ()
