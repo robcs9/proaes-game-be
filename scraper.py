@@ -8,6 +8,8 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup
 from io import StringIO
 import json
+from selenium import webdriver
+import math
 
 headers = {
     #"User-Agent": "Mozilla/5.0",
@@ -54,9 +56,9 @@ url_olx = "https://www.olx.com.br/imoveis/aluguel/estado-pe/grande-recife/recife
 # WebQuartos
 url_wq = "https://www.webquarto.com.br/busca/quartos/recife-pe/Cordeiro%7CV%C3%A1rzea%7CTorre%7CTorr%C3%B5es%7CMadalena%7CIputinga?price_range%5B%5D=0,1000&has_photo=0&smokers_allowed=0&children_allowed=0&pets_allowed=0&drinks_allowed=0&visitors_allowed=0&couples_allowed=0"
 
+# MGF Imóveis
+url_mgf = "https://www.mgfimoveis.com.br/aluguel/quarto/pe-recife-cidade-universitaria?pricemax=1000"
 
-from selenium import webdriver
-import math
 def search_OLX():
     driver = webdriver.Firefox()
     driver.get(url_olx)
