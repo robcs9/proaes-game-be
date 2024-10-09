@@ -121,7 +121,7 @@ def search_OLX():
 
 # seleniumTest()
 
-# WQ test url
+# WQ multi-page test url
 url = "https://www.webquarto.com.br/busca/quartos/recife-pe?price_range[]=0,15000&has_photo=0&smokers_allowed=0&children_allowed=0&pets_allowed=0&drinks_allowed=0&visitors_allowed=0&couples_allowed=0"
 url_wq = url
 
