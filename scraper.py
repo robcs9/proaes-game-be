@@ -10,6 +10,7 @@ from io import StringIO
 import json
 from selenium import webdriver
 import math
+import codecs
 
 headers = {
     #"User-Agent": "Mozilla/5.0",
@@ -120,8 +121,16 @@ def search_OLX():
 
 # seleniumTest()
 
+# WQ test url
+url = "https://www.webquarto.com.br/busca/quartos/recife-pe?price_range[]=0,15000&has_photo=0&smokers_allowed=0&children_allowed=0&pets_allowed=0&drinks_allowed=0&visitors_allowed=0&couples_allowed=0"
+url_wq = url
+
+# Remove caracteres com encoding irrelevante
+def sanitize(str):
+    return codecs.charmap_encode(str, 'ignore')
 
 def search_WQ():
+    
     html = urlopen(url_wq)
     soup = BeautifulSoup(html, 'lxml')
     result = soup.find_all("script")
@@ -136,7 +145,7 @@ def search_WQ():
         if content.find(begin) > -1:
             end_idx = content.find(end)
             data_str = content[len(begin) - 1 : end_idx].strip()[:-1]
-
+    data_str = sanitize(data_str)
     data = json.loads(data_str)['ads']
     
     ads = []
