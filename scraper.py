@@ -1,12 +1,12 @@
 # import numpy as np
 # import matplotlib.pyplot as plt
 # import seaborn as sns
-import time
-import requests as rq
-import pandas as pd
+# import time
+# import requests as rq
+# import pandas as pd
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
-from io import StringIO
+# from io import StringIO
 import json
 from selenium import webdriver
 import math
@@ -126,8 +126,30 @@ url = "https://www.webquarto.com.br/busca/quartos/recife-pe?price_range[]=0,1500
 url_wq = url
 
 # Remove caracteres com encoding irrelevante
-def sanitize(str):
-    return codecs.charmap_encode(str, 'ignore')
+def sanitize(s):
+    import ast, re, html
+    
+    # Remove caracteres unicode irrelevantes (emojis, etc.)
+    #r = codecs.charmap_encode(re.sub(r'\\/', '/', s), 'ignore')[0].decode('unicode_escape')
+    # r = codecs.charmap_encode(s, 'ignore')[0]#.decode('unicode_escape')
+    r = re.sub(r'\\/', '/', s)
+    charmap_tuple = codecs.charmap_encode(r, 'ignore')
+    u_escaped = charmap_tuple[0].decode('unicode_escape', 'replace')
+    
+    # Remove surrogate pairs (html emojis (e.g.: '\ud83d\udc4', ' &#55356;&#57117;' ) )
+    emojiless_str = re.sub(r'[\uD800-\uDBFF][\uDC00-\uDFFF]', '', u_escaped)
+    # r = re.sub(r'\\u[0-9a-fA-F]{4}', '', r)
+    emojiless_str = re.sub(r'\\u[0-9a-fA-F]{4}', '', emojiless_str)
+    # bullet point removal
+    # emojiless_str = re.sub(r'&\#[a-zA-Z0-9]{1,5}', '', emojiless_str)
+    result = emojiless_str
+    
+    result = result.replace(r'\\u25cf', '')
+    result = result.replace(r'\\n', '')
+    print(result[10669].encode('utf-8')) # fix this little bug!
+    # result = result.translate('utf-8')
+    # result = result.encode('utf-8', 'replace').decode('utf-8', 'replace')
+    return result
 
 def search_WQ():
     
@@ -145,8 +167,10 @@ def search_WQ():
         if content.find(begin) > -1:
             end_idx = content.find(end)
             data_str = content[len(begin) - 1 : end_idx].strip()[:-1]
+    
     data_str = sanitize(data_str)
-    data = json.loads(data_str)['ads']
+    # print(data_str[10660:10675]) # troublesome bullet point unicoded symbol found here
+    data = json.loads(data_str)['ads'] # set strict=False to allow unescaped characters
     
     ads = []
     
