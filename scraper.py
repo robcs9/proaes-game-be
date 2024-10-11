@@ -20,7 +20,7 @@ headers = {
 }
 
 # OLX req headers
-h = {
+""" h = {
 		"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/jxl,image/webp,image/png,image/svg+xml,*/*;q=0.8",
 		"Accept-Encoding": "gzip, deflate, br, zstd",
 		"Accept-Language": "en-US,en;q=0.5"
@@ -49,7 +49,7 @@ HEADERS = {
         "Sec-Fetch-Site": "none",
         "Sec-Fetch-User": "?1",
         "Cache-Control": "max-age=0",
-    }
+    } """
 
 # OLX
 url_olx = "https://www.olx.com.br/imoveis/aluguel/estado-pe/grande-recife/recife?pe=1000&ret=1020&ret=1060&ret=1040&sd=3747&sd=3778&sd=3766&sd=3764&sd=3762"
@@ -122,11 +122,31 @@ def search_OLX():
 # seleniumTest()
 
 # WQ multi-page test url
-url = "https://www.webquarto.com.br/busca/quartos/recife-pe?price_range[]=0,15000&has_photo=0&smokers_allowed=0&children_allowed=0&pets_allowed=0&drinks_allowed=0&visitors_allowed=0&couples_allowed=0"
-url_wq = url
+url = "https://www.webquarto.com.br/busca/quartos/recife-pe?page=1&price_range[]=0,15000&has_photo=0&smokers_allowed=0&children_allowed=0&pets_allowed=0&drinks_allowed=0&visitors_allowed=0&couples_allowed=0"
+# url_wq = url # testing-only, keep comment out otherwise
+
+def findDataWQ(raw):
+    # target characters between 'window.search' and 'window.search.city_name'
+    for line in raw:
+        content = line.get_text().strip()
+        begin = "window.search = {"
+        end = "window.search.city_name"
+        if content.find(begin) > -1:
+            end_idx = content.find(end)
+            data_str = content[len(begin) - 1 : end_idx].strip()[:-1]
+            rest_str = content[end_idx:]
+            return data_str, rest_str
+    return ""
+
+def findPaginationWQ(src):
+    arr = src.split(" = ")
+    s = arr[3]
+    end = s.find("window")
+    s = s[:end - 4]
+    return json.loads(s)
 
 # Remove caracteres com encoding irrelevante
-def sanitize(s):
+def sanitizeWQ(s):
     import ast, re, html
     
     # Remove caracteres unicode irrelevantes (emojis, etc.)
@@ -137,68 +157,70 @@ def sanitize(s):
     u_escaped = charmap_tuple[0].decode('unicode_escape', 'replace')
     
     # Remove surrogate pairs (html emojis (e.g.: '\ud83d\udc4', ' &#55356;&#57117;' ) )
-    emojiless_str = re.sub(r'[\uD800-\uDBFF][\uDC00-\uDFFF]', '', u_escaped)
+    emojiless_str = re.sub(r'[\uD800-\uDFFF]', '', u_escaped)
     # r = re.sub(r'\\u[0-9a-fA-F]{4}', '', r)
     emojiless_str = re.sub(r'\\u[0-9a-fA-F]{4}', '', emojiless_str)
     # bullet point removal
     # emojiless_str = re.sub(r'&\#[a-zA-Z0-9]{1,5}', '', emojiless_str)
     result = emojiless_str
+    result = re.sub(r"[\n\r]", r" ", result)
     
-    result = result.replace(r'\\u25cf', '')
-    result = result.replace(r'\\n', '')
-    print(result[10669].encode('utf-8')) # fix this little bug!
-    # result = result.translate('utf-8')
-    # result = result.encode('utf-8', 'replace').decode('utf-8', 'replace')
+    """ undef_chars = result.strip().split()
+    for w in undef_chars:
+        print(w) """
+    # print(f'length: {len(undef_chars)}')
     return result
 
+def adsDataToJson(data_str):
+        # set loads 'strict' arg to False to allow unescaped characters
+        ads = []
+        data = json.loads(data_str,strict=False)['ads']
+        for d in data:
+            ad = {
+                'active': d['active'],
+                'url': d['url'],
+                'title': d['title'],
+                'description': d['description'],
+                'main_photo': d['main_photo'],
+                # 'date': d['date'],
+                'rent_price': d['rent_price'],
+                'address': d['address'],
+                'location': d['location'],
+                'property_type': d['property_type'],
+                'room_type': d['room_type'],
+                'gender': d['gender'],
+                'min_age': d['min_age'],
+                'about_roommate': d['about_roommate'],
+                'lgbt_friendly': d['lgbt_friendly'],
+                'min_age': d['min_age'],
+                'max_age': d['max_age'],
+                'available_at': d['available_at']
+            }
+            ads.append(ad)
+        return ads
+
 def search_WQ():
-    
     html = urlopen(url_wq)
     soup = BeautifulSoup(html, 'lxml')
-    result = soup.find_all("script")
-    
-    data_str = ""
-    # target between 'window.search' and 'window.search.city_name'
-    for line in result:
-        content = line.text.strip()
-        begin = "window.search = {"
-        end = "window.search.city_name"
-
-        if content.find(begin) > -1:
-            end_idx = content.find(end)
-            data_str = content[len(begin) - 1 : end_idx].strip()[:-1]
-    
-    data_str = sanitize(data_str)
-    # print(data_str[10660:10675]) # troublesome bullet point unicoded symbol found here
-    data = json.loads(data_str)['ads'] # set strict=False to allow unescaped characters
-    
+    raw_scripts = soup.find_all("script")
     ads = []
     
-    for d in data:
-        # ad1 = d.fromkeys(d.keys())
-        ad = {
-            'active': d['active'],
-            'url': d['url'],
-            'title': d['title'],
-            'description': d['description'],
-            'main_photo': d['main_photo'],
-            # 'date': d['date'],
-            'rent_price': d['rent_price'],
-            'address': d['address'],
-            'location': d['location'],
-            'property_type': d['property_type'],
-            'room_type': d['room_type'],
-            'gender': d['gender'],
-            'min_age': d['min_age'],
-            'about_roommate': d['about_roommate'],
-            'lgbt_friendly': d['lgbt_friendly'],
-            'min_age': d['min_age'],
-            'max_age': d['max_age'],
-            'available_at': d['available_at']
-        }
-        ads.append(ad)
+    data_str, pagination = findDataWQ(raw_scripts)
+    pagination = findPaginationWQ(pagination)
+    data_str = sanitizeWQ(data_str)
+    ads.append(adsDataToJson(data_str))
+    
+    for i in range(pagination['last_page'] - 1):
+        page_url = f"https://www.webquarto.com.br/busca/quartos/recife-pe?page={i + 1}&price_range[]=0,15000&has_photo=0&smokers_allowed=0&children_allowed=0&pets_allowed=0&drinks_allowed=0&visitors_allowed=0&couples_allowed=0"
+        html = urlopen(page_url)
+        soup = BeautifulSoup(html, 'lxml')
+        raw_scripts = soup.find_all("script")
+        data_str, _ = findDataWQ(raw_scripts)
+        data_str = sanitizeWQ(data_str)
+        ads.append(adsDataToJson(data_str))    
     
     # Dados dos anúncios da busca no WebQuartos
+    ads = [item for sublist in ads for item in sublist]
     for i, ad in enumerate(ads):
-        print(f'------ begin {i} -----\n{ad}\n------ end  {i} -----\n')
+        print(f'------ begin {i} -----\n{ad}\n------ end {i} -----\n')
 search_WQ()
