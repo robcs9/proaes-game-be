@@ -3,7 +3,7 @@
 # import seaborn as sns
 # import time
 # import requests as rq
-# import pandas as pd
+import pandas as pd
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 # from io import StringIO
@@ -51,33 +51,35 @@ HEADERS = {
         "Cache-Control": "max-age=0",
     } """
 
-# OLX
 url_olx = "https://www.olx.com.br/imoveis/aluguel/estado-pe/grande-recife/recife?pe=1000&ret=1020&ret=1060&ret=1040&sd=3747&sd=3778&sd=3766&sd=3764&sd=3762"
-
-# WebQuartos
 url_wq = "https://www.webquarto.com.br/busca/quartos/recife-pe/Cordeiro%7CV%C3%A1rzea%7CTorre%7CTorr%C3%B5es%7CMadalena%7CIputinga?price_range%5B%5D=0,1000&has_photo=0&smokers_allowed=0&children_allowed=0&pets_allowed=0&drinks_allowed=0&visitors_allowed=0&couples_allowed=0"
-
-# MGF Imóveis
 url_mgf = "https://www.mgfimoveis.com.br/aluguel/quarto/pe-recife-cidade-universitaria?pricemax=1000"
 
-def search_OLX():
+# Retorna a quantidade de páginas de resultados da busca
+def findPagePropsOLX(soup):
+    data_str = soup.find("script", {"id": "__NEXT_DATA__"}).get_text()
+    props = json.loads(data_str)['props']['pageProps']
+    return props
+
+def makeSeleniumSoup(url):
+    driver = webdriver.Firefox()
+    driver.get(url)
+    content = driver.page_source.encode("utf-8").strip()
+    soup = BeautifulSoup(content, "lxml") # alt parser: html.parser
+    return soup
+    
+def searchOLX():
     driver = webdriver.Firefox()
     driver.get(url_olx)
     content = driver.page_source.encode("utf-8").strip()
-    # soup = BeautifulSoup(content, "html.parser")
-    soup = BeautifulSoup(content, "lxml")
+    soup = BeautifulSoup(content, "lxml") # alt parser: html.parser
     
-    # Quantidade de páginas
-    script_data = soup.find("script", {"id": "__NEXT_DATA__"}).get_text()
+    """ script_data = soup.find("script", {"id": "__NEXT_DATA__"}).get_text()
     page_props = json.loads(script_data)['props']['pageProps']
+    pages_count = math.ceil(page_props['totalOfAds'] / page_props['pageSize']) """
+    page_props = findPagePropsOLX(soup)
     pages_count = math.ceil(page_props['totalOfAds'] / page_props['pageSize'])
     
-    # Calculando quantidade de páginas de resultados da busca
-    # total_results = soup.find("div", {"id": "total-of-ads"}).p.get_text().split(" ")[-2]
-    # pages_count = math.ceil(int(total_results) / 50)
-    # print(f'pages_count = {pages_count}')
-    
-    # Todos os anúncios extraídos de cada página
     ads = []
     
     for i in range(1, pages_count + 1):
@@ -115,18 +117,17 @@ def search_OLX():
       
     # Print the data from each ad
     for i, ad in enumerate(ads):
-       print(f'\n---- begin ad {i + 1} ----\n{ad}\n---- end ad {i + 1} ----')
+       print(f'OLX:\n---- begin ad {i + 1} ----\n{ad}\n---- end ad {i + 1} ----')
     
-    print(f'\nTotal ads processed: {len(ads)}')
+    print(f'\nAds count: {len(ads)}')
 
-# seleniumTest()
 
-# WQ multi-page test url
-url = "https://www.webquarto.com.br/busca/quartos/recife-pe?page=1&price_range[]=0,15000&has_photo=0&smokers_allowed=0&children_allowed=0&pets_allowed=0&drinks_allowed=0&visitors_allowed=0&couples_allowed=0"
-# url_wq = url # testing-only, keep comment out otherwise
+# WQ multi-pages test url
+# testing-only, keep commented out otherwise
+# url_wq = "https://www.webquarto.com.br/busca/quartos/recife-pe?page=1&price_range[]=0,15000&has_photo=0&smokers_allowed=0&children_allowed=0&pets_allowed=0&drinks_allowed=0&visitors_allowed=0&couples_allowed=0"
 
 def findDataWQ(raw):
-    # target characters between 'window.search' and 'window.search.city_name'
+    # target text between 'window.search' and 'window.search.city_name'
     for line in raw:
         content = line.get_text().strip()
         begin = "window.search = {"
@@ -171,7 +172,7 @@ def sanitizeWQ(s):
     # print(f'length: {len(undef_chars)}')
     return result
 
-def adsDataToJson(data_str):
+def adsDataToJsonWQ(data_str):
         # set loads 'strict' arg to False to allow unescaped characters
         ads = []
         data = json.loads(data_str,strict=False)['ads']
@@ -199,7 +200,7 @@ def adsDataToJson(data_str):
             ads.append(ad)
         return ads
 
-def search_WQ():
+def searchWQ():
     html = urlopen(url_wq)
     soup = BeautifulSoup(html, 'lxml')
     raw_scripts = soup.find_all("script")
@@ -208,7 +209,7 @@ def search_WQ():
     data_str, pagination = findDataWQ(raw_scripts)
     pagination = findPaginationWQ(pagination)
     data_str = sanitizeWQ(data_str)
-    ads.append(adsDataToJson(data_str))
+    ads.append(adsDataToJsonWQ(data_str))
     
     for i in range(pagination['last_page'] - 1):
         page_url = f"https://www.webquarto.com.br/busca/quartos/recife-pe?page={i + 1}&price_range[]=0,15000&has_photo=0&smokers_allowed=0&children_allowed=0&pets_allowed=0&drinks_allowed=0&visitors_allowed=0&couples_allowed=0"
@@ -217,10 +218,40 @@ def search_WQ():
         raw_scripts = soup.find_all("script")
         data_str, _ = findDataWQ(raw_scripts)
         data_str = sanitizeWQ(data_str)
-        ads.append(adsDataToJson(data_str))    
+        ads.append(adsDataToJsonWQ(data_str))    
     
-    # Dados dos anúncios da busca no WebQuartos
+    # Dados dos anúncios em lista simples
     ads = [item for sublist in ads for item in sublist]
-    for i, ad in enumerate(ads):
-        print(f'------ begin {i} -----\n{ad}\n------ end {i} -----\n')
-search_WQ()
+    
+    # for i, ad in enumerate(ads):
+        # print(f'------ begin {i} -----\n{ad}\n------ end {i} -----\n')
+    
+    """ df = pd.DataFrame({
+        'active': ads[0]['active'],
+        'url': ads[0]['url'],
+        'title': ads[0]['title'],
+        'description': ads[0]['description'],
+        'main_photo': ads[0]['main_photo'],
+        'rent_price': ads[0]['rent_price'],
+        'address': ads[0]['address'],
+        'location': ads[0]['location'],
+        'property_type': ads[0]['property_type'],
+        'room_type': ads[0]['room_type'],
+        'gender': ads[0]['gender'],
+        'min_age': ads[0]['min_age'],
+        'about_roommate': ads[0]['about_roommate'],
+        'lgbt_friendly': ads[0]['lgbt_friendly'],
+        'min_age': ads[0]['min_age'],
+        'max_age': ads[0]['max_age'],
+        'available_at': ads[0]['available_at']
+    }) """
+
+    # failed attempt to create a dataframe from a Series:
+    # TypeError: int() argument must be a string, a bytes-like object or a real number, not '_NoValueType'
+    # p = pd.DataFrame(pd.Series(ads))
+    
+    p = pd.Series(ads[0])
+    print(f'\nSingle ad example:\n\n{p}')
+
+# searchOLX()
+searchWQ()
