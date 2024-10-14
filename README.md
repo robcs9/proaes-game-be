@@ -11,8 +11,8 @@ Buscador de anúncios de aluguéis de moradias para estudantes da UFPE.
 
 ### TO-DO
 
-- Corrigir encoding dos caracteres dos dados obtidos na OLX
-- Cruzar informações para tentar encontrar as plataformas/canais de anúncios utilizadas pelos estabelecimentos encontrados no Google Maps
+[x] Corrigir encoding dos caracteres dos dados obtidos na OLX
+[ ] Cruzar informações para tentar encontrar as plataformas/canais de anúncios utilizadas pelos estabelecimentos encontrados no Google Maps
 
 ### Estudo:
 
@@ -29,13 +29,13 @@ Buscador de anúncios de aluguéis de moradias para estudantes da UFPE.
 
 - [mgf](https://www.mgfimoveis.com.br/aluguel/quarto/pe-recife-cidade-universitaria)
 
-
 - [OLX](https://www.olx.com.br/estado-pe?q=aluguel%20quartos&cg=1000)
 
 - [OLX](https://www.olx.com.br/imoveis/aluguel/aluguel-de-quartos/estado-pe?q=aluguel%20quartos)
 
 - [OLX](https://www.olx.com.br/imoveis/aluguel/estado-pe/grande-recife/recife/cidade-universitaria?pe=2000&ret=1020&ret=1060&ret=1040)
-[trovit](https://imoveis.trovit.com.br/alugar-quarto-recife)
+
+- [trovit](https://imoveis.trovit.com.br/alugar-quarto-recife)
 
 
 ### Mapas
@@ -49,9 +49,10 @@ Buscador de anúncios de aluguéis de moradias para estudantes da UFPE.
 [Abordagem alternativa](https://queroquarto.com/)
 
 ---
+
 ### Misc
 
 ##### OLX:
 
 - Atributos relevantes: 'title', 'price', 'professionalAd', 'thumbnail', 'url', 'date', 'location', 'municipality', 'neighbourhood', 'uf', 'category'
-- O atributo "date" está no formato "unix epoch"
+- O atributo "date" pode estar no formato "unix epoch" em alguns casos
