@@ -11,8 +11,8 @@ Buscador de anúncios de aluguéis de moradias para estudantes da UFPE.
 
 ### TO-DO
 
-[x] Corrigir encoding dos caracteres dos dados obtidos na OLX
-[ ] Cruzar informações para tentar encontrar as plataformas/canais de anúncios utilizadas pelos estabelecimentos encontrados no Google Maps
+- [x] Corrigir encoding dos caracteres dos dados obtidos na OLX
+- [ ] Cruzar informações para tentar encontrar as plataformas/canais de anúncios utilizadas pelos estabelecimentos encontrados no Google Maps
 
 ### Estudo:
 
