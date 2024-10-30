@@ -11,6 +11,7 @@ import json
 from selenium import webdriver
 import math
 import codecs
+import asyncio
 
 headers = {
     #"User-Agent": "Mozilla/5.0",
@@ -82,6 +83,11 @@ def searchOLX():
     
     ads = []
     
+    # CURL_CFFI based method
+    # from curl_cffi import requests as currq
+    # res = currq.get(url, impersonate="chrome")
+    # soup = BeautifulSoup(res.text, 'lxml')
+    
     for i in range(1, pages_count + 1):
         data = {}
         
@@ -111,15 +117,16 @@ def searchOLX():
                    'category': d['category'],
                 }
                 ads.append(ad)
-        print(f"Page {i} done")
+        print(f"OLX Page {i} done")
         
     driver.quit()
       
     # Print the data from each ad
-    for i, ad in enumerate(ads):
-       print(f'OLX:\n---- begin ad {i + 1} ----\n{ad}\n---- end ad {i + 1} ----')
+    # for i, ad in enumerate(ads):
+    #    print(f'OLX:\n---- begin ad {i + 1} ----\n{ad}\n---- end ad {i + 1} ----')
     
-    print(f'\nAds count: {len(ads)}')
+    # print(f'\nAds count: {len(ads)}')
+    return ads
 
 
 # WQ multi-pages test url
@@ -200,6 +207,7 @@ def adsDataToJsonWQ(data_str):
             ads.append(ad)
         return ads
 
+
 def searchWQ():
     html = urlopen(url_wq)
     soup = BeautifulSoup(html, 'lxml')
@@ -250,8 +258,30 @@ def searchWQ():
     # TypeError: int() argument must be a string, a bytes-like object or a real number, not '_NoValueType'
     # p = pd.DataFrame(pd.Series(ads))
     
-    p = pd.Series(ads[0])
-    print(f'\nSingle ad example:\n\n{p}')
+    # p = pd.Series(ads[0])
+    # print(f'\nSingle ad example:\n\n{p}')
+    return ads
 
-# searchOLX()
-searchWQ()
+def printAds(data_arr: list, provider: str):
+    series = []
+    pd.Series()
+    print(f"Anúncios de Moradia encontrados na {provider}:")
+    for data in data_arr:
+        s = pd.Series(data)
+        series.append(s)
+        print(f"\n{s}\n")
+
+    # print(f'\n{series}\n')
+    # print(f'\nSingle ad example:\n\n{p}')
+    
+# printAds(searchWQ())
+
+async def printScrapersResults():
+    printAds(searchOLX(), "OLX")
+    printAds(searchWQ(), "WebQuartos")
+
+asyncio.run(printScrapersResults())
+
+
+""" printAds(searchOLX(), "OLX")
+printAds(searchWQ(), "WebQuartos") """
