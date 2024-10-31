@@ -115,7 +115,31 @@ def adsDataToJsonWQ(data_str):
         ads = []
         data = json.loads(data_str,strict=False)['ads']
         for d in data:
-            ad = {
+            # Compare and normalize both data shapes
+            ad1 = {
+                'url': d['url'], 
+                'title': d['title'],
+                'description': d['description'], # title (another)
+                'main_photo': d['main_photo'], # thumbnail
+                'rent_price': d['rent_price'], # price
+                'address': d['address'], # street (needs to be concat'd: address+location)
+                'location': d['location'], # read above
+                'property_type': d['property_type'], # category
+                'room_type': d['room_type'], # category too
+                'about_roommate': d['about_roommate'], # extra description
+            }
+            # OLX
+            ad2 = {
+                   'title': d['subject'],
+                   'price': d['price'],
+                   'professionalAd': d['professionalAd'],
+                   'thumbnail': d['thumbnail'],
+                   'url': d['url'],
+                #    'date': d['date'],
+                   'location': d['location'],
+                   'category': d['category'],
+                }
+            """ ad = {
                 'active': d['active'],
                 'url': d['url'],
                 'title': d['title'],
@@ -134,8 +158,9 @@ def adsDataToJsonWQ(data_str):
                 'min_age': d['min_age'],
                 'max_age': d['max_age'],
                 'available_at': d['available_at']
-            }
-            ads.append(ad)
+            } """
+            # ads.append(ad)
+            ads.append(ad1)
         return ads
 
 
@@ -168,15 +193,25 @@ def printAdsSeries(data_arr: list, src: str):
     for data in data_arr:
         s = pd.Series(data)
         series.append(s)
-        print(f"\n{s}\n")
+        # print(f"\n{s}\n")
+    
+    df = {}
+    for i, data in enumerate(data_arr):
+        
+        pass
+    print(data_arr[0])
+    # df = pd.DataFrame({some_series: pd.Series.keys some_series.title}, index = some_series.index)
+    # print(df)
 
 async def scrapeAndPrint():
     running = True
     while running:
         printAdsSeries(searchWQ(), "WebQuartos")
         printAdsSeries(searchOLX(), "OLX")
+        
         curtime = time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime()) # date.fromtimestamp(t)
-        print(f"Scrape finished at {curtime}")
+        print(f"Scraping finished at {curtime}")
+        break
         await asyncio.sleep(60)
 
 asyncio.run(scrapeAndPrint())
