@@ -53,7 +53,7 @@ def searchOLX():
                     'property_type': d['category'],
                 }
                 ads.append(ad)
-        print(f"\nOLX Page {i} scrape done\n")
+        print(f"OLX Page {i} done")
         
     return ads
 
@@ -117,7 +117,7 @@ def adsDataToJsonWQ(data_str):
             # Compare and normalize both data shapes
             ad = {
                 'url': d['url'], 
-                'title': f"{d['title']}. {d['description']}. {d['about_roommate']}",
+                'title': f"{d['title']}",# {d['description']}. {d['about_roommate']}",
                 'thumbnail': d['main_photo'],
                 'price': d['rent_price'],
                 'address': f"{d['address']}, {d['location']}",
@@ -136,6 +136,7 @@ def searchWQ():
     pagination = findPaginationWQ(pagination)
     data_str = sanitizeWQ(data_str)
     ads.append(adsDataToJsonWQ(data_str))
+    print(f"WebQuartos Page 1 done")
     
     for i in range(pagination['last_page'] - 1):
         page_url = f"https://www.webquarto.com.br/busca/quartos/recife-pe?page={i + 1}&price_range[]=0,15000&has_photo=0&smokers_allowed=0&children_allowed=0&pets_allowed=0&drinks_allowed=0&visitors_allowed=0&couples_allowed=0"
@@ -143,16 +144,24 @@ def searchWQ():
         raw_scripts = soup.find_all("script")
         data_str, _ = findDataWQ(raw_scripts)
         data_str = sanitizeWQ(data_str)
-        ads.append(adsDataToJsonWQ(data_str))    
+        ads.append(adsDataToJsonWQ(data_str))
+        print(f"WebQuartos Page {i+1} done")
     
     # Dados dos anúncios em flat list
     ads = [item for sublist in ads for item in sublist]
     return ads
 
-def printAdsSeries(data_arr: list, src: str):
+def saveToCSV(df: pd.DataFrame):
+    df = df.rename(columns={
+        'title': 'Título','thumbnail': 'Foto','price': 'Preço','address': 'Endereço','property_type': 'TipoMoradia'
+    })
+    df.to_csv("data/data.csv")
+    # print(df)
+    
+def makeDataFrame(data_arr: list, src: str):
     serieses = []
     
-    print(f"Anúncios de Moradia encontrados na {src}:")
+    # print(f"Anúncios de Moradia encontrados na {src}:")
     for data in data_arr:
         s = pd.Series(data)
         serieses.append(s)
@@ -160,8 +169,7 @@ def printAdsSeries(data_arr: list, src: str):
     
     df = {}
     df = pd.DataFrame(serieses)
-    
-    print(df)
+    return df
     # for i, data in enumerate(data_arr):    
     
     # print(data_arr[0])
@@ -171,12 +179,28 @@ def printAdsSeries(data_arr: list, src: str):
 async def scrapeAndPrint():
     running = True
     while running:
-        printAdsSeries(searchWQ(), "WebQuartos")
-        printAdsSeries(searchOLX(), "OLX")
+        curtime = time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime())
+        print(f"\nScraping now... ({curtime})\n")
         
-        curtime = time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime()) # date.fromtimestamp(t)
-        print(f"Scraping finished at {curtime}")
+        dfWQ = makeDataFrame(searchWQ(), "WebQuartos")
+        dfOLX = makeDataFrame(searchOLX(), "OLX")
+        
+        
+        curtime = time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime())
+        print(f"\nScraping finished ({curtime})\n")
+        
+        # concat DFs before saving
+        df = pd.concat([dfWQ, dfOLX])
+        saveToCSV(df)
         break
         await asyncio.sleep(60)
 
 asyncio.run(scrapeAndPrint())
+
+# renaming columns test
+""" foo = pd.DataFrame({"A": [1, 2, 3], "B": [4, 5, 6]})
+
+# print(foo)
+foo = foo.rename(columns={"A": "a", "B": "c"})
+
+print(foo) """
