@@ -45,14 +45,12 @@ def searchOLX():
         for d in data:
             if d.get("subject") is not None:
                 ad = {
-                   'title': d['subject'],
-                   'price': d['price'],
-                   'professionalAd': d['professionalAd'],
-                   'thumbnail': d['thumbnail'],
-                   'url': d['url'],
-                   'date': d['date'],
-                   'location': d['location'],
-                   'category': d['category'],
+                    'url': d['url'], 
+                    'title': d['subject'],
+                    'thumbnail': d['thumbnail'],
+                    'price': d['price'],
+                    'address': d['location'],
+                    'property_type': d['category'],
                 }
                 ads.append(ad)
         print(f"\nOLX Page {i} scrape done\n")
@@ -63,6 +61,7 @@ def searchOLX():
 # WQ multi-pages test url
 # testing-only, keep commented out otherwise
 # url_wq = "https://www.webquarto.com.br/busca/quartos/recife-pe?page=1&price_range[]=0,15000&has_photo=0&smokers_allowed=0&children_allowed=0&pets_allowed=0&drinks_allowed=0&visitors_allowed=0&couples_allowed=0"
+
 
 def findDataWQ(raw):
     # target text between 'window.search' and 'window.search.city_name'
@@ -111,56 +110,20 @@ def sanitizeWQ(s):
     return result
 
 def adsDataToJsonWQ(data_str):
-        # set loads 'strict' arg to False to allow unescaped characters
         ads = []
+        # set loads 'strict' arg to False to allow unescaped characters
         data = json.loads(data_str,strict=False)['ads']
         for d in data:
             # Compare and normalize both data shapes
-            ad1 = {
+            ad = {
                 'url': d['url'], 
-                'title': d['title'],
-                'description': d['description'], # title (another)
-                'main_photo': d['main_photo'], # thumbnail
-                'rent_price': d['rent_price'], # price
-                'address': d['address'], # street (needs to be concat'd: address+location)
-                'location': d['location'], # read above
-                'property_type': d['property_type'], # category
-                'room_type': d['room_type'], # category too
-                'about_roommate': d['about_roommate'], # extra description
+                'title': f"{d['title']}. {d['description']}. {d['about_roommate']}",
+                'thumbnail': d['main_photo'],
+                'price': d['rent_price'],
+                'address': f"{d['address']}, {d['location']}",
+                'property_type': f"{d['property_type']}. {d['room_type']}",
             }
-            # OLX
-            ad2 = {
-                   'title': d['subject'],
-                   'price': d['price'],
-                   'professionalAd': d['professionalAd'],
-                   'thumbnail': d['thumbnail'],
-                   'url': d['url'],
-                #    'date': d['date'],
-                   'location': d['location'],
-                   'category': d['category'],
-                }
-            """ ad = {
-                'active': d['active'],
-                'url': d['url'],
-                'title': d['title'],
-                'description': d['description'],
-                'main_photo': d['main_photo'],
-                # 'date': d['date'],
-                'rent_price': d['rent_price'],
-                'address': d['address'],
-                'location': d['location'],
-                'property_type': d['property_type'],
-                'room_type': d['room_type'],
-                'gender': d['gender'],
-                'min_age': d['min_age'],
-                'about_roommate': d['about_roommate'],
-                'lgbt_friendly': d['lgbt_friendly'],
-                'min_age': d['min_age'],
-                'max_age': d['max_age'],
-                'available_at': d['available_at']
-            } """
-            # ads.append(ad)
-            ads.append(ad1)
+            ads.append(ad)
         return ads
 
 
@@ -187,19 +150,21 @@ def searchWQ():
     return ads
 
 def printAdsSeries(data_arr: list, src: str):
-    series = []
+    serieses = []
     
     print(f"Anúncios de Moradia encontrados na {src}:")
     for data in data_arr:
         s = pd.Series(data)
-        series.append(s)
+        serieses.append(s)
         # print(f"\n{s}\n")
     
     df = {}
-    for i, data in enumerate(data_arr):
-        
-        pass
-    print(data_arr[0])
+    df = pd.DataFrame(serieses)
+    
+    print(df)
+    # for i, data in enumerate(data_arr):    
+    
+    # print(data_arr[0])
     # df = pd.DataFrame({some_series: pd.Series.keys some_series.title}, index = some_series.index)
     # print(df)
 
