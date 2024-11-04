@@ -63,6 +63,15 @@ def searchOLX():
 # url_wq = "https://www.webquarto.com.br/busca/quartos/recife-pe?page=1&price_range[]=0,15000&has_photo=0&smokers_allowed=0&children_allowed=0&pets_allowed=0&drinks_allowed=0&visitors_allowed=0&couples_allowed=0"
 
 
+def normalizeAdsPrices(ads):
+    
+    for ad in ads:
+        price = ad['price']
+        price = f'{price},00' if price.find(',') == -1 else price
+        ad['price'] = price    
+    
+    return ads
+
 def findDataWQ(raw):
     # target text between 'window.search' and 'window.search.city_name'
     for line in raw:
@@ -110,21 +119,21 @@ def sanitizeWQ(s):
     return result
 
 def adsDataToJsonWQ(data_str):
-        ads = []
-        # set loads 'strict' arg to False to allow unescaped characters
-        data = json.loads(data_str,strict=False)['ads']
-        for d in data:
-            # Compare and normalize both data shapes
-            ad = {
-                'url': d['url'], 
-                'title': f"{d['title']}",# {d['description']}. {d['about_roommate']}",
-                'thumbnail': d['main_photo'],
-                'price': d['rent_price'],
-                'address': f"{d['address']}, {d['location']}",
-                'property_type': f"{d['property_type']}. {d['room_type']}",
-            }
-            ads.append(ad)
-        return ads
+    ads = []
+    # set loads 'strict' arg to False to allow unescaped characters
+    data = json.loads(data_str,strict=False)['ads']
+    for d in data:
+        # Compare and normalize both data shapes
+        ad = {
+            'url': d['url'], 
+            'title': f"{d['title']}",# {d['description']}. {d['about_roommate']}",
+            'thumbnail': d['main_photo'],
+            'price': d['rent_price'],
+            'address': f"{d['address']}, {d['location']}",
+            'property_type': f"{d['property_type']}. {d['room_type']}",
+        }
+        ads.append(ad)
+    return ads
 
 
 def searchWQ():
@@ -153,12 +162,15 @@ def searchWQ():
 
 def saveToCSV(df: pd.DataFrame):
     df = df.rename(columns={
-        'title': 'Título','thumbnail': 'Foto','price': 'Preço','address': 'Endereço','property_type': 'TipoMoradia'
+        'url': 'URL', 'title': 'Título','thumbnail': 'Foto','price': 'Preço','address': 'Endereço','property_type': 'Tipo'
     })
-    df.to_csv("data/data.csv")
-    # print(df)
+    # print(df.apply(lambda x: normalizeAdsPrices(x), axis=1, result_type='expand'))
+    # print(df['Preço'])
+    df.to_csv("data/data.csv", columns=['Título', 'Tipo', 'Endereço', 'Preço', 'URL'])
     
 def makeDataFrame(data_arr: list, src: str):
+    data_arr = normalizeAdsPrices(data_arr)
+    
     serieses = []
     
     # print(f"Anúncios de Moradia encontrados na {src}:")
@@ -184,7 +196,6 @@ async def scrapeAndPrint():
         
         dfWQ = makeDataFrame(searchWQ(), "WebQuartos")
         dfOLX = makeDataFrame(searchOLX(), "OLX")
-        
         
         curtime = time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime())
         print(f"\nScraping finished ({curtime})\n")
