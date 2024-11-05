@@ -191,14 +191,14 @@ def makeDataFrame(data_arr: list, src: str):
 async def scrapeAndPrint():
     running = True
     while running:
-        curtime = time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime())
-        print(f"\nScraping now... ({curtime})\n")
+        curr_time = time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime())
+        print(f"\nScraping now... ({curr_time})\n")
         
         dfWQ = makeDataFrame(searchWQ(), "WebQuartos")
         dfOLX = makeDataFrame(searchOLX(), "OLX")
         
-        curtime = time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime())
-        print(f"\nScraping finished ({curtime})\n")
+        curr_time = time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime())
+        print(f"\nScraping finished ({curr_time})\n")
         
         # concat DFs before saving
         df = pd.concat([dfWQ, dfOLX])
