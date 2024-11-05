@@ -203,6 +203,7 @@ async def scrapeAndPrint():
         # concat DFs before saving
         df = pd.concat([dfWQ, dfOLX])
         saveToCSV(df)
+        print(df)
         break
         await asyncio.sleep(60)
 
