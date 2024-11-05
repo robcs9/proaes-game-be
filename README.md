@@ -2,7 +2,6 @@
 
 Aplicação com a finalidade de encontrar anúncios de aluguéis de moradias para estudantes da **UFPE** e organizá-los com insights relevantes.
 
----
 ## Uso
 
 ###### TBD
