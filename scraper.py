@@ -145,7 +145,7 @@ def searchWQ():
     pagination = findPaginationWQ(pagination)
     data_str = sanitizeWQ(data_str)
     ads.append(adsDataToJsonWQ(data_str))
-    print(f"WebQuartos Page 1 done")
+    print(f"WebQuarto Page 1 done")
     
     for i in range(pagination['last_page'] - 1):
         page_url = f"https://www.webquarto.com.br/busca/quartos/recife-pe?page={i + 1}&price_range[]=0,15000&has_photo=0&smokers_allowed=0&children_allowed=0&pets_allowed=0&drinks_allowed=0&visitors_allowed=0&couples_allowed=0"
@@ -154,7 +154,7 @@ def searchWQ():
         data_str, _ = findDataWQ(raw_scripts)
         data_str = sanitizeWQ(data_str)
         ads.append(adsDataToJsonWQ(data_str))
-        print(f"WebQuartos Page {i+1} done")
+        print(f"WebQuarto Page {i+1} done")
     
     # Dados dos anúncios em flat list
     ads = [item for sublist in ads for item in sublist]
@@ -194,7 +194,7 @@ async def scrapeAndPrint():
         curr_time = time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime())
         print(f"\nScraping now... ({curr_time})\n")
         
-        dfWQ = makeDataFrame(searchWQ(), "WebQuartos")
+        dfWQ = makeDataFrame(searchWQ(), "WebQuarto")
         dfOLX = makeDataFrame(searchOLX(), "OLX")
         
         curr_time = time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime())

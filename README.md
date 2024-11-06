@@ -18,7 +18,7 @@ Aplicação com a finalidade de encontrar anúncios de aluguéis de moradias par
 ## TO-DO
 
 - [x] Implementar scraper
-- [x] Tratamento dos dados da WebQuartos
+- [x] Tratamento dos dados da WebQuarto
 - [x] Tratamento dos dados da OLX ~~(corrigir encoding dos caracteres dos dados obtidos na OLX)~~
 - [ ] Implementar mapeamento geográfico dos dados coletados
 - [ ] Implementar visualização dos relatórios com insights
