@@ -14,7 +14,7 @@ from curl_cffi import requests as currq
 res = currq.get(url, impersonate="chrome")
 soup = BeautifulSoup(res.text, 'lxml')
 print(soup.find('script', {"id": "__NEXT_DATA__"}).get_text())
-#print(res.text) #
+
 
 from selenium import webdriver
 def makeSeleniumSoup(url):

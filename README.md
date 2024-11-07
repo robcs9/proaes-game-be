@@ -25,11 +25,11 @@ Aplicação com a finalidade de encontrar anúncios de aluguéis de moradias par
 - [ ] Implementar asincronicidade do scraper
 - [ ] Implantação do serviço
 
-## Misc dev notes
+## Misc & Dev notes
 
-#### OLX:
-
-- O atributo "date" pode estar no formato "unix epoch" em alguns casos
+- lat e lng já estão presentes nos dados da WebQuarto
+- OLX utiliza o CEP para estimar a localização do imóvel
+- O atributo "date" dos dados da OLX pode estar no formato "unix epoch" em alguns casos
 
 ## Fontes:
 

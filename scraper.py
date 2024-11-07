@@ -11,8 +11,19 @@ url_olx = "https://www.olx.com.br/imoveis/aluguel/estado-pe/grande-recife/recife
 url_wq = "https://www.webquarto.com.br/busca/quartos/recife-pe/Cordeiro%7CV%C3%A1rzea%7CTorre%7CTorr%C3%B5es%7CMadalena%7CIputinga?price_range%5B%5D=0,1000&has_photo=0&smokers_allowed=0&children_allowed=0&pets_allowed=0&drinks_allowed=0&visitors_allowed=0&couples_allowed=0"
 url_mgf = "https://www.mgfimoveis.com.br/aluguel/quarto/pe-recife-cidade-universitaria?pricemax=1000"
 
+# New feature
+def getAdCep(url: str, provider: str):
+    cep = ''
+    soup = makeSoup(url)
+    if provider == "OLX":
+        pass
+    if provider == "WebQuarto":
+        pass
+    
+    return cep
+# /New Feature
 
-def makeSoup(url):
+def makeSoup(url: str):
     content = curlrq.get(url, impersonate="chrome")
     soup = BeautifulSoup(content.text, "lxml")
     return soup
@@ -203,7 +214,7 @@ async def scrapeAndPrint():
         # concat DFs before saving
         df = pd.concat([dfWQ, dfOLX])
         saveToCSV(df)
-        print(df)
+        # print(df)
         break
         await asyncio.sleep(60)
 
