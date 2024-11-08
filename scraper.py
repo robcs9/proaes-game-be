@@ -6,22 +6,11 @@ import codecs
 from curl_cffi import requests as curlrq
 import time
 import asyncio
+import re
 
 url_olx = "https://www.olx.com.br/imoveis/aluguel/estado-pe/grande-recife/recife?pe=1000&ret=1020&ret=1060&ret=1040&sd=3747&sd=3778&sd=3766&sd=3764&sd=3762"
 url_wq = "https://www.webquarto.com.br/busca/quartos/recife-pe/Cordeiro%7CV%C3%A1rzea%7CTorre%7CTorr%C3%B5es%7CMadalena%7CIputinga?price_range%5B%5D=0,1000&has_photo=0&smokers_allowed=0&children_allowed=0&pets_allowed=0&drinks_allowed=0&visitors_allowed=0&couples_allowed=0"
 url_mgf = "https://www.mgfimoveis.com.br/aluguel/quarto/pe-recife-cidade-universitaria?pricemax=1000"
-
-# New feature
-def getAdCep(url: str, provider: str):
-    cep = ''
-    soup = makeSoup(url)
-    if provider == "OLX":
-        pass
-    if provider == "WebQuarto":
-        pass
-    
-    return cep
-# /New Feature
 
 def makeSoup(url: str):
     content = curlrq.get(url, impersonate="chrome")
@@ -34,6 +23,16 @@ def findPagePropsOLX(soup):
     props = json.loads(data_str)['props']['pageProps']
     return props
     
+
+# todo: implementar
+import cep_to_coords as ctc
+# ctc.getCoordsFromCep('54123456')
+
+def getCepOLX(url: str):
+    soup = makeSoup(url)
+    data_str = soup.find('script', string=re.compile(r'(?:dataLayer = )(\[(.*)\])')).get_text(strip=True)    
+    return re.search(r'"zipcode":"(\d{8})"', data_str).group(1)
+
 def searchOLX():
     soup = makeSoup(url_olx)
     page_props = findPagePropsOLX(soup)
@@ -62,10 +61,14 @@ def searchOLX():
                     'price': d['price'],
                     'address': d['location'],
                     'property_type': d['category'],
+                    'lat': '', #d['lat'],
+                    'lng': '' #d['lng'],
+                    # 'zipcode': getCepOLX(d['url'])
                 }
                 ads.append(ad)
         print(f"OLX Page {i} done")
-        
+    
+    
     return ads
 
 
@@ -123,16 +126,18 @@ def sanitizeWQ(s):
     result = emojiless_str
     result = re.sub(r"[\n\r]", r" ", result)
     
-    """ undef_chars = result.strip().split()
-    for w in undef_chars:
-        print(w) """
+    # undef_chars = result.strip().split()
+    # for w in undef_chars:
+    #     print(w)
     # print(f'length: {len(undef_chars)}')
     return result
 
+# parses string data from WebQuarto to JSON
 def adsDataToJsonWQ(data_str):
     ads = []
     # set loads 'strict' arg to False to allow unescaped characters
     data = json.loads(data_str,strict=False)['ads']
+    
     for d in data:
         # Compare and normalize both data shapes
         ad = {
@@ -142,6 +147,8 @@ def adsDataToJsonWQ(data_str):
             'price': d['rent_price'],
             'address': f"{d['address']}, {d['location']}",
             'property_type': f"{d['property_type']}. {d['room_type']}",
+            'lat': d['lat'],
+            'lng': d['lng']
         }
         ads.append(ad)
     return ads
@@ -173,11 +180,12 @@ def searchWQ():
 
 def saveToCSV(df: pd.DataFrame):
     df = df.rename(columns={
-        'url': 'URL', 'title': 'Título','thumbnail': 'Foto','price': 'Preço','address': 'Endereço','property_type': 'Tipo'
+        'url': 'URL', 'title': 'Título','thumbnail': 'Foto',
+        'price': 'Preço','address': 'Endereço','property_type': 'Tipo'
     })
     # print(df.apply(lambda x: normalizeAdsPrices(x), axis=1, result_type='expand'))
     # print(df['Preço'])
-    df.to_csv("data/data.csv", columns=['Título', 'Tipo', 'Endereço', 'Preço', 'URL'])
+    df.to_csv("data/data.csv", columns=['Título', 'Tipo', 'Endereço', 'Preço', 'URL', 'lat', 'lng'])
     
 def makeDataFrame(data_arr: list, src: str):
     data_arr = normalizeAdsPrices(data_arr)
@@ -221,9 +229,9 @@ async def scrapeAndPrint():
 asyncio.run(scrapeAndPrint())
 
 # renaming columns test
-""" foo = pd.DataFrame({"A": [1, 2, 3], "B": [4, 5, 6]})
+# foo = pd.DataFrame({"A": [1, 2, 3], "B": [4, 5, 6]})
 
 # print(foo)
-foo = foo.rename(columns={"A": "a", "B": "c"})
+# foo = foo.rename(columns={"A": "a", "B": "c"})
 
-print(foo) """
+# print(foo)
