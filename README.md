@@ -20,7 +20,7 @@ Aplicação com a finalidade de encontrar anúncios de aluguéis de moradias par
 - [x] Implementar scraper
 - [x] Tratamento dos dados da WebQuarto
 - [x] Tratamento dos dados da OLX ~~(corrigir encoding dos caracteres dos dados obtidos na OLX)~~
-- [~] Implementar mapeamento geográfico dos dados coletados (implementando busca de coordenadas por cep)
+- [~] Implementar mapeamento geográfico dos dados coletados (implementando busca de coordenadas por cep) (maps.co & Overpass services)
 - [ ] Implementar visualização dos relatórios com insights
 - [ ] Implementar asincronicidade do scraper
 - [ ] Implantação do serviço
