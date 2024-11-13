@@ -25,13 +25,20 @@ def findPagePropsOLX(soup):
     
 
 # todo: implementar
-import cep_to_coords as ctc
-# ctc.getCoordsFromCep('54123456')
+# import geomapping as ctc
+# ctc.getCoordsFromCep('50810000')
 
+# Bottleneck here
 def getCepOLX(url: str):
     soup = makeSoup(url)
     data_str = soup.find('script', string=re.compile(r'(?:dataLayer = )(\[(.*)\])')).get_text(strip=True)    
     return re.search(r'"zipcode":"(\d{8})"', data_str).group(1)
+
+def parseAddress(cep: str):
+    res = curlrq.get(f'viacep.com.br/ws/{cep}/json/').json()
+    if res.get('erro'):
+        return 'Endereço com CEP inválido.'
+    return f'{res['logradouro']}, {res['bairro']}, {res['localidade']}'
 
 def searchOLX():
     soup = makeSoup(url_olx)
@@ -54,12 +61,14 @@ def searchOLX():
 
         for d in data:
             if d.get("subject") is not None:
+                addr = parseAddress(getCepOLX(d['url']))
                 ad = {
                     'url': d['url'], 
                     'title': d['subject'],
                     'thumbnail': d['thumbnail'],
                     'price': d['price'],
-                    'address': d['location'],
+                    # 'address': d['location'],
+                    'address': addr if addr != 'Endereço com CEP inválido.' else d['location'],
                     'property_type': d['category'],
                     'lat': '', #d['lat'],
                     'lng': '' #d['lng'],
