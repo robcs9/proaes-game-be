@@ -7,6 +7,7 @@ from curl_cffi import requests as curlrq
 import time
 import asyncio
 import re
+import geoservices
 
 url_olx = "https://www.olx.com.br/imoveis/aluguel/estado-pe/grande-recife/recife?pe=1000&ret=1020&ret=1060&ret=1040&sd=3747&sd=3778&sd=3766&sd=3764&sd=3762"
 url_wq = "https://www.webquarto.com.br/busca/quartos/recife-pe/Cordeiro%7CV%C3%A1rzea%7CTorre%7CTorr%C3%B5es%7CMadalena%7CIputinga?price_range%5B%5D=0,1000&has_photo=0&smokers_allowed=0&children_allowed=0&pets_allowed=0&drinks_allowed=0&visitors_allowed=0&couples_allowed=0"
@@ -23,10 +24,6 @@ def findPagePropsOLX(soup):
     props = json.loads(data_str)['props']['pageProps']
     return props
     
-
-# todo: implementar
-# import geomapping as ctc
-# ctc.getCoordsFromCep('50810000')
 
 # Bottleneck here
 def getCepOLX(url: str):
@@ -61,7 +58,14 @@ def searchOLX():
 
         for d in data:
             if d.get("subject") is not None:
-                addr = parseAddress(getCepOLX(d['url']))
+                cep = getCepOLX(d['url'])
+                addr = parseAddress(cep)
+                coords = geoservices.parseCoords(cep)
+                coords_split = []
+                if len(coords) > 0:
+                    coords_split = coords.split(',')
+                else:
+                    coords_split = [' ', ' ']
                 ad = {
                     'url': d['url'], 
                     'title': d['subject'],
@@ -70,8 +74,9 @@ def searchOLX():
                     # 'address': d['location'],
                     'address': addr if addr != 'Endereço com CEP inválido.' else d['location'],
                     'property_type': d['category'],
-                    'lat': '', #d['lat'],
-                    'lng': '' #d['lng'],
+                    'latlng': coords,
+                    'lat': coords_split[0],
+                    'lng': coords_split[1],
                     # 'zipcode': getCepOLX(d['url'])
                 }
                 ads.append(ad)
@@ -156,6 +161,7 @@ def adsDataToJsonWQ(data_str):
             'price': d['rent_price'],
             'address': f"{d['address']}, {d['location']}",
             'property_type': f"{d['property_type']}. {d['room_type']}",
+            'latlng': f'{d['lat']},{d['lng']}',
             'lat': d['lat'],
             'lng': d['lng']
         }
@@ -190,7 +196,8 @@ def searchWQ():
 def saveToCSV(df: pd.DataFrame):
     df = df.rename(columns={
         'url': 'URL', 'title': 'Título','thumbnail': 'Foto',
-        'price': 'Preço','address': 'Endereço','property_type': 'Tipo'
+        'price': 'Preço','address': 'Endereço','property_type': 'Tipo',
+        # 'latlng': 'Coordenadas'
     })
     # print(df.apply(lambda x: normalizeAdsPrices(x), axis=1, result_type='expand'))
     # print(df['Preço'])

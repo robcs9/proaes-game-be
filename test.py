@@ -1,5 +1,5 @@
 import unittest
-import geomapping as ctc
+import geoservices as ctc
 
 class AddTests(unittest.TestCase):
     def test_one_plus_two(self):
