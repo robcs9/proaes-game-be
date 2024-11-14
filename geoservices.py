@@ -26,3 +26,4 @@ def parseCoords(cep: str):
     return f'{res[0]['lat']},{res[0]['lon']}' if len(res) > 0 else ''
 # print(parseCoords('54000-000'))
 
+# todo: Batch request for coords parsing

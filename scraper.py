@@ -9,26 +9,31 @@ import asyncio
 import re
 import geoservices
 
+# mostly constants
 url_olx = "https://www.olx.com.br/imoveis/aluguel/estado-pe/grande-recife/recife?pe=1000&ret=1020&ret=1060&ret=1040&sd=3747&sd=3778&sd=3766&sd=3764&sd=3762"
 url_wq = "https://www.webquarto.com.br/busca/quartos/recife-pe/Cordeiro%7CV%C3%A1rzea%7CTorre%7CTorr%C3%B5es%7CMadalena%7CIputinga?price_range%5B%5D=0,1000&has_photo=0&smokers_allowed=0&children_allowed=0&pets_allowed=0&drinks_allowed=0&visitors_allowed=0&couples_allowed=0"
 url_mgf = "https://www.mgfimoveis.com.br/aluguel/quarto/pe-recife-cidade-universitaria?pricemax=1000"
 
 # check if the ad already exists
-def compareAds(ad: dict, prev_ads: list):
-    for prev_ad in prev_ads:
-        if ad['url'] == prev_ad['url']:
-            return True
-    return False
+def compareAds(ad: dict, prev_ads_urls: list):
+    print(ad.keys())
+    # dict_keys(['advertisingId', 'deviceType'])??? chaves desconhecidas, precisa checar antes de processar
+    print(ad['url'])
+    # for url in prev_ads_urls:
+    #     # print(url)
+    #     if ad['url'] == url:
+    #         return True
+    # return False
 
 # Filters out ads sharing the same url
 # todo: test behavior for empty and equal ads arrays
-def filterAds(ads: list[dict], prev_ads: list[dict]):
-    print(f'Filtering out ads... Matching {len(ads)} ads found with the previously\
-        stored {len(prev_ads)} ads')
+def filterAds(ads: list[dict], prev_ads_urls: list):
+    
+    print(f'Filtering out ads...\n {len(ads)} ads to be matched against the {len(prev_ads_urls)} previously stored ads')
     for i, curr_ad in enumerate(ads):
-        if compareAds(curr_ad, prev_ads):
+        if compareAds(curr_ad, prev_ads_urls):
             ads.pop(i)
-    print(f'{len(ads)} ads filtered new ads found')
+    print(f'{len(ads)} new ads found')
     return ads
 
 def makeSoup(url: str):
@@ -61,10 +66,11 @@ def searchOLX():
     pages_count = math.ceil(page_props['totalOfAds'] / page_props['pageSize'])
     
     ads = []
+    unfiltereds = []
     
     for i in range(1, pages_count + 1):
-        data = {}
         
+        data = {}
         # Evita a repetição do scrape na página inicial
         if i == 1:
             data = page_props['ads']
@@ -73,32 +79,45 @@ def searchOLX():
             soup = makeSoup(page_url)
             page_props = findPagePropsOLX(soup)
             data = page_props['ads']
-
-        for d in data:
-            if d.get("subject") is not None:
-                cep = getCepOLX(d['url'])
-                addr = parseAddress(cep)
-                coords = geoservices.parseCoords(cep)
-                coords_split = []
-                if len(coords) > 0:
-                    coords_split = coords.split(',')
-                else:
-                    coords_split = [' ', ' ']
-                ad = {
-                    'url': d['url'], 
-                    'title': d['subject'],
-                    'thumbnail': d['thumbnail'],
-                    'price': d['price'],
-                    # 'address': d['location'],
-                    'address': addr if addr != 'Endereço com CEP inválido.' else d['location'],
-                    'property_type': d['category'],
-                    'latlng': coords,
-                    'lat': coords_split[0],
-                    'lng': coords_split[1],
-                    # 'zipcode': getCepOLX(d['url'])
-                }
-                ads.append(ad)
-        print(f"OLX Page {i} done")
+        unfiltereds.append(data)
+        print(f"Got OLX page {i} data")
+    
+    # Flattening nested lists with ads
+    unfiltereds = [ad for page in unfiltereds for ad in page]
+    
+    print('Processing ad data...')
+    prev_ads_urls = pd.read_csv('./data/old_data.csv').get('URL')
+    for i, ad in enumerate(unfiltereds):
+        # todo - load previous ads and filters out new ads here
+        # todo: refactor to replace csv for json
+        filtereds = filterAds(unfiltereds, prev_ads_urls)
+        # print(f'{len(filtereds)}')
+        break
+        
+        if ad.get("subject") is not None:
+            cep = getCepOLX(ad['url'])
+            addr = parseAddress(cep)
+            coords = geoservices.parseCoords(cep)
+            coords_split = []
+            if len(coords) > 0:
+                coords_split = coords.split(',')
+            else:
+                coords_split = [' ', ' ']
+            actual_ad = {
+                'url': ad['url'], 
+                'title': ad['subject'],
+                'thumbnail': ad['thumbnail'],
+                'price': ad['price'],
+                # 'address': d['location'],
+                'address': addr if addr != 'Endereço com CEP inválido.' else ad['location'],
+                'property_type': ad['category'],
+                'latlng': coords,
+                'lat': coords_split[0],
+                'lng': coords_split[1],
+                # 'zipcode': getCepOLX(d['url'])
+            }
+            ads.append(actual_ad)
+            print(f"OLX ad {i} has been processed")
     
     
     return ads
@@ -212,6 +231,8 @@ def searchWQ():
     return ads
 
 def saveData(df: pd.DataFrame):
+    df.to_json("data/data.json")
+    
     df = df.rename(columns={
         'url': 'URL', 'title': 'Título','thumbnail': 'Foto',
         'price': 'Preço','address': 'Endereço','property_type': 'Tipo',
@@ -220,7 +241,6 @@ def saveData(df: pd.DataFrame):
     # print(df.apply(lambda x: normalizeAdsPrices(x), axis=1, result_type='expand'))
     # print(df['Preço'])
     df.to_csv("data/data.csv", columns=['Título', 'Tipo', 'Endereço', 'Preço', 'URL', 'lat', 'lng'])
-    df.to_json("data/data.json", columns=['Título', 'Tipo', 'Endereço', 'Preço', 'URL', 'lat', 'lng'])
     
 def makeDataFrame(data_arr: list, src: str):
     data_arr = normalizeAdsPrices(data_arr)
