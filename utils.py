@@ -60,3 +60,11 @@ def makeSeleniumSoup(url):
     
 import asyncio
 # asyncio.run(some_fn())
+
+# renaming columns test
+# foo = pd.DataFrame({"A": [1, 2, 3], "B": [4, 5, 6]})
+
+# print(foo)
+# foo = foo.rename(columns={"A": "a", "B": "c"})
+
+# print(foo)
