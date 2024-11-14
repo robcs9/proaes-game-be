@@ -15,7 +15,7 @@ def normalizeCep(cep: str):
         return ''
     return f'{cep[:5]}-{cep[5:]}' if cep.find('-') == -1 else cep
 
-# It takes a well-formed CEP (12345-678) argument
+# It takes a well-formed CEP (12345-678) as argument
 def parseCoords(cep: str):
     cep = normalizeCep(cep)
     GEOAPIFY_API_KEY = config['GEOAPIFY_API_KEY']
@@ -24,5 +24,5 @@ def parseCoords(cep: str):
     # return { 'lat': res[0]['lat'], 'lon': res[0]['lon'] } if len(res) > 0 else 'Erro: Coordenadas não encontradas - CEP inválido'
     # return f'{res[0]['lat']},{res[0]['lon']}' if len(res) > 0 else 'Erro: Coordenadas não encontradas - CEP inválido'
     return f'{res[0]['lat']},{res[0]['lon']}' if len(res) > 0 else ''
-
 # print(parseCoords('54000-000'))
+
