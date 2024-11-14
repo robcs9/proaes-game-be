@@ -13,6 +13,24 @@ url_olx = "https://www.olx.com.br/imoveis/aluguel/estado-pe/grande-recife/recife
 url_wq = "https://www.webquarto.com.br/busca/quartos/recife-pe/Cordeiro%7CV%C3%A1rzea%7CTorre%7CTorr%C3%B5es%7CMadalena%7CIputinga?price_range%5B%5D=0,1000&has_photo=0&smokers_allowed=0&children_allowed=0&pets_allowed=0&drinks_allowed=0&visitors_allowed=0&couples_allowed=0"
 url_mgf = "https://www.mgfimoveis.com.br/aluguel/quarto/pe-recife-cidade-universitaria?pricemax=1000"
 
+# check if the ad already exists
+def compareAds(ad: dict, prev_ads: list):
+    for prev_ad in prev_ads:
+        if ad['url'] == prev_ad['url']:
+            return True
+    return False
+
+# Filters out ads sharing the same url
+# todo: test behavior for empty and equal ads arrays
+def filterAds(ads: list[dict], prev_ads: list[dict]):
+    print(f'Filtering out ads... Matching {len(ads)} ads found with the previously\
+        stored {len(prev_ads)} ads')
+    for i, curr_ad in enumerate(ads):
+        if compareAds(curr_ad, prev_ads):
+            ads.pop(i)
+    print(f'{len(ads)} ads filtered new ads found')
+    return ads
+
 def makeSoup(url: str):
     content = curlrq.get(url, impersonate="chrome")
     soup = BeautifulSoup(content.text, "lxml")
@@ -193,7 +211,7 @@ def searchWQ():
     ads = [item for sublist in ads for item in sublist]
     return ads
 
-def saveToCSV(df: pd.DataFrame):
+def saveData(df: pd.DataFrame):
     df = df.rename(columns={
         'url': 'URL', 'title': 'Título','thumbnail': 'Foto',
         'price': 'Preço','address': 'Endereço','property_type': 'Tipo',
@@ -202,6 +220,7 @@ def saveToCSV(df: pd.DataFrame):
     # print(df.apply(lambda x: normalizeAdsPrices(x), axis=1, result_type='expand'))
     # print(df['Preço'])
     df.to_csv("data/data.csv", columns=['Título', 'Tipo', 'Endereço', 'Preço', 'URL', 'lat', 'lng'])
+    df.to_json("data/data.json", columns=['Título', 'Tipo', 'Endereço', 'Preço', 'URL', 'lat', 'lng'])
     
 def makeDataFrame(data_arr: list, src: str):
     data_arr = normalizeAdsPrices(data_arr)
@@ -237,17 +256,9 @@ async def scrapeAndPrint():
         
         # concat DFs before saving
         df = pd.concat([dfWQ, dfOLX])
-        saveToCSV(df)
+        saveData(df)
         # print(df)
         break
         await asyncio.sleep(60)
 
 asyncio.run(scrapeAndPrint())
-
-# renaming columns test
-# foo = pd.DataFrame({"A": [1, 2, 3], "B": [4, 5, 6]})
-
-# print(foo)
-# foo = foo.rename(columns={"A": "a", "B": "c"})
-
-# print(foo)
