@@ -10,10 +10,11 @@ from bs4 import BeautifulSoup
 url = "https://www.olx.com.br/imoveis/aluguel/estado-pe/grande-recife/recife?pe=2000&ret=1020&ret=1060&ret=1040&sd=3747&sd=3778&sd=3766&sd=3764&sd=3762&o=2"
 # headers = { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:131.0) Gecko/20100101 Firefox/131.0"}
 
-from curl_cffi import requests as currq
-res = currq.get(url, impersonate="chrome")
-soup = BeautifulSoup(res.text, 'lxml')
-print(soup.find('script', {"id": "__NEXT_DATA__"}).get_text())
+def search():
+    from curl_cffi import requests as currq
+    res = currq.get(url, impersonate="chrome")
+    soup = BeautifulSoup(res.text, 'lxml')
+    print(soup.find('script', {"id": "__NEXT_DATA__"}).get_text())
 
 
 from selenium import webdriver
@@ -68,3 +69,38 @@ import asyncio
 # foo = foo.rename(columns={"A": "a", "B": "c"})
 
 # print(foo)
+
+import pandas as pd
+
+def normalizeAdsPrices(ads: list[dict]):
+    
+    for ad in ads:
+        price = ad['price']
+        price = f'{price},00' if price.find(',') == -1 else price
+        ad['price'] = price    
+    
+    return ads
+
+def makeDataFrame(data_arr: list):
+    data_arr = normalizeAdsPrices(data_arr)
+    
+    serieses = []
+    
+    # print(f"Anúncios de Moradia encontrados na {src}:")
+    for data in data_arr:
+        s = pd.Series(data)
+        serieses.append(s)
+        # print(f"\n{s}\n")
+    
+    df = {}
+    df = pd.DataFrame(serieses)
+    return df
+    # for i, data in enumerate(data_arr):    
+    
+    # print(data_arr[0])
+    # df = pd.DataFrame({some_series: pd.Series.keys some_series.title}, index = some_series.index)
+    # print(df)
+
+from datetime import datetime
+def dateTimeNow():
+    return datetime.now().strftime('%d/%m/%Y %H:%M:%S')

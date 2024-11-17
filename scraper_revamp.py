@@ -9,6 +9,9 @@ import asyncio
 import re
 import geoservices
 import utils
+from model import Ad
+import repository as repo
+
 # mostly constants
 url_olx = "https://www.olx.com.br/imoveis/aluguel/estado-pe/grande-recife/recife?pe=1000&ret=1020&ret=1060&ret=1040&sd=3747&sd=3778&sd=3766&sd=3764&sd=3762"
 url_wq = "https://www.webquarto.com.br/busca/quartos/recife-pe/Cordeiro%7CV%C3%A1rzea%7CTorre%7CTorr%C3%B5es%7CMadalena%7CIputinga?price_range%5B%5D=0,1000&has_photo=0&smokers_allowed=0&children_allowed=0&pets_allowed=0&drinks_allowed=0&visitors_allowed=0&couples_allowed=0"
@@ -86,18 +89,21 @@ def searchOLX():
     print('Processing ad data...')
     # Load previous ads
     # todo - replace csv for json, then sqlite database eventually
-    prev_ads_urls = pd.read_csv('./data/old_data.csv').get('URL')
-    prev_ads = pd.read_csv('./data/old_data.csv')
-    filtereds, updatables = filterAds(unfiltereds, prev_ads)
+    
+    # prev_ads = pd.read_csv('./data/old_data.csv')
+    # filtereds, updatables = filterAds(unfiltereds, prev_ads)
+    filtereds = unfiltereds # only for initial test!
     
     # todo - delete ads with broken url
-    # todo - flag updatable ads to not go through the parseCoords function
+    # todo - flag updatable ads to not go through the parseCoords function unless CEP has changed
     total_ads_count = 0
     current_ads_count = 0
     # todo - parsecoords in batch
+    
     for i, ad in enumerate(filtereds):
         if ad.get("subject") is not None:
             # todo - def buildOlxAd(ad) function that appends (not overwrite) the data, but creates empty data initially
+            
             cep = getCepOLX(ad['url'])
             addr = parseAddress(cep)
             coords = geoservices.parseCoords(cep)
@@ -292,26 +298,7 @@ def saveData(df: pd.DataFrame):
     # print(df.apply(lambda x: normalizeAdsPrices(x), axis=1, result_type='expand'))
     # print(df['Preço'])
     df.to_csv("data/data.csv", columns=['Título', 'Tipo', 'Endereço', 'Preço', 'URL', 'lat', 'lng'])
-    
-def makeDataFrame(data_arr: list, src: str):
-    data_arr = normalizeAdsPrices(data_arr)
-    
-    serieses = []
-    
-    # print(f"Anúncios de Moradia encontrados na {src}:")
-    for data in data_arr:
-        s = pd.Series(data)
-        serieses.append(s)
-        # print(f"\n{s}\n")
-    
-    df = {}
-    df = pd.DataFrame(serieses)
-    return df
-    # for i, data in enumerate(data_arr):    
-    
-    # print(data_arr[0])
-    # df = pd.DataFrame({some_series: pd.Series.keys some_series.title}, index = some_series.index)
-    # print(df)
+
 
 async def scrapeAndPrint():
     running = True
@@ -319,8 +306,8 @@ async def scrapeAndPrint():
         curr_time = time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime())
         print(f"\nScraping now... ({curr_time})\n")
         
-        dfWQ = makeDataFrame(searchWQ(), "WebQuarto")
-        dfOLX = makeDataFrame(searchOLX(), "OLX")
+        dfWQ = utils.makeDataFrame(searchWQ(), "WebQuarto")
+        dfOLX = utils.makeDataFrame(searchOLX(), "OLX")
         
         curr_time = time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime())
         print(f"\nScraping finished ({curr_time})\n")
@@ -328,8 +315,8 @@ async def scrapeAndPrint():
         # concat DFs before saving
         df = pd.concat([dfWQ, dfOLX])
         saveData(df)
-        # print(df)
+        repo
         break
-        await asyncio.sleep(60)
+        await asyncio.sleep(3600) # secs
 
 asyncio.run(scrapeAndPrint())
