@@ -30,11 +30,15 @@ def parseCoords(cep: str):
 
 # Batch request for geocoding of CEPs
 def batchGeocode(ceps: list):
+    normalized_ceps = []
+    for cep in ceps:
+        normalized_ceps.append(normalizeCep(cep))
+
     url = f'https://api.geoapify.com/v1/batch?apiKey={GEOAPIFY_API_KEY}'
     headers = {'Content-Type': 'application/json'}
 
     inputs = []
-    for cep in ceps:
+    for cep in normalized_ceps:
         inputs.append({"params": {"postcode": cep}})
     
     data = {"api": "/v1/geocode/search","params": {"country": "brazil","type": "postcode", "format": "json"},"inputs":inputs}
@@ -53,8 +57,9 @@ def batchGeocode(ceps: list):
                 print(f'\nBatch job done. Found {len(results)} results')
                 
                 coords = []
+                # print(results[-1])
                 for result in results:
-                    r = result['result']['results']
+                    r = result['result']['results'] if not result['result'].get('error') else {}
                     lat = ''
                     lng = ''
                     if len(r) > 0:
@@ -73,4 +78,4 @@ def batchGeocode(ceps: list):
 
     # use bias param to improve precision?
 
-# print(batchGeocode(['54330-075','54000-000','55000-000', '111-789']))
+print(batchGeocode(['54330-075','54000-000','55000-000', '111-789']))

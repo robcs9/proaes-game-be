@@ -69,7 +69,6 @@ def searchOLX():
     ads = []
     unfiltereds = []
     for i in range(1, pages_count + 1):
-        
         data = {}
         # Evita a repetição do scraper na página inicial
         if i == 1:
@@ -84,48 +83,49 @@ def searchOLX():
     
     # Flattening nested lists with ads
     unfiltereds = [ad for page in unfiltereds for ad in page]
-    filtereds = unfiltereds
+    # filtereds = unfiltereds
     print('Processing ad data...')
-    # todo - replace csv for json, then sqlite database eventually?
     
+    # todo - replace csv for json, then sqlite database eventually?
     # Load previous ads
     # prev_ads = repo.getAds()
     # filtereds = filterAds(unfiltereds, prev_ads)
     
-    
-    # todo - delete ads with broken url - def removeInvalidAds()
-    # todo - flag updatable ads to not go through the parseCoords function unless CEP has changed
     total_ads_count = 0
     current_ads_count = 0
-    # todo - parsecoords in batch
+    # geoservices.batchGeocode()
+    # update urls scraped that match any saved ad:
+    # Either remove ads that are missing 'subject' key from the data file or Update fields that might have changed
+    # todo (maybe?) - flag updatable ads to not go through the parseCoords function unless CEP has changed
+    # todo - delete ads with broken url - def removeInvalidAds(); investigate if missing 'subject' key sufficies this check
     
-    # CONTINUE HERE
-    for i, ad in enumerate(filtereds):
+    ceps = []
+    for i, ad in enumerate(unfiltereds):
         if ad.get("subject") is not None:
-            # todo - def buildOlxAd(ad) function that appends (not overwrite) the data, but creates empty data initially
-            
             cep = getCepOLX(ad['url'])
             addr = parseAddress(cep)
-            coords = geoservices.parseCoords(cep)
-            coords_split = []
-            coords_split = coords.split(',') if len(coords) > 0 else [' ', ' ']
-            actual_ad = {
+            # coords = geoservices.parseCoords(cep)
+            # coords_split = coords.split(',') if len(coords) > 0 else [' ', ' ']
+            
+            ad_data = {
                 'url': ad['url'], 
                 'title': ad['subject'],
-                # 'thumbnail': ad['thumbnail'],
                 'price': ad['price'],
                 'address': addr if addr != 'Endereço com CEP inválido.' else ad['location'],
                 'property_type': ad['category'],
-                # 'latlng': coords,
-                'lat': coords_split[0],
-                'lng': coords_split[1],
-                # 'active': True,
-                # 'modifiedAt': utils.dateTimeNow()
+                'cep': cep, # ignore or remove this attr once lat and lng are appended to the dict
             }
-            ads.append(actual_ad)
+            ceps.append(cep)
+            ads.append(ad_data)
         # print(f"{i+1}/{total_ads_count} OLX ads have been processed")
-    print(f'All {len(filtereds)} ads processed')
-    
+    for ad in ads:
+        coords = geoservices.batchGeocode(ceps)
+        ad['lat'] = coords['lat']
+        ad['lng'] = coords['lng']
+        # remove cep attr from ad dict here
+        continue
+    print(f'All {len(unfiltereds)} ads processed')
+    return
     current_ads_count = len(filtereds)
     # for i, ad in enumerate(updatables):
     #     # todo - def updateOlxAd(ad)
@@ -294,4 +294,5 @@ async def scrapeAndPrint():
         break
         await asyncio.sleep(3600) # secs
 
-asyncio.run(scrapeAndPrint())
+# asyncio.run(scrapeAndPrint())
+searchOLX()
