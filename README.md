@@ -17,6 +17,8 @@ Aplicação com a finalidade de encontrar anúncios de aluguéis de moradias par
 
 ## TO-DO
 
+- [~] Testar últimas atualizações em searchOLX
+- [~] Corrigir implementação de searchWQ
 - [x] Implementar scraper
 - [x] Tratamento dos dados da WebQuarto
 - [x] Tratamento dos dados da OLX ~~(corrigir encoding dos caracteres dos dados obtidos na OLX)~~

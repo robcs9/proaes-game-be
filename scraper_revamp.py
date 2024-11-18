@@ -18,26 +18,25 @@ url_wq = "https://www.webquarto.com.br/busca/quartos/recife-pe/Cordeiro%7CV%C3%A
 url_mgf = "https://www.mgfimoveis.com.br/aluguel/quarto/pe-recife-cidade-universitaria?pricemax=1000"
 
 # check if an ad already exists
-def compareAds(ad: dict, prev_ads_urls: list):
-    if ad.get('url') and ad.get('subject'):
-        for url in prev_ads_urls:
-            # print(url)
-            if ad['url'] == url:
-                return True
-        return False
-
+def compareAds(ad: dict, prev_df):
+    if ad.get('url'):
+        found = repo.find(ad['url'])
+        return True if len(found) > 0 else False
+    print('Error: ad url empty or invalid')
 # Filters out ads sharing the same url
 # todo: test behavior for empty and equal ads arrays
-def filterAds(new_ads: list[dict], prev_ads: list):
+def filterAds(new_ads: list[dict], prev_df):
     
-    print(f'Filtering out ads...\n {len(new_ads)} ads to be matched against the {len(prev_ads)} previously stored ads')
-    updatable_ads = []
-    for i, curr_ad in enumerate(new_ads):
-        if compareAds(curr_ad, prev_ads.get('url')):
-            # update ad
-            updatable_ads.append(new_ads.pop(i))
-    print(f'\nNew ads: {len(new_ads)}\nUpdatable ads: {len(updatable_ads)}\n')
-    return new_ads, updatable_ads
+    print(f'Filtering out ads...\n {len(new_ads)} ads to be matched against the {len(prev_df)} previously stored ads')
+    # updatable_ads = []
+    for i, ad in enumerate(new_ads):
+        # if compareAds(ad, prev_df.get('url')):
+        idx = repo.find(ad['url']).index[0]
+        repo.update(ad, idx)
+        # new_ads.pop() - pop current ad, but missing arg (actual index for ad)
+        # if compareAds(ad, prev_df):
+        #     repo.update(ad, idx)
+    return new_ads
 
 def makeSoup(url: str):
     content = curlrq.get(url, impersonate="chrome")
@@ -85,21 +84,22 @@ def searchOLX():
     
     # Flattening nested lists with ads
     unfiltereds = [ad for page in unfiltereds for ad in page]
-    
+    filtereds = unfiltereds
     print('Processing ad data...')
+    # todo - replace csv for json, then sqlite database eventually?
+    
     # Load previous ads
-    # todo - replace csv for json, then sqlite database eventually
+    # prev_ads = repo.getAds()
+    # filtereds = filterAds(unfiltereds, prev_ads)
     
-    # prev_ads = pd.read_csv('./data/old_data.csv')
-    # filtereds, updatables = filterAds(unfiltereds, prev_ads)
-    filtereds = unfiltereds # only for initial test!
     
-    # todo - delete ads with broken url
+    # todo - delete ads with broken url - def removeInvalidAds()
     # todo - flag updatable ads to not go through the parseCoords function unless CEP has changed
     total_ads_count = 0
     current_ads_count = 0
     # todo - parsecoords in batch
     
+    # CONTINUE HERE
     for i, ad in enumerate(filtereds):
         if ad.get("subject") is not None:
             # todo - def buildOlxAd(ad) function that appends (not overwrite) the data, but creates empty data initially
@@ -108,72 +108,43 @@ def searchOLX():
             addr = parseAddress(cep)
             coords = geoservices.parseCoords(cep)
             coords_split = []
-            if len(coords) > 0:
-                coords_split = coords.split(',')
-            else:
-                coords_split = [' ', ' ']
+            coords_split = coords.split(',') if len(coords) > 0 else [' ', ' ']
             actual_ad = {
                 'url': ad['url'], 
                 'title': ad['subject'],
-                'thumbnail': ad['thumbnail'],
+                # 'thumbnail': ad['thumbnail'],
                 'price': ad['price'],
                 'address': addr if addr != 'Endereço com CEP inválido.' else ad['location'],
                 'property_type': ad['category'],
-                'latlng': coords,
+                # 'latlng': coords,
                 'lat': coords_split[0],
                 'lng': coords_split[1],
-                'active': True,
-                'modifiedAt': utils.dateTimeNow()
+                # 'active': True,
+                # 'modifiedAt': utils.dateTimeNow()
             }
             ads.append(actual_ad)
-        print(f"{i+1}/{total_ads_count} OLX ads have been processed")
+        # print(f"{i+1}/{total_ads_count} OLX ads have been processed")
+    print(f'All {len(filtereds)} ads processed')
     
     current_ads_count = len(filtereds)
-    for i, ad in enumerate(updatables):
-        # todo - def updateOlxAd(ad)
-        if ad.get("subject") is not None:
-            actual_ad = {
-                'url': ad['url'], # don't update
-                'title': ad['subject'],
-                'thumbnail': ad['thumbnail'],
-                'price': ad['price'],
-                'address': addr if addr != 'Endereço com CEP inválido.' else ad['location'],
-                'property_type': ad['category'],
-                'latlng': coords, # get from prev_ads
-                'lat': coords_split[0], # get from prev_ads
-                'lng': coords_split[1], # get from prev_ads
-                'active': True,
-                'modifiedAt': utils.dateTimeNow()
-            }
-            ads.append(actual_ad)
-        print(f"{current_ads_count+1+i}/{total_ads_count} OLX ads have been processed")
-    
-    # for i, ad in enumerate(unfiltereds):
+    # for i, ad in enumerate(updatables):
+    #     # todo - def updateOlxAd(ad)
     #     if ad.get("subject") is not None:
-    #         cep = getCepOLX(ad['url'])
-    #         addr = parseAddress(cep)
-    #         coords = geoservices.parseCoords(cep)
-    #         coords_split = []
-    #         if len(coords) > 0:
-    #             coords_split = coords.split(',')
-    #         else:
-    #             coords_split = [' ', ' ']
     #         actual_ad = {
-    #             'url': ad['url'], 
+    #             'url': ad['url'], # don't update
     #             'title': ad['subject'],
     #             'thumbnail': ad['thumbnail'],
     #             'price': ad['price'],
-    #             # 'address': d['location'],
     #             'address': addr if addr != 'Endereço com CEP inválido.' else ad['location'],
     #             'property_type': ad['category'],
-    #             'latlng': coords,
-    #             'lat': coords_split[0],
-    #             'lng': coords_split[1],
-    #             # 'zipcode': getCepOLX(d['url'])
+    #             'latlng': coords, # get from prev_ads
+    #             'lat': coords_split[0], # get from prev_ads
+    #             'lng': coords_split[1], # get from prev_ads
+    #             'active': True,
+    #             'modifiedAt': utils.dateTimeNow()
     #         }
     #         ads.append(actual_ad)
-    #         print(f"OLX ad {i} has been processed")
-    
+    #     print(f"{current_ads_count+1+i}/{total_ads_count} OLX ads have been processed")
     
     return ads
 
@@ -306,8 +277,12 @@ async def scrapeAndPrint():
         curr_time = time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime())
         print(f"\nScraping now... ({curr_time})\n")
         
-        dfWQ = utils.makeDataFrame(searchWQ(), "WebQuarto")
-        dfOLX = utils.makeDataFrame(searchOLX(), "OLX")
+        # dfWQ = utils.makeDataFrame(searchWQ())
+        # dfOLX = utils.makeDataFrame(searchOLX())
+        dfOLX = repo.saveAll(searchOLX)
+        
+        # searchWQ corrections pending
+        dfWQ = repo.saveAll(searchWQ)
         
         curr_time = time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime())
         print(f"\nScraping finished ({curr_time})\n")

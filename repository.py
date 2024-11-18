@@ -40,8 +40,9 @@ def save(ad: dict):
   if len(found) > 0:
     # todo - handle multiple search hits
     print('Similar ad(s) have been found. Updating instead now...')
-    ad['id'] = int(found.index[0])
-    return update(ad)
+    # ad['id'] = int(found.index[0])
+    idx = int(found.index[0])
+    return update(ad, idx)
   
   idx = ads_df.last_valid_index()
   idx = 0 if idx is None else idx + 1
@@ -66,9 +67,9 @@ def saveAll(ads: list[dict]):
     print('All ads appended to data.csv successfully')
     return
   
-  df = utils.makeDataFrame(ads)
-  df.to_csv('./data/data.csv')
-  print('save op msg2')
+  # df = utils.makeDataFrame(ads)
+  # df.to_csv('./data/data.csv')
+  # print('save op msg2')
 
 # def saveAll(ads_df: pd.DataFrame):
 
@@ -83,11 +84,11 @@ def find(url: str):
   return found
 
 
-def update(updated_ad: dict):
+def update(updated_ad: dict, idx: int):
   ads_df = getAds()
   wasUpdated = False
   for k, v in updated_ad.items():
-    idx = updated_ad['id']
+    # idx = updated_ad['id']
     keyExists = None
     try:
       keyExists = ATTRS.index(k)
