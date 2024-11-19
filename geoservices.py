@@ -14,7 +14,7 @@ GEOAPIFY_API_KEY = config['GEOAPIFY_API_KEY']
 
 def normalizeCep(cep: str):
     if len(cep) > 9 or len(cep) < 8:
-        print('Error: Falha ao tentar normalizar - CEP inválido')
+        print(f'Error: Falha ao tentar normalizar. CEP inválido ({cep})')
         return ''
     return f'{cep[:5]}-{cep[5:]}' if cep.find('-') == -1 else cep
 
@@ -46,8 +46,10 @@ def batchGeocode(ceps: list):
     
     try:
         job_rq = requests.post(url, headers=headers, data=data).json()
+        if job_rq.get('error'):
+            print(f'Error: {job_rq['message']}')
+            return
         job_url = job_rq['url']
-        
         print(f'\nGeocoded CEP batch requested at {job_url}')
         while True:
             job = requests.get(job_url)
