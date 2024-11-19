@@ -118,12 +118,14 @@ def searchOLX():
             ceps.append(cep)
             ads.append(ad_data)
         # print(f"{i+1}/{total_ads_count} OLX ads have been processed")
+    proper_ads = []
     for ad in ads:
         coords = geoservices.batchGeocode(ceps)
         ad['lat'] = coords['lat']
         ad['lng'] = coords['lng']
-        # remove cep attr from ad dict here
-        continue
+        ad.pop('cep')
+        proper_ads.append(ad)
+    print(proper_ads)
     print(f'All {len(unfiltereds)} ads processed')
     return
     current_ads_count = len(filtereds)
