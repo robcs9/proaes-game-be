@@ -1,3 +1,4 @@
+import sys
 import pandas as pd
 from bs4 import BeautifulSoup
 import json
@@ -80,29 +81,29 @@ def searchOLX():
             data = page_props['ads']
         unfiltereds.append(data)
         print(f"Got OLX page {i} data")
-    
+        
     # Flattening nested lists with ads
     unfiltereds = [ad for page in unfiltereds for ad in page]
     # filtereds = unfiltereds
-    print('Processing ad data...')
     
     # todo - replace csv for json, then sqlite database eventually?
     # Load previous ads
     # prev_ads = repo.getAds()
     # filtereds = filterAds(unfiltereds, prev_ads)
     
-    total_ads_count = 0
-    current_ads_count = 0
-    # geoservices.batchGeocode()
     # update urls scraped that match any saved ad:
     # Either remove ads that are missing 'subject' key from the data file or Update fields that might have changed
     # todo (maybe?) - flag updatable ads to not go through the parseCoords function unless CEP has changed
     # todo - delete ads with broken url - def removeInvalidAds(); investigate if missing 'subject' key sufficies this check
     
+    print('Processing ad data...')
     ceps = []
+    ads_count = len(unfiltereds)
+    invalid_count = 0
     for i, ad in enumerate(unfiltereds):
         if ad.get("subject") is not None:
             cep = getCepOLX(ad['url'])
+            cep = geoservices.normalizeCep(cep)
             addr = parseAddress(cep)
             # coords = geoservices.parseCoords(cep)
             # coords_split = coords.split(',') if len(coords) > 0 else [' ', ' ']
@@ -115,40 +116,57 @@ def searchOLX():
                 'property_type': ad['category'],
                 'cep': cep, # ignore or remove this attr once lat and lng are appended to the dict
             }
-            ceps.append(cep)
+            
+            try:
+                cep_recorded = True if ceps.index(cep) else False
+                print(f'Skipping CEP {cep}' if cep_recorded else '???')
+            except Exception as e:
+                cep_recorded = False
+            if not cep_recorded:
+                ceps.append(cep)
+            # print(f'ceps state:\n{ceps}')
+            
             ads.append(ad_data)
-        # print(f"{i+1}/{total_ads_count} OLX ads have been processed")
+        else:
+            # skip bad results scraped
+            invalid_count += 1
+            print(f'\nInvalid ad #{i}:\n{ad.keys()}\n')
+        print(f"{i+1}/{ads_count} OLX ads have been processed")
+    
+    coords = geoservices.batchGeocode(ceps)
+    
+    if coords is None:
+        raise Exception('Erro. Falha na operação de Geocoding - Nenhum resultado obtido')
+
+    geocoding_count = len(coords)
+    # SEVERE BOTTLENECK
     proper_ads = []
     for ad in ads:
-        coords = geoservices.batchGeocode(ceps)
-        ad['lat'] = coords['lat']
-        ad['lng'] = coords['lng']
-        ad.pop('cep')
+        for coord in coords:
+            # debugging
+            # print('Comparing.....')
+            # print(f'coord: {coord}')
+            # print(f'ad: {ad}')
+            
+            if ad.get('cep'):
+                if ad['cep'] == coord['cep']:
+                    ad['lat'] = coord['lat']
+                    ad['lng'] = coord['lng']
+                else:
+                    geocode = geoservices.toGeocode(ad['address'])
+                    if not (geocode['lat'] == '' and geocode['lng'] == ''):
+                        geocoding_count += 1
+                    ad['lat'] = geocode['lat']
+                    ad['lng'] = geocode['lng']
+                ad.pop('cep')
         proper_ads.append(ad)
-    print(proper_ads)
-    print(f'All {len(unfiltereds)} ads processed')
-    return
-    current_ads_count = len(filtereds)
-    # for i, ad in enumerate(updatables):
-    #     # todo - def updateOlxAd(ad)
-    #     if ad.get("subject") is not None:
-    #         actual_ad = {
-    #             'url': ad['url'], # don't update
-    #             'title': ad['subject'],
-    #             'thumbnail': ad['thumbnail'],
-    #             'price': ad['price'],
-    #             'address': addr if addr != 'Endereço com CEP inválido.' else ad['location'],
-    #             'property_type': ad['category'],
-    #             'latlng': coords, # get from prev_ads
-    #             'lat': coords_split[0], # get from prev_ads
-    #             'lng': coords_split[1], # get from prev_ads
-    #             'active': True,
-    #             'modifiedAt': utils.dateTimeNow()
-    #         }
-    #         ads.append(actual_ad)
-    #     print(f"{current_ads_count+1+i}/{total_ads_count} OLX ads have been processed")
     
-    return ads
+    print(f'Total scraped ad links: {len(unfiltereds)}')
+    # print(f'Geocoded CEPs: {len(coords)}/{ads_count}')
+    print(f'Geocoded CEPs: {geocoding_count}/{ads_count}')
+    print(f'Invalid ads: {invalid_count};')
+    print(f'Found {len(proper_ads)} useful OLX ads')
+    return proper_ads
 
 
 # WQ multi-pages test url
@@ -297,4 +315,4 @@ async def scrapeAndPrint():
         await asyncio.sleep(3600) # secs
 
 # asyncio.run(scrapeAndPrint())
-searchOLX()
+print(searchOLX())

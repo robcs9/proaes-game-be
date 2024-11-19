@@ -30,10 +30,14 @@ def parseCoords(cep: str):
 
 # Batch request for geocoding of CEPs
 def batchGeocode(ceps: list):
-    normalized_ceps = []
+    if len(ceps) == 0:
+        print('Erro: Nenhum CEP foi passado para ser feito o Geocoding')
+        return
+    
+    normalized_ceps = [] 
     for cep in ceps:
         normalized_ceps.append(normalizeCep(cep))
-
+    
     url = f'https://api.geoapify.com/v1/batch?apiKey={GEOAPIFY_API_KEY}'
     headers = {'Content-Type': 'application/json'}
 
@@ -50,13 +54,15 @@ def batchGeocode(ceps: list):
             print(f'Error: {job_rq['message']}')
             return
         job_url = job_rq['url']
-        print(f'\nGeocoded CEP batch requested at {job_url}')
+        print(f'\nGeocoding Batch requested at {job_url}')
         while True:
+            
             job = requests.get(job_url)
+            # code 202 -> pending
             if job.status_code == 200:
                 job = job.json()
                 results = job['results']
-                print(f'\nBatch job done. Found {len(results)} results')
+                print(f'\nBatch job done. Found {len(results)} CEP results')
                 
                 coords = []
                 # print(results[-1])
@@ -72,12 +78,47 @@ def batchGeocode(ceps: list):
                         'lat': lat,
                         'lng': lng
                     })
+                # generator one liner: [r for result in results if len(result['result']['results'] )]
                 return coords
             print('\nBatch job ongoing...')
-            sleep(1)
+            sleep(10)
     except requests.exceptions.HTTPError as e:
         print(e.response.text)
-
     # use bias param to improve precision?
 
-print(batchGeocode(['54330-075','54000-000','55000-000', '111-789']))
+
+# print(batchGeocode(['54330-075','54000-000','55000-000', '111-789']))
+# if geocoding with CEP fails, try address search
+def toGeocode(addr: str):
+    api_url = f'https://api.geoapify.com/v1/geocode/search?text={addr}&filter=countrycode:br&format=json&apiKey={GEOAPIFY_API_KEY}'
+    res = requests.get(api_url).json()
+    geocode = { 'lat': '', 'lng': ''}
+    if len(res['results']) > 0:
+        res = res['results'][0]
+        geocode['lat'] = res['lat']
+        geocode['lng'] = res['lon']
+    else:
+        print('\nAddress text geocoding has failed. No results found\n')
+    return geocode
+
+
+# Debugging
+# import json
+
+# ads_path = './data/debug_ads.json'
+# coords_path = './data/debug_coords.json'
+
+# with open(ads_path) as fd:
+#     ads = json.load(fd)['ads']
+# with open(coords_path) as fd:
+#     coords = json.load(fd)['coords']
+
+# for ad in ads:
+#     for coord in coords:
+#         print(f'\ncoord {coord}')
+#         print(f'\nad {ad}\n')
+#         if coord['cep'] == ad['cep']:
+#             ad['lat'] = coord['lat']
+#             ad['lng'] = coord['lng']
+#             ad.pop('cep')
+            
