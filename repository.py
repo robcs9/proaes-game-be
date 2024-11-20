@@ -18,7 +18,7 @@ def initDF():
   print('\nNew empty DataFrame for ads initialized successfully')
   return df
 
-def getAds(active=False):
+def getAds(active_only=False):
   # if path.exists('./data/data.csv'):
   file_name = 'data.csv'
   
@@ -30,7 +30,7 @@ def getAds(active=False):
     print(f'\nError: {e.strerror}. Arquivo CSV {file_name} não encontrado\n')
     ads_df = initDF()
   
-  if active and len(ads_df) > 0:
+  if active_only and len(ads_df) > 0:
     ads_df = ads_df[ads_df['active'] == True]
   
   print(f'\n{len(ads_df)} ads retrieved')
