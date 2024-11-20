@@ -17,14 +17,15 @@ Aplicação com a finalidade de encontrar anúncios de aluguéis de moradias par
 
 ## TO-DO
 
-- [~] Testar últimas atualizações em searchOLX
-- [~] Corrigir implementação de searchWQ
 - [x] Implementar scraper
 - [x] Tratamento dos dados da WebQuarto
-- [x] Tratamento dos dados da OLX ~~(corrigir encoding dos caracteres dos dados obtidos na OLX)~~
-- [~] Implementar mapeamento geográfico dos dados coletados (implementando busca de coordenadas por cep) (maps.co & Overpass services)
+- [x] Tratamento dos dados da OLX (limpeza)
+- [x] Atualizar searchOLX com repositório dos dados
+- [x] Implementar remoção dos ads com URLs inválidas no scraper ao acessar os ads salvos no repositório para atualizações
+- [~] Implementar mapeamento geográfico dos dados coletados (implementando busca de coordenadas por cep) (geoapify tiles, maps.co & Overpass services)
+- [ ] Implementar assincronicidade das funções do scraper
+- [ ] Atualizar searchWQ com repositório dos dados
 - [ ] Implementar visualização dos relatórios com insights
-- [ ] Implementar asincronicidade do scraper
 - [ ] Implantação do serviço
 
 ## Misc & Dev notes
