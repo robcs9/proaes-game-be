@@ -1,7 +1,16 @@
+// import { h } from "preact";
+import { useRef } from "preact/hooks";
 import { useSignal } from "@preact/signals";
 import Map from "../islands/Map.tsx";
+import { Button } from "../components/Button.tsx";
 
-
+// const btn = useRef()
+// const handleClick = () => {
+//   dialog.current.open()
+// }
+const handleClick = () => {
+  
+}
 export default function Home() {
   const myAPIKey = useSignal(Deno.env.get('GEOAPIFY_API_KEY'));
   
@@ -27,6 +36,12 @@ export default function Home() {
         <p class={"text-xl mt-6 font-semibold"}>Encontre um lugar com o custo-benefício ideal que você merece agora mesmo, estudante!</p>
         {/* <h2 class="text-xl">Encontre  para você que quer morar próximo à sua universidade!</h2> */}
         <Map myAPIKey={myAPIKey}/>
+
+        {/* <Button ref={btn} onClick={handleClick}>test</Button> */}
+        {/* <a href="/">
+        <Button onClick={handleClick}>Formulário</Button>
+        </a> */}
+        {/* <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSeyfPL0sFaUyK5mBI83g3mbCCf377Jl9YZ73GEZ12x-XMUiKA/viewform?embedded=true" width="640" height="1485" frameborder="0">Carregando…</iframe> */}
       </div>
     </div>
   );
