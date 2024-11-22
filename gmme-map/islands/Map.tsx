@@ -10,8 +10,8 @@ interface MapProps {
 
 export default function Map(props: MapProps) {
   return (
-    <div class="flex gap-8 py-6">
-      <p class="text-lg">map goes here {props.myAPIKey}</p>
+    <div class="py-6">
+      <iframe src="https://www.google.com/maps/d/embed?mid=1q8kcKbPxXyk1U9CmvG68f4nuUkafmV0&hl=en&ehbc=2E312F" width="800" height="600"></iframe>
     </div>
   );
 }
