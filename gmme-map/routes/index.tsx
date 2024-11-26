@@ -20,7 +20,7 @@ export default function Home() {
         <a class={"inline-block"} href={"/"}>
           <img src="/marvin.png" class={""} alt="marvin-logo-by-pngegg" />
         </a>
-        <a class={"inline-block"} href={"/"}>
+        <a class={""} href={"/"}>
           <h1 class="mx-2 text-xl my-2 font-bold">GMME - GUIA DO MOCHILEIRO DAS MORADIAS ESTUDANTIS</h1>
         </a>
       </div>
