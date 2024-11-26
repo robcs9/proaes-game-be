@@ -24,6 +24,7 @@ Aplicação com a finalidade de agregar anúncios de aluguel de moradias e organ
 - [x] Tratamento dos dados da OLX (limpeza)
 - [x] Atualizar searchOLX com repositório dos dados
 - [x] Implementar remoção dos ads com URLs inválidas no scraper ao acessar os ads salvos no repositório para atualizações
+- [~] Refatorar separando implementações diferentes do scraper (OLX/WQ/etc.) em múltiplos arquivos próprios
 - [~] Implementar mapeamento geográfico dos dados coletados (geoapify tiles, maps.co & Overpass services)
 - [ ] Implementar assincronicidade das funções do scraper
 - [ ] Atualizar searchWQ com repositório dos dados
