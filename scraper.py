@@ -12,7 +12,7 @@ import geoservices
 import utils
 from model import Ad
 import repository as repo
-
+import plot
 # mostly constants
 url_olx = "https://www.olx.com.br/imoveis/aluguel/estado-pe/grande-recife/recife?pe=1000&ret=1020&ret=1060&ret=1040&sd=3747&sd=3778&sd=3766&sd=3764&sd=3762"
 url_wq = "https://www.webquarto.com.br/busca/quartos/recife-pe/Cordeiro%7CV%C3%A1rzea%7CTorre%7CTorr%C3%B5es%7CMadalena%7CIputinga?price_range%5B%5D=0,1000&has_photo=0&smokers_allowed=0&children_allowed=0&pets_allowed=0&drinks_allowed=0&visitors_allowed=0&couples_allowed=0"
@@ -316,7 +316,7 @@ def validateSavedData():
         print(f'\nValidated ads: {i+1}/{count}')
 
 # main
-async def scrapeAndPrint():
+async def main():
     running = True
     while running:
         validateSavedData()
@@ -335,16 +335,11 @@ async def scrapeAndPrint():
         curr_time = time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime())
         print(f"\nScraping finished ({curr_time})\n")
         
-        # concat DFs before saving
-        # df = pd.concat([dfWQ, dfOLX])
-        # saveData(df)
-        # repo
+        plot.plotMap()
         break
         await asyncio.sleep(3600) # secs
 
-# Run main routine
-asyncio.run(scrapeAndPrint())
-
+asyncio.run(main())
 # [O.K] - for tests only
 # with open('./data/olx_ads_testbase.json') as fd:
 #     olx_ads = json.load(fd)['olx_ads']
