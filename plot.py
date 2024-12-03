@@ -25,9 +25,16 @@ def scatterMarkers(df:pd.DataFrame=None, grp: DataFrameGroupBy=None):
     curr_lat = lat
     curr_lon = lon
     # print(f'original ({lat}, {lon})')
+    # for idx in group.index:
+    #   curr_lat = curr_lat * 0.999
+    #   curr_lon = (curr_lon + 0.999) % lon
+    #   df.loc[idx, "lat"] = curr_lat
+    #   df.loc[idx, "lng"] = curr_lon
+    #   # print(f'current ({curr_lat}, {curr_lon})')
     for idx in group.index:
-      curr_lat = curr_lat * 0.999
-      curr_lon = (curr_lon + 0.999) % lon
+      distance = 0.001
+      # curr_lat += 0.999
+      curr_lon += distance
       df.loc[idx, "lat"] = curr_lat
       df.loc[idx, "lng"] = curr_lon
       # print(f'current ({curr_lat}, {curr_lon})')
