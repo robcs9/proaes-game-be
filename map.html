@@ -26,29 +26,83 @@
     </style>
   </head>
   <body>
-    <div id="map" style="height:800px;width:600px;"></div>
+    <div id="map" style="height: 800px; width: 600px"></div>
     <script>
       // Examples: https://maplibre.org/maplibre-gl-js/docs/examples/
+      const getData = async () => {
+        try {
+          //const json = await fetch("./plot.json");
+          const json = await fetch("./data/geo.json");
+          if (!json.ok)
+            throw new Error(`HTTP error! status: ${json.status}`);
+          const data = await json.json();
+          // check if data.data is valid before returning
+          console.log(data)
+          return data;
+        } catch (err) {
+          console.error("Error fetching data:", err);
+        }
+      };
 
-      center = [-110.985, 32];
-      style = "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
-      /*const map = new maplibregl.Map({
-        container: "map", // container id
-        style: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json", // style URL
-        center: center, // starting position [lng, lat]
-        zoom: 16, // starting zoom
-        maplibreLogo: true,
-      });
-
-      const marker = new maplibregl.Marker().setLngLat(center).addTo(map);*/
+      const datajson = getData();
+      console.log(datajson);
+      const center = [-34.949739906180845, -8.05176740274159];
+      const style =
+        "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json";
 
       const map = new maplibregl.Map({
-        container: 'map',
-        style:
-            'https://api.maptiler.com/maps/streets/style.json?key=get_your_own_OpIi9ZULNHzrESv6T2vL',
-        center: [-90.96, -0.47],
-        zoom: 7.5
-    });
+        container: "map", // container id
+        style: style, // style URL
+        center: center, // starting position [lng,lat]
+        zoom: 14, // starting zoom
+        maplibrelogo: true,
+      });
+
+      const centerMarker = new maplibregl.Marker({
+        color: "#ff0000",
+      })
+        .setLngLat(center)
+        .addTo(map);
+      
+      const geojson = {
+        type: "FeatureCollection",
+        features: [
+          {
+            type: "Feature",
+            properties: {
+              message: "Foo",
+              iconSize: [60, 60],
+            },
+            geometry: {
+              type: "Point",
+              coordinates: [-66.324462890625, -16.024695711685304],
+            },
+          },
+          {
+            type: "Feature",
+            properties: {
+              message: "Bar",
+              iconSize: [50, 50],
+            },
+            geometry: {
+              type: "Point",
+              coordinates: [-61.2158203125, -15.97189158092897],
+            },
+          },
+          {
+            type: "Feature",
+            properties: {
+              message: "Baz",
+              iconSize: [40, 40],
+            },
+            geometry: {
+              type: "Point",
+              coordinates: [-63.29223632812499, -18.28151823530889],
+            },
+          },
+        ],
+      };
+
       map.on("load", async () => {
         // Add an image to use as a custom marker
         const image = await map.loadImage(
@@ -58,35 +112,7 @@
         // Add a GeoJSON source with 3 points.
         map.addSource("points", {
           type: "geojson",
-          data: {
-            type: "FeatureCollection",
-            features: [
-              {
-                type: "Feature",
-                properties: {},
-                geometry: {
-                  type: "Point",
-                  coordinates: [-91.395263671875, -0.9145729757782163],
-                },
-              },
-              {
-                type: "Feature",
-                properties: {},
-                geometry: {
-                  type: "Point",
-                  coordinates: [-90.32958984375, -0.6344474832838974],
-                },
-              },
-              {
-                type: "Feature",
-                properties: {},
-                geometry: {
-                  type: "Point",
-                  coordinates: [-91.34033203125, 0.01647949196029245],
-                },
-              },
-            ],
-          },
+          data: geojson,
         });
 
         // Add a symbol layer

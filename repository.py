@@ -3,6 +3,7 @@
 import pandas as pd
 import os.path as path
 import utils
+import json
 # todo - use Ad class for dicts
 from model import Ad
 
@@ -68,6 +69,10 @@ def saveAll(ads: list[dict]):
   for ad in ads:
     save(ad)
   print('\nAll ads saved to data.csv successfully')
+  
+  # Saving to geojson as well
+  df = getAds()
+  toGeojson(df)
   return
   # ads_df = getAds()
   # if len(ads_df) > 0:
@@ -163,3 +168,67 @@ def delete(idx: int):
 # delete(1)
 
 # todo - manage all .to_csv() calls with proper file opening mode (truncate, overwrite, append...)
+
+def toGeojson(df:pd.DataFrame=None):
+  # import numpy as np
+  # df['active'] = df['active'].astype('bool')
+  # print(type(df.loc[1,"active"]))
+  
+  data = {
+    "type": "FeatureCollection",
+    "features": []
+  }
+  features = []
+  
+  # for i, ad in enumerate(ads):
+    # print(ad)
+    # print(df.iloc[i])
+  
+  def makeFeatures(df: pd.DataFrame):
+    geo_features = []
+    shape = {
+      "type": "Feature",
+      "properties": {
+        "id": 0,
+        "title": "",
+        "price": "",
+        "address": "",
+        "url": "",
+        "property_type": "",
+        "modifiedAt": "",
+        "active": "True"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -56.050564,
+          -15.555707
+        ]
+      }
+    }
+    keys = shape['properties'].keys()
+    for i in df.index:
+      feature = dict(type="Feature",properties={},geometry={"type": "Point"})
+      feature['properties']['id'] = i
+      feature['geometry']['coordinates'] = [df.loc[i, 'lng'], df.loc[i, 'lat']]
+      for key in keys:
+        if key == "id":
+          continue
+        feature['properties'][key] = df.loc[i, key]
+        if key == "active":
+          feature['properties'][key] = df.loc[i, key]
+          feature['properties'][key] = bool(shape['properties'][key])
+      geo_features.append(feature)
+    return geo_features
+  features = makeFeatures(df)
+  data['features'] = features
+  # checking proper bool type for active
+  # print(type(data['features'][0]['properties']['active']))
+  geojson = json.dumps(data, ensure_ascii=False)
+  # geojson = json.dumps({'foo': 'bará'}, ensure_ascii=False,)
+  try:
+    with open('./data/geo.json', 'w', encoding='utf-8') as fd:
+      fd.write(geojson)
+      print("GEOJSON saved successfully!")
+  except Exception as e:
+    print(f'Falha ao salvar geojson. Error: {e}. ')
