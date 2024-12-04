@@ -51,7 +51,7 @@ def plotMap():
   size=[15 for i in range(len(df))], )
   
   # fig.layout.title.text = 'some text1'
-  fig.update_layout(go.Layout(title='some text3'))
+  fig.update_layout(go.Layout(title='some text3',))
   # print('file updated!')
   # fig.update_layout(mapbox_style="carto-positron")
   
