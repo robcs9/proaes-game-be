@@ -196,7 +196,7 @@ def toGeojson(df:pd.DataFrame=None):
         "url": "",
         "property_type": "",
         "modifiedAt": "",
-        "active": "True"
+        "active": "",
       },
       "geometry": {
         "type": "Point",
@@ -216,18 +216,23 @@ def toGeojson(df:pd.DataFrame=None):
           continue
         feature['properties'][key] = df.loc[i, key]
         if key == "active":
+          # print(f'active status: {df.loc[i,key]}')
           feature['properties'][key] = df.loc[i, key]
           feature['properties'][key] = bool(shape['properties'][key])
+          # debug: check if active is being set to "True" every time at this point
+          
       geo_features.append(feature)
     return geo_features
+  
   features = makeFeatures(df)
+  # print(f'\nfeatures: {features} \n')
   data['features'] = features
   # checking proper bool type for active
   # print(type(data['features'][0]['properties']['active']))
   geojson = json.dumps(data, ensure_ascii=False)
   # geojson = json.dumps({'foo': 'bará'}, ensure_ascii=False,)
   try:
-    with open('./data/geo.json', 'w', encoding='utf-8') as fd:
+    with open('./data/data.geojson', 'w', encoding='utf-8') as fd:
       fd.write(geojson)
       print("GEOJSON saved successfully!")
   except Exception as e:

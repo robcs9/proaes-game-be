@@ -91,9 +91,18 @@ def batchGeocode(ceps: list):
 # if geocoding with CEP fails, try address search
 def toGeocode(addr: str):
     api_url = f'https://api.geoapify.com/v1/geocode/search?text={addr}&filter=countrycode:br&format=json&apiKey={GEOAPIFY_API_KEY}'
-    res = requests.get(api_url).json()
     geocode = { 'lat': '', 'lng': ''}
-    if len(res['results']) > 0:
+    res = {}
+    try:
+        # to-do: handle possible json() errors apart
+        # e.g.:     raise RequestsJSONDecodeError(e.msg, e.doc, e.pos)
+        # requests.exceptions.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+        res = requests.get(api_url).json()
+    except Exception as e:
+        print(f'\nError: {e}')
+        print(f'Falha ao tentar geocodificar o endereço: {addr}')
+        res['results'] = {}
+    if res.get('results') and len(res['results']) > 0:
         res = res['results'][0]
         geocode['lat'] = res['lat']
         geocode['lng'] = res['lon']

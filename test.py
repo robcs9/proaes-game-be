@@ -2,7 +2,8 @@ import unittest
 import geoservices as ctc
 import plot
 import re
-
+from repository import getAds
+from repository import toGeojson
         
 class CepToCoordsTests(unittest.TestCase):
     
@@ -27,3 +28,9 @@ class PlottingTests(unittest.TestCase):
             print(f'Actual Exception: {e.strerror}')
             err_str = e.strerror
         self.assertEqual(err_str, None,'plot.json not found')
+    
+    def test_geojson_export(self):
+        print('\nBeginning toGeojson test\n')
+        ads = getAds()
+        # print(ads['active'])
+        toGeojson(ads)
