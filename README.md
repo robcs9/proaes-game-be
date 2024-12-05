@@ -25,6 +25,7 @@ Aplicação com a finalidade de agregar anúncios de aluguel de moradias e organ
 - [x] Atualizar searchOLX com repositório dos dados
 - [x] Implementar remoção dos ads com URLs inválidas no scraper ao acessar os ads salvos no repositório para atualizações
 - [x] Implementar mapeamento geográfico dos dados coletados (plotly)
+- [~] Transferir gmme-map para outro repositório se o serviço estiver instável durante a execução simultânea do scraper com o site
 - [~] Debugar o comportamento de repository.update que está, possivelmente, tornando o atributo active em False para todos os ads
 - [~] Ajustes do mapa - layout overhaul (cluster, scattergap, scattermode)
 - [ ] Ajustes do mapa - events handlers
