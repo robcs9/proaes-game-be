@@ -4,6 +4,7 @@ import plot
 import re
 from repository import getAds
 from repository import toGeojson
+from repository import makeFeatures
         
 class CepToCoordsTests(unittest.TestCase):
     
@@ -29,8 +30,29 @@ class PlottingTests(unittest.TestCase):
             err_str = e.strerror
         self.assertEqual(err_str, None,'plot.json not found')
     
-    def test_geojson_export(self):
-        print('\nBeginning toGeojson test\n')
+    # def test_geojson_export(self):
+    #     print('\nBeginning toGeojson function test\n')
+    #     ads = getAds()
+    #     # print(ads['active'])
+    #     geojson = toGeojson(ads)
+    #     features = geojson['features']
+    #     found_active = False
+    #     for active_prop in [feature['properties']['active'] for feature in features]:
+    #         if active_prop:
+    #             print('Found active')
+    #             found_active = True
+    #             break
+    #     self.assertTrue(found_active, 'Nenhum anúncio com status ativo verdadeiro encontrado')
+    
+    def test_make_geojson_features(self):
+        print('\nBeginning toGeojson function test\n')
         ads = getAds()
         # print(ads['active'])
-        toGeojson(ads)
+        features = makeFeatures(ads)
+        found_active = False
+        for active_prop in [feature['properties']['active'] for feature in features]:
+            if active_prop:
+                print('Found active')
+                found_active = True
+                break
+        self.assertTrue(found_active, 'Nenhum anúncio com status ativo verdadeiro encontrado')

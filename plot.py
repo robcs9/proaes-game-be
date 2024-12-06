@@ -3,18 +3,18 @@ import plotly.graph_objects as go
 import pandas as pd
 
 # retrieving overlapping locations to be handled later as markers/traces
-def groupByLatLng(df:pd.DataFrame=None):
-  df = pd.read_csv('./data/data.csv', index_col=0)
+def scatterOverlaps(df:pd.DataFrame=None):
+  # df = pd.read_csv('./data/data.csv', index_col=0)
   grouping = df[df.duplicated(['lat', 'lng'], keep=False)].groupby(['lat', 'lng'], as_index=False)
   # filtered_list = grouped_df.agg(list)
   # print(grouped_df.groups)
   # print(grouping.get_group((-8.055802, -34.921399)))
-  no_overlap_df = scatterMarkers(df, grouping)
+  no_overlap_df = handleOverlapsCoords(df, grouping)
   return no_overlap_df
 
 
 from pandas.core.groupby.generic import DataFrameGroupBy
-def scatterMarkers(df:pd.DataFrame=None, grp: DataFrameGroupBy=None):
+def handleOverlapsCoords(df:pd.DataFrame=None, grp: DataFrameGroupBy=None):
   # for row in group.groups
   # print(dir(group.groups))
   # print(grp.groups.keys())
@@ -42,10 +42,8 @@ def scatterMarkers(df:pd.DataFrame=None, grp: DataFrameGroupBy=None):
 
 def plotMap():
   df = pd.read_csv('./data/data.csv', index_col=0)
-  df = groupByLatLng()
-  # return
+  df = scatterOverlaps(df)
   center = dict(lat=-8.0513, lon=-34.9313)
-  # fig = px.scatter_mapbox(df, lat="lat", lon="lng", hover_name="title", hover_data=["title", "price", "url",],
   fig = px.scatter_map(df, lat="lat", lon="lng", hover_name="title", hover_data=["title", "price", "url",],
   color_discrete_sequence=["red"], zoom=13, height=700, center=center, opacity=0.2,
   size=[15 for i in range(len(df))], )
@@ -86,4 +84,4 @@ def plotMap():
 
 # Testing
 
-plotMap()
+# plotMap()

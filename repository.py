@@ -1,9 +1,10 @@
 # todo - sqlite implementation
-
 import pandas as pd
 import os.path as path
 import utils
 import json
+from plot import scatterOverlaps
+
 # todo - use Ad class for dicts
 from model import Ad
 
@@ -70,10 +71,11 @@ def saveAll(ads: list[dict]):
     save(ad)
   print('\nAll ads saved to data.csv successfully')
   
-  # Saving to geojson as well
-  df = getAds()
-  toGeojson(df)
-  return
+  # Exporting to geojson as well
+  ads_df = getAds(active_only=True)
+  ads_df = scatterOverlaps(ads_df)
+  toGeojson(ads_df)
+  
   # ads_df = getAds()
   # if len(ads_df) > 0:
   #   for ad in ads:
@@ -169,6 +171,53 @@ def delete(idx: int):
 
 # todo - manage all .to_csv() calls with proper file opening mode (truncate, overwrite, append...)
 
+def makeFeatures(df: pd.DataFrame):
+  geo_features = []
+  shape = {
+    "type": "Feature",
+    "properties": {
+      "id": 0,
+      "title": "",
+      "price": "",
+      "address": "",
+      "url": "",
+      "property_type": "",
+      "modifiedAt": "",
+      "active": "",
+    },
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -56.0,
+        -15.5
+      ]
+    }
+  }
+  
+  if df is None:
+    print('Error: Invalid DataFrame passed. Unable to make geojson features.')
+    return geo_features
+  
+  keys = shape['properties'].keys()
+  for i in df.index:
+    feature = dict(type="Feature",properties={},geometry={"type": "Point"})
+    feature['properties']['id'] = i
+    feature['geometry']['coordinates'] = [df.loc[i, 'lng'], df.loc[i, 'lat']]
+    for key in keys:
+      if key != "id":
+        feature['properties'][key] = df.loc[i, key]
+      # if key == "active":
+        # print(f'active status: {df.loc[i,key]}')
+        # feature['properties'][key] = df.loc[i, key]
+        # feature['properties'][key] = bool(shape['properties'][key])
+        # debug: check if active is being set to "True" every time at this point
+    feature['properties']['active'] = bool(feature['properties']['active'])
+    geo_features.append(feature)
+  
+  # debugging/testing - remove after done
+  # geo_features[0]['properties']['active'] = True
+  return geo_features
+
 def toGeojson(df:pd.DataFrame=None):
   # import numpy as np
   # df['active'] = df['active'].astype('bool')
@@ -178,54 +227,10 @@ def toGeojson(df:pd.DataFrame=None):
     "type": "FeatureCollection",
     "features": []
   }
-  features = []
-  
-  # for i, ad in enumerate(ads):
-    # print(ad)
-    # print(df.iloc[i])
-  
-  def makeFeatures(df: pd.DataFrame):
-    geo_features = []
-    shape = {
-      "type": "Feature",
-      "properties": {
-        "id": 0,
-        "title": "",
-        "price": "",
-        "address": "",
-        "url": "",
-        "property_type": "",
-        "modifiedAt": "",
-        "active": "",
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          -56.050564,
-          -15.555707
-        ]
-      }
-    }
-    keys = shape['properties'].keys()
-    for i in df.index:
-      feature = dict(type="Feature",properties={},geometry={"type": "Point"})
-      feature['properties']['id'] = i
-      feature['geometry']['coordinates'] = [df.loc[i, 'lng'], df.loc[i, 'lat']]
-      for key in keys:
-        if key == "id":
-          continue
-        feature['properties'][key] = df.loc[i, key]
-        if key == "active":
-          # print(f'active status: {df.loc[i,key]}')
-          feature['properties'][key] = df.loc[i, key]
-          feature['properties'][key] = bool(shape['properties'][key])
-          # debug: check if active is being set to "True" every time at this point
-          
-      geo_features.append(feature)
-    return geo_features
-  
+    
   features = makeFeatures(df)
   # print(f'\nfeatures: {features} \n')
+  
   data['features'] = features
   # checking proper bool type for active
   # print(type(data['features'][0]['properties']['active']))
@@ -235,5 +240,15 @@ def toGeojson(df:pd.DataFrame=None):
     with open('./data/data.geojson', 'w', encoding='utf-8') as fd:
       fd.write(geojson)
       print("GEOJSON saved successfully!")
+      
+      # debugging/testing - remove after done
+      # return data 
   except Exception as e:
     print(f'Falha ao salvar geojson. Error: {e}. ')
+
+def export():
+  ads_df = getAds(active_only=True)
+  ads_df = scatterOverlaps(ads_df)
+  toGeojson(ads_df)
+
+export()
