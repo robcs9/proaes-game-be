@@ -42,6 +42,7 @@ export default function Home() {
         <Button onClick={handleClick}>Formulário</Button>
         </a> */}
         {/* <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSeyfPL0sFaUyK5mBI83g3mbCCf377Jl9YZ73GEZ12x-XMUiKA/viewform?embedded=true" width="640" height="1485" frameborder="0">Carregando…</iframe> */}
+        <footer><p>&copy; 2024, <a href="https://github.com/robcs9/gmme">Guia do Mochileiro das Moradias Estudantis</a></p></footer>
       </div>
     </div>
   );

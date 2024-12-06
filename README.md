@@ -27,9 +27,10 @@ Aplicação com a finalidade de agregar anúncios de aluguel de moradias e organ
 - [x] Implementar mapeamento geográfico dos dados coletados (plotly)
 - [x] Bug - Recuperação apenas de ads ativos durante a exportação para geojson
 - [x] Debugar o comportamento de repository.update que está, possivelmente, tornando o atributo active em False para todos os ads
+- [x] Ajustes do mapa - events handlers
 - [~] Transferir gmme-map para outro repositório se o serviço estiver instável durante a execução simultânea do scraper com o site
-- [~] Ajustes do mapa - layout overhaul (cluster, scattergap, scattermode)
-- [ ] Ajustes do mapa - events handlers
+- [~] Layout overhaul do mapa (clustering, scattergap, scattermode)
+- [ ] Filtros embutidos no mapa
 - [ ] Refatorar separando implementações diferentes do scraper (OLX/WQ/etc.) em arquivos próprios
 - [ ] Otimização no tempo de execução das atribuições dos geocodes aos ads
 - [ ] Implementar assincronicidade das funções do scraper

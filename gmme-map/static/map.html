@@ -30,7 +30,7 @@
     </style>
   </head>
   <body>
-    <div id="map" style="height: 800px; width: 600px"></div>
+    <div id="map"></div>
     <script>
       // Examples: https://maplibre.org/maplibre-gl-js/docs/examples/
       // About Popups
@@ -38,8 +38,8 @@
 
       const getData = async () => {
         try {
-          //const json = await fetch("./plot.json");
-          const json = await fetch("/data.geojson");
+          const json = await fetch("./data.geojson");
+          //const json = await fetch("./data/data.geojson");
           if (!json.ok) throw new Error(`HTTP error! status: ${json.status}`);
           const data = await json.json();
           // check if data.data is valid before returning
@@ -52,9 +52,9 @@
 
       const center = [-34.949739906180845, -8.05176740274159];
       const bounds = [
-        [-35.05753608967149,-8.215822246952289],
-        [-34.791714891930305,-7.919269971663603,]
-      ]
+        [-35.05753608967149, -8.215822246952289],
+        [-34.791714891930305, -7.919269971663603],
+      ];
       const style =
         "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json";
       // alt map style: 'https://api.maptiler.com/maps/streets/style.json?key=get_your_own_OpIi9ZULNHzrESv6T2vL',
@@ -67,20 +67,18 @@
         maplibrelogo: true,
         maxBounds: bounds,
       });
+
       const centerMarker = new maplibregl.Marker({
         color: "#ff0000",
       })
         .setLngLat(center)
         .addTo(map);
 
-      //const popup = new maplibregl.Popup()
-
       (async () => {
         let data = await getData();
         let features = [];
         if (data.features) features = data.features;
         //datajson.then(res => data = res.features)
-        
 
         const geojson = {
           type: "FeatureCollection",
@@ -124,18 +122,20 @@
       // location of the feature, with description HTML from its properties.
       map.on("click", "symbols", (e) => {
         const coordinates = e.features[0].geometry.coordinates.slice();
-        const title = e.features[0].properties.title
-        const price = e.features[0].properties.price
-        const address = e.features[0].properties.address
-        const url = e.features[0].properties.url
-        const propertyType = e.features[0].properties.property_type
-        const modifiedAt = e.features[0].properties.modifiedAt
-        const active = e.features[0].properties.active
-        
+        const title = e.features[0].properties.title;
+        const price = e.features[0].properties.price;
+        const address = e.features[0].properties.address;
+        const url = e.features[0].properties.url;
+        const propertyType = e.features[0].properties.property_type;
+        const modifiedAt = e.features[0].properties.modifiedAt;
+        const active = e.features[0].properties.active;
+
         //console.log(active)
-        
-        urlText = url.slice(url.indexOf('/')+2,url.indexOf('.br')+3)
-        status = active ? `<span style="color: green">ATIVO</span>` : `<span style="color: red">INATIVO</span>`
+
+        urlText = url.slice(url.indexOf("/") + 2, url.indexOf(".br") + 3);
+        status = active
+          ? `<span style="color: green">ATIVO</span>`
+          : `<span style="color: red">INATIVO</span>`;
         const description = `
           <strong style="font-size: 1.25em;">${title.toUpperCase()} (${status})</strong>
           <p>${price}</p>
@@ -182,7 +182,6 @@
 
       // Handle clusters
       // https://maplibre.org/maplibre-gl-js/docs/examples/cluster/
-      
     </script>
   </body>
 </html>
