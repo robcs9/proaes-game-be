@@ -30,9 +30,9 @@ Aplicação com a finalidade de agregar anúncios de aluguel de moradias e organ
 - [x] Ajustes do mapa - events handlers
 - [x] Layout overhaul do mapa - scattergap
 - [x] Transferir gmme-map para outro repositório
+- [~] Refatorar separando implementações diferentes do scraper (OLX/WQ/etc.) em arquivos próprios
 - [ ] Otimização no tempo de execução das atribuições dos geocodes aos ads
 - [ ] Implementar assincronicidade das funções do scraper
-- [ ] Refatorar separando implementações diferentes do scraper (OLX/WQ/etc.) em arquivos próprios
 - [ ] Investigar geocoding retornando resultados de outros estados do país
 - [ ] Atualizar searchWQ com repositório dos dados
 - [ ] Backend API
