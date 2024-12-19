@@ -237,6 +237,8 @@ async def main():
         
         # plot.plotMap()
         break
+        
+        # Runtime loop
         # await asyncio.sleep(3600) # secs
         for i in range(10, 0, -1):
             print(f"Restarting in {i} secs...")
