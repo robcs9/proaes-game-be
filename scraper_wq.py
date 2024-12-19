@@ -99,3 +99,39 @@ def searchWQ():
     # Dados dos anúncios em flat list
     ads = [item for sublist in ads for item in sublist]
     return ads
+
+
+# WQ (snippet found in "utils", unknown usage)
+# for i, ad in enumerate(ads):
+        # print(f'------ begin {i} -----\n{ad}\n------ end {i} -----\n')
+        
+# for i, ad in enumerate(ads):
+        # print(f'------ begin {i} -----\n{ad}\n------ end {i} -----\n')
+    
+    """ df = pd.DataFrame({
+        'active': ads[0]['active'],
+        'url': ads[0]['url'],
+        'title': ads[0]['title'],
+        'description': ads[0]['description'],
+        'main_photo': ads[0]['main_photo'],
+        'rent_price': ads[0]['rent_price'],
+        'address': ads[0]['address'],
+        'location': ads[0]['location'],
+        'property_type': ads[0]['property_type'],
+        'room_type': ads[0]['room_type'],
+        'gender': ads[0]['gender'],
+        'min_age': ads[0]['min_age'],
+        'about_roommate': ads[0]['about_roommate'],
+        'lgbt_friendly': ads[0]['lgbt_friendly'],
+        'min_age': ads[0]['min_age'],
+        'max_age': ads[0]['max_age'],
+        'available_at': ads[0]['available_at']
+    }) """
+
+    # failed attempt to create a dataframe from a Series:
+    # TypeError: int() argument must be a string, a bytes-like object or a real number, not '_NoValueType'
+    # p = pd.DataFrame(pd.Series(ads))
+    
+    # p = pd.Series(ads[0])
+    # print(f'\nSingle ad example:\n\n{p}')
+    

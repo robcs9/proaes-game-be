@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+import repository as repo
 # from urllib.request import urlopen
 # import numpy as np
 # import matplotlib.pyplot as plt
@@ -24,51 +25,6 @@ def makeSeleniumSoup(url):
     content = driver.page_source.encode("utf-8").strip()
     soup = BeautifulSoup(content, "lxml") # alt parser: html.parser
     return soup
-
-# WQ 
-# for i, ad in enumerate(ads):
-        # print(f'------ begin {i} -----\n{ad}\n------ end {i} -----\n')
-        
-# for i, ad in enumerate(ads):
-        # print(f'------ begin {i} -----\n{ad}\n------ end {i} -----\n')
-    
-    """ df = pd.DataFrame({
-        'active': ads[0]['active'],
-        'url': ads[0]['url'],
-        'title': ads[0]['title'],
-        'description': ads[0]['description'],
-        'main_photo': ads[0]['main_photo'],
-        'rent_price': ads[0]['rent_price'],
-        'address': ads[0]['address'],
-        'location': ads[0]['location'],
-        'property_type': ads[0]['property_type'],
-        'room_type': ads[0]['room_type'],
-        'gender': ads[0]['gender'],
-        'min_age': ads[0]['min_age'],
-        'about_roommate': ads[0]['about_roommate'],
-        'lgbt_friendly': ads[0]['lgbt_friendly'],
-        'min_age': ads[0]['min_age'],
-        'max_age': ads[0]['max_age'],
-        'available_at': ads[0]['available_at']
-    }) """
-
-    # failed attempt to create a dataframe from a Series:
-    # TypeError: int() argument must be a string, a bytes-like object or a real number, not '_NoValueType'
-    # p = pd.DataFrame(pd.Series(ads))
-    
-    # p = pd.Series(ads[0])
-    # print(f'\nSingle ad example:\n\n{p}')
-    
-import asyncio
-# asyncio.run(some_fn())
-
-# renaming columns test
-# foo = pd.DataFrame({"A": [1, 2, 3], "B": [4, 5, 6]})
-
-# print(foo)
-# foo = foo.rename(columns={"A": "a", "B": "c"})
-
-# print(foo)
 
 import pandas as pd
 
@@ -104,3 +60,77 @@ def makeDataFrame(data_arr: list):
 from datetime import datetime
 def dateTimeNow():
     return datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+
+
+# Refactoring for modular structure section
+
+# check if an ad already exists
+def compareAds(ad: dict, df):
+    if ad.get('url'):
+        found = repo.find(ad['url'])
+        return True if len(found) > 0 else False
+    print('Error: ad url empty or invalid')
+
+# Filters out ads sharing the same url
+# todo: test behavior for empty and equal ads arrays
+def filterAds(new_ads: list[dict], prev_df):
+    
+    print(f'Filtering out ads...\n {len(new_ads)} ads to be matched against the {len(prev_df)} previously stored ads')
+    # updatable_ads = []
+    for i, ad in enumerate(new_ads):
+        # if compareAds(ad, prev_df.get('url')):
+        idx = repo.find(ad['url']).index[0]
+        repo.update(ad, idx)
+        # new_ads.pop() - pop current ad, but missing arg (actual index for ad)
+        # if compareAds(ad, prev_df):
+        #     repo.update(ad, idx)
+    return new_ads
+
+from curl_cffi import requests as curlrq
+def makeSoup(url: str):
+    content = curlrq.get(url, impersonate="chrome")
+    soup = BeautifulSoup(content.text, "lxml")
+    return soup
+
+def parseAddress(cep: str):
+    if cep is None or len(cep) < 8:
+        print(f"Falha ao tentar processar CEP inválido ({cep}).")
+        return
+    res = curlrq.get(f'https://viacep.com.br/ws/{cep}/json/').json()
+    if res.get('erro'):
+        print(f"Endereço não encontrado para o CEP informado ({cep}).")
+        return
+    return f'{res['logradouro']}, {res['bairro']}, {res['localidade']}'
+
+def normalizeAdsPrices(ads: list[dict]):
+    
+    for ad in ads:
+        price = ad['price']
+        price = normalizePrice(price)
+        ad['price'] = price    
+    
+    return ads
+
+def normalizePrice(price: str):
+    return f'{price},00' if price.find(',') == -1 else price
+
+# Checa se as páginas dos ads salvos ainda estão disponíveis na OLX
+def validateSavedData():
+    print('\nValidating status for previously saved ads')
+    ads_df = repo.getAds()
+    urls = ads_df.get('url')
+    ads_df_len = len(urls) if urls is not None else 0
+    if ads_df_len == 0:
+        print('\nNo ads previously saved found. Skipping validation.')
+        return
+    
+    count = len(urls)
+    for i,url in enumerate(urls):
+        res = curlrq.get(url, impersonate='chrome')
+        status_code = res.status_code
+        if status_code >= 400 and status_code < 500:
+            print(f'\nAd with URL {url} not available anymore. Removing now...')
+            idx = ads_df[ads_df['url'] == url].index[0]
+            repo.delete(idx)
+        # else: make ad active again?
+        print(f'\nValidated ads: {i+1}/{count}')

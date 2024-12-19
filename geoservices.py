@@ -13,9 +13,9 @@ config = dotenv_values('.env')
 GEOAPIFY_API_KEY = config['GEOAPIFY_API_KEY']
 
 def normalizeCep(cep: str):
-    if len(cep) > 9 or len(cep) < 8:
-        print(f'Error: Falha ao tentar normalizar. CEP inválido ({cep})')
-        return ''
+    if cep is None or len(cep) < 8 or len(cep) > 9:
+        print(f'Falha ao tentar normalizar o CEP ({cep})')
+        return
     return f'{cep[:5]}-{cep[5:]}' if cep.find('-') == -1 else cep
 
 # It takes a well-formed CEP (12345-678) as argument

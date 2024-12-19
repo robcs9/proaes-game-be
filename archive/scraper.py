@@ -52,14 +52,29 @@ def findPagePropsOLX(soup):
 
 # Bottleneck here
 def getCepOLX(url: str):
+    if url is None or url == "" or url.find("olx.com.br") == -1:
+        print(f"Improper url provided to getCepOLX. No results found at the url ({url})")
+        return
     soup = makeSoup(url)
-    data_str = soup.find('script', string=re.compile(r'(?:dataLayer = )(\[(.*)\])')).get_text(strip=True)    
-    return re.search(r'"zipcode":"(\d{8})"', data_str).group(1)
+    script_tag = soup.find('script', string=re.compile(r'(?:dataLayer = )(\[(.*)\])'))
+    data_str = ""
+    if script_tag is not None:
+        data_str = script_tag.get_text(strip=True)
+    cep_str = re.search(r'"zipcode":"(\d{8})"', data_str)
+    if cep_str is None:
+        print(f"Nenhum CEP encontrado na URL: {url}")
+        return
+    cep = re.search(r'"zipcode":"(\d{8})"', data_str).group(1)
+    return cep
 
 def parseAddress(cep: str):
-    res = curlrq.get(f'viacep.com.br/ws/{cep}/json/').json()
+    if cep is None or len(cep) < 8:
+        print(f"Falha ao tentar processar CEP inválido ({cep}).")
+        return
+    res = curlrq.get(f'https://viacep.com.br/ws/{cep}/json/').json()
     if res.get('erro'):
-        return 'Endereço com CEP inválido.'
+        print(f"Endereço não encontrado para o CEP informado ({cep}).")
+        return
     return f'{res['logradouro']}, {res['bairro']}, {res['localidade']}'
 
 def searchOLX():
@@ -114,14 +129,14 @@ def searchOLX():
                 'url': ad['url'], 
                 'title': ad['subject'],
                 'price': ad['price'],
-                'address': addr if addr != 'Endereço com CEP inválido.' else ad['location'],
+                'address': addr if addr is not None else ad['location'],
                 'property_type': ad['category'],
-                'cep': cep, # ignore or remove this attr once lat and lng are appended to the dict
+                'cep': cep if cep is not None else "", # ignore or remove this attr once lat and lng are appended to the dict
             }
             
             try:
                 cep_recorded = True if ceps.index(cep) else False
-                print(f'Skipping CEP {cep}' if cep_recorded else '???')
+                print(f'Skipping CEP ({cep})' if cep_recorded else '???')
             except Exception as e:
                 cep_recorded = False
             if not cep_recorded:
@@ -245,7 +260,8 @@ async def main():
             await asyncio.sleep(1)
         print('Restarting now!')
 
-asyncio.run(main())
 # [O.K] - for tests only
 # with open('./data/olx_ads_testbase.json') as fd:
 #     olx_ads = json.load(fd)['olx_ads']
+
+asyncio.run(main())
