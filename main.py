@@ -23,7 +23,7 @@ async def main():
         curr_time = time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime())
         print(f"\nScraping finished ({curr_time})\n")
         
-        # break
+        break
         # Runtime loop
         # await asyncio.sleep(3600) # secs
         for i in range(3600, 0, -1):
