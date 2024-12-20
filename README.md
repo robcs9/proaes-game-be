@@ -31,7 +31,7 @@ Aplicação com a finalidade de agregar anúncios de aluguel de moradias e organ
 - [x] Layout overhaul do mapa - scattergap
 - [x] Transferir gmme-map para outro repositório
 - [x] Refatorar separando implementações diferentes do scraper (OLX/WQ/etc.) em arquivos próprios
-- [ ] Backend API
+- [~] Backend API
 - [ ] Cron jobs/Background worker
 - [ ] Deployment
 - [ ] Investigar geocoding retornando resultados de outros estados do país

@@ -23,10 +23,11 @@ async def main():
         curr_time = time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime())
         print(f"\nScraping finished ({curr_time})\n")
         
-        break
+        # break
         # Runtime loop
         # await asyncio.sleep(3600) # secs
-        for i in range(3600, 0, -1):
+        # for i in range(3600, 0, -1):
+        for i in range(300, 0, -1):
             print(f"Restarting in {i} secs...")
             await asyncio.sleep(1)
         print('Restarting now!')
