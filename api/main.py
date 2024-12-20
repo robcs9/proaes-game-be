@@ -2,6 +2,7 @@ from enum import Enum
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 import json
+import uvicorn
 
 class ModelName(str, Enum):
   alexnet = "alexnet"
@@ -46,3 +47,8 @@ async def geojson():
       return {"data": geojson}
   except Exception as e:
     return { "error": "Falha ao recuperar o arquivo GeoJSON."}
+
+# if __name__ == "__main__":
+  # uvicorn.run("main:app", host="0.0.0.0", port=3000)
+
+# run on custom port: $ uvicorn main:app --host 0.0.0.0 --port 3000
