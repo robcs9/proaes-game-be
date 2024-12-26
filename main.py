@@ -3,10 +3,12 @@ import repository as repo
 import time
 from scraper_olx import searchOLX
 from utils import validateSavedData
+import math
 
 async def main():
     running = True
     while running:
+        
         validateSavedData()
         curr_time = time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime())
         print(f"\nScraping now... ({curr_time})\n")
@@ -27,10 +29,13 @@ async def main():
         # Runtime loop
         # await asyncio.sleep(3600) # secs
         # for i in range(3600, 0, -1):
-        for i in range(300, 0, -1):
-            print(f"Restarting in {i} secs...")
-            await asyncio.sleep(1)
-        print('Restarting now!')
+            # print(f"Restarting in {i} secs...")
+            # await asyncio.sleep(60)
+        for i in range(3600, 0, -60):
+            print(f"Restarting in {math.floor(i / 60)} mins...")
+            await asyncio.sleep(60)
+        
+        print('Restarting scraper now!')
 
 # [O.K] - for tests only
 # with open('./data/olx_ads_testbase.json') as fd:
