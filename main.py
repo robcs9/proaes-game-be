@@ -11,6 +11,8 @@ async def main():
         
         validateSavedData()
         curr_time = time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime())
+        begin_timestamp = curr_time
+
         print(f"\nScraping now... ({curr_time})\n")
         # dfWQ = utils.makeDataFrame(searchWQ())
         # dfOLX = utils.makeDataFrame(searchOLX())
@@ -22,8 +24,10 @@ async def main():
         # searchWQ corrections pending
         # dfWQ = repo.saveAll(searchWQ)
         
-        curr_time = time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime())
-        print(f"\nScraping finished ({curr_time})\n")
+        # curr_time = time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime())
+        # print(f"\nScraping finished ({curr_time})\n")
+        finish_timestamp = time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime())
+        print(f"\nScraping began at {begin_timestamp} and finished at ({finish_timestamp})\n")
         
         # break
         # Runtime loop
