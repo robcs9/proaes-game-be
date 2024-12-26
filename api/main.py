@@ -40,9 +40,9 @@ async def get_model(model_name: ModelName):
 async def geojson():
   print("Opening data.geojson")
   try:
-    with open('../data/data.geojson', encoding="utf-8") as fd:
+    with open('../data/data.geojson', encoding="utf-8") as file:
       print("GeoJSON found")
-      content = fd.read()
+      content = file.read()
       geojson = json.loads(content)
       return {"data": geojson}
   except Exception as e:
