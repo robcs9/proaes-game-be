@@ -13,7 +13,7 @@ app = FastAPI()
 
 # app.mount("/static", StaticFiles(directory="static", name="static"))
 
-@app.get("/")
+@app.get("/api")
 async def root():  
   return {"message": "Hello World"}
 
@@ -36,7 +36,7 @@ async def get_model(model_name: ModelName):
 # async def read_file(file_path: str):
     # return {"file_path": file_path}
 
-@app.get("/geojson")
+@app.get("/api/geojson")
 async def geojson():
   print("Opening data.geojson")
   try:
