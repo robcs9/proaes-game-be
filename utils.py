@@ -135,5 +135,5 @@ def validateSavedData():
         # else: make ad active again?
         print(f'\nValidated ads: {i+1}/{count}')
 
-r = makeSoup("https://google.com/404")
-print(r)
+#r = makeSoup("https://google.com/404")
+#print(r)
