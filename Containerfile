@@ -1,17 +1,19 @@
 FROM python
 
-LABEL maintainer="rcs9@proton.me"
+WORKDIR /usr/app
 
-COPY dependencies.txt dependencies.txt
+COPY requirements.txt requirements.txt
 
-RUN pip3 install -r dependencies.txt
+# RUN apt update
+RUN pip3 install --no-cache-dir -r requirements.txt
+# RUN sudo apt install python3-pip
 
-# WORKDIR /usr/src/app
-
-# COPY requirements.txt ./
-# RUN pip install --no-cache-dir -r requirements.txt
+# pipx for virtualenv with WSL!
+# RUN sudo apt install python3 python3-pip pipx
+# pipx install pandas --include-deps
 
 COPY . .
 
-# CMD [ "fastapi", "dev", "./api/main.py"]
-CMD [ "python3", "-m", "./main.py"]
+EXPOSE 5000
+
+CMD [ "python3", "./main.py" ]

@@ -1,5 +1,5 @@
-import plotly.express as px
-import plotly.graph_objects as go
+# import plotly.express as px
+# import plotly.graph_objects as go
 import pandas as pd
 
 # retrieving overlapping locations to be handled later as markers/traces

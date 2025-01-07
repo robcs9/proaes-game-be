@@ -251,4 +251,4 @@ def export():
   ads_df = scatterOverlaps(ads_df)
   toGeojson(ads_df)
 
-export()
+# export()
