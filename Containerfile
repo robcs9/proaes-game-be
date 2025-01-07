@@ -17,3 +17,7 @@ COPY . .
 EXPOSE 5000
 
 CMD [ "python3", "./main.py" ]
+
+# RUN python3 ./main.py
+# Requires multithreading through bash scripting to run both API and scraper
+# CMD [ "fastapi", "dev", "./api/main.py" ]
