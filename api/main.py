@@ -48,7 +48,9 @@ async def geojson():
   except Exception as e:
     return { "error": "Falha ao recuperar o arquivo GeoJSON."}
 
+# listening on custom PORT
 # if __name__ == "__main__":
   # uvicorn.run("main:app", host="0.0.0.0", port=3000)
 
-# run on custom port: $ uvicorn main:app --host 0.0.0.0 --port 3000
+# run on custom port. default host: 127.0.0.1, default port: 8000
+# $ uvicorn main:app --host 127.0.0.1 --port 3000
