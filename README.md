@@ -32,6 +32,8 @@ Aplicação com a finalidade de agregar anúncios de aluguel de moradias e organ
 - [x] Transferir gmme-map para outro repositório
 - [x] Refatorar separando implementações diferentes do scraper (OLX/WQ/etc.) em arquivos próprios
 - [x] Backend API
+- [x] Investigar bug que impede do container abrir data.geojson através do fastapi, embora o arquivo exista no diretório ./data corretamente - path errado
+- [~] Migrar implementação de soft delete para hard
 - [ ] Remover validação de status de ads (validateSavedData) -- renomear função para validateAd ou similar -- e permitir sobrescrever todos os dados sempre que o scraper for invocado?
 - [ ] Cron jobs/Background worker
 - [ ] Deployment

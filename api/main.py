@@ -1,13 +1,9 @@
 from enum import Enum
 from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
+# from fastapi.staticfiles import StaticFiles
 import json
 import uvicorn
-
-class ModelName(str, Enum):
-  alexnet = "alexnet"
-  resnet = "resnet"
-  lenet = "lenet"
+from pathlib import Path
 
 app = FastAPI()
 
@@ -15,22 +11,7 @@ app = FastAPI()
 
 @app.get("/api")
 async def root():  
-  return {"message": "Hello World"}
-
-@app.get("/items/{item_id}")
-async def read_item(item_id: int):
-  return {"item_id": item_id}
-
-
-@app.get("/models/{model_name}")
-async def get_model(model_name: ModelName):
-  if model_name is ModelName.alexnet:
-    return {"model_name": model_name, "message": "Deep Learning FTW"}
-  if model_name.value == "resnet":
-    return {"model_name": model_name, "message": "LeCNN all the images"}
-  if model_name.value == ModelName.lenet.value:
-    return {"model_name": model_name, "message": "Le another Learning Model"}
-  return {"message": "Oops!"}
+  return {"message": "Hello!"}
 
 # @app.get("/files/{file_path:path}")
 # async def read_file(file_path: str):
@@ -39,13 +20,20 @@ async def get_model(model_name: ModelName):
 @app.get("/api/geojson")
 async def geojson():
   print("Opening data.geojson")
+  
+  # check for the correct path
+  # print(Path.cwd())
+  # print(Path('./app/data/data.geojson').resolve(strict=True))
+  
   try:
-    with open('../data/data.geojson', encoding="utf-8") as file:
+    # with open("./app/data/data.geojson", encoding="utf-8") as file:
+    with open("./data/data.geojson", encoding="utf-8") as file:
       print("GeoJSON found")
       content = file.read()
       geojson = json.loads(content)
       return {"data": geojson}
   except Exception as e:
+    print(f"Error.\n{e}")
     return { "error": "Falha ao recuperar o arquivo GeoJSON."}
 
 # listening on custom PORT
