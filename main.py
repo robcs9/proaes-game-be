@@ -4,7 +4,7 @@ from scraper_olx import searchOLX
 from utils import validateSavedData
 
 def main():
-    validateSavedData()
+    # validateSavedData()
     curr_time = time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime())
     begin_timestamp = curr_time
     print(f"\nScraping now... ({curr_time})\n")
