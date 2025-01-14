@@ -98,11 +98,14 @@ def makeSoup(url: str):
     return soup
 
 def parseAddress(cep: str):
+    # find alternative to ViaCEP for downtimes
     if cep is None or len(cep) < 8:
         print(f"Falha ao tentar processar CEP inválido ({cep}).")
         return
-    res = curlrq.get(f'https://viacep.com.br/ws/{cep}/json/').json()
-    if res.get('erro'):
+    # res = curlrq.get(f'https://viacep.com.br/ws/{cep}/json/').json()
+    res = curlrq.get(f'opencep.com/v1/{cep}').json()
+    # if res.get('erro'): # ViaCep error response
+    if res.get('error'):
         print(f"Endereço não encontrado para o CEP informado ({cep}).")
         return
     return f'{res['logradouro']}, {res['bairro']}, {res['localidade']}'

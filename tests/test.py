@@ -5,6 +5,7 @@ import re
 from repository import getAds
 from repository import toGeojson
 from repository import makeFeatures
+
         
 class CepToCoordsTests(unittest.TestCase):
     
@@ -56,3 +57,4 @@ class PlottingTests(unittest.TestCase):
                 found_active = True
                 break
         self.assertTrue(found_active, 'Nenhum anúncio com status ativo verdadeiro encontrado')
+

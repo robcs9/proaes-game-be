@@ -33,8 +33,8 @@ Aplicação com a finalidade de agregar anúncios de aluguel de moradias e organ
 - [x] Refatorar separando implementações diferentes do scraper (OLX/WQ/etc.) em arquivos próprios
 - [x] Backend API
 - [x] Investigar bug que impede do container abrir data.geojson através do fastapi, embora o arquivo exista no diretório ./data corretamente - path errado
-- [~] Migrar implementação de soft delete para hard
-- [ ] Remover validação de status de ads (validateSavedData) -- renomear função para validateAd ou similar -- e permitir sobrescrever todos os dados sempre que o scraper for invocado?
+- [x] Remover atualização mandatória dos ads e manter apenas dados mais recentes
+- [x] Encontrar alternativa para api da ViaCEP para substituir na função de parseAddress
 - [ ] Cron jobs/Background worker
 - [ ] Deployment
 - [ ] Investigar geocoding retornando resultados de outros estados do país

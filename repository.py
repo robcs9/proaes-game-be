@@ -1,5 +1,6 @@
 # todo - sqlite implementation
 import pandas as pd
+import os
 import os.path as path
 import utils
 import json
@@ -42,16 +43,8 @@ def getAds(active_only=False):
 # try np.where?
 def save(ad: dict):
   ads_df = getAds()
-  found = ads_df.loc[ads_df['url'] == ad['url']]
-  if len(found) > 0:
-    # todo - handle multiple search hits
-    print('\nSimilar ad(s) have been found. Updating instead now...')
-    # ad['id'] = int(found.index[0])
-    idx = int(found.index[0])
-    return update(ad, idx)
-  
-  idx = ads_df.last_valid_index()
-  idx = 0 if idx is None else idx + 1
+  # idx = 0
+  idx = len(ads_df)
   for k, v in ad.items():
     ads_df.loc[idx, k] = v
   ads_df.loc[idx, 'modifiedAt'] = utils.dateTimeNow()
@@ -64,17 +57,44 @@ def save(ad: dict):
   print(last_ad)
   return last_ad
 
+def saveAdDF(ads_df: pd.DataFrame, ad: dict):
+  # idx = 0
+  idx = len(ads_df) + 1
+  for k, v in ad.items():
+    ads_df.loc[idx, k] = v
+  ads_df.loc[idx, 'modifiedAt'] = utils.dateTimeNow()
+  ads_df.loc[idx, 'active'] = True
+  
+  # ads_df.to_json('./data/data.json',force_ascii=False)
+  # ads_df.to_csv('./data/data.csv',encoding='utf-8')
+  print('\nNew ad saved!')
+  last_ad = ads_df.tail(1)
+  print(last_ad)
+  return ads_df
+
 # Saves into new file or appends to current file
-def saveAll(ads: list[dict]):
+def saveAll(ads: list[dict], dir='./data'):
+  ads_df = initDF()
+  # Remove previously saved data
+  # print('Removendo dados salvos previamente')
+  # try:
+  #   os.remove('./data/data.csv')
+  #   os.remove('./data/data.geojson')
+  #   print('Removendo')
+  # except Exception as e:
+  #   print(f"Error:\n{e}")
+    # handle error?
   
   for ad in ads:
-    save(ad)
+    # save(ad)
+    ads_df = saveAdDF(ads_df, ad)
+  ads_df.to_csv(f"{dir}/data.csv",encoding='utf-8')
   print('\nAll ads saved to data.csv successfully')
   
   # Exporting to geojson as well
-  ads_df = getAds(active_only=True)
+  # ads_df = getAds(active_only=True)
   ads_df = scatterOverlaps(ads_df)
-  toGeojson(ads_df)
+  toGeojson(ads_df, dir)
   
   # ads_df = getAds()
   # if len(ads_df) > 0:
@@ -218,7 +238,7 @@ def makeFeatures(df: pd.DataFrame):
   # geo_features[0]['properties']['active'] = True
   return geo_features
 
-def toGeojson(df:pd.DataFrame=None):
+def toGeojson(df:pd.DataFrame=None, dir='./data'):
   # import numpy as np
   # df['active'] = df['active'].astype('bool')
   # print(type(df.loc[1,"active"]))
@@ -237,12 +257,10 @@ def toGeojson(df:pd.DataFrame=None):
   geojson = json.dumps(data, ensure_ascii=False)
   # geojson = json.dumps({'foo': 'bará'}, ensure_ascii=False,)
   try:
-    with open('./data/data.geojson', 'w', encoding='utf-8') as fd:
+    with open(f"{dir}/data.geojson", 'w', encoding='utf-8') as fd:
       fd.write(geojson)
       print("GEOJSON saved successfully!")
-      
-      # debugging/testing - remove after done
-      # return data 
+
   except Exception as e:
     print(f'Falha ao salvar geojson. Error: {e}. ')
 
