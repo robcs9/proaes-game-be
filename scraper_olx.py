@@ -1,9 +1,5 @@
-import pandas as pd
-from bs4 import BeautifulSoup
-import json, math, time, asyncio, re, geoservices
-from curl_cffi import requests as curlrq
-import repository as repo
-from utils import makeSoup, parseAddress, validateSavedData
+import json, math, re, geoservices
+from utils import makeSoup, parseAddress
 # Constants
 # todo - Rename to URL
 url_olx = "https://www.olx.com.br/imoveis/aluguel/estado-pe/grande-recife/recife?pe=1000&ret=1020&ret=1060&ret=1040&sd=3747&sd=3778&sd=3766&sd=3764&sd=3762"
@@ -15,6 +11,7 @@ def findPagePropsOLX(soup):
     return props
 
 # Bottleneck here
+# Rework: utilizar o endereço completo, CEP incluso, para melhorar a precisão do geocoding
 def getCepOLX(url: str):
     if url is None or url == "" or url.find("olx.com.br") == -1:
         print(f"Improper url provided to getCepOLX. No results found at the url ({url})")
