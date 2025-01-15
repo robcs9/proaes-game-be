@@ -35,6 +35,7 @@ Aplicação com a finalidade de agregar anúncios de aluguel de moradias e organ
 - [x] Investigar bug que impede do container abrir data.geojson através do fastapi, embora o arquivo exista no diretório ./data corretamente - path errado
 - [x] Remover atualização mandatória dos ads e manter apenas dados mais recentes
 - [x] Encontrar alternativa para api da ViaCEP para substituir na função de parseAddress
+- [~] Otimizar busca e geocoding de endereços dos anúncios da OLX
 - [ ] Cron jobs/Background worker
 - [ ] Deployment
 - [ ] Investigar geocoding retornando resultados de outros estados do país
