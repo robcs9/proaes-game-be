@@ -1,4 +1,4 @@
-# Guia do Mochileiro das Moradias Estudantis (GMME)
+# Guia de Acomodações para Moradia Estudantil (GAME)
 
 Aplicação com a finalidade de agregar anúncios de aluguel de moradias e organizá-los com insights relevantes para estudantes e demais interessados em morar no entorno da Cidade Universitária em Recife - PE.
 
@@ -33,17 +33,17 @@ Aplicação com a finalidade de agregar anúncios de aluguel de moradias e organ
 - [x] Refatorar separando implementações diferentes do scraper (OLX/WQ/etc.) em arquivos próprios
 - [x] Backend API
 - [x] Investigar bug que impede do container abrir data.geojson através do fastapi, embora o arquivo exista no diretório ./data corretamente - path errado
+- [x] Reduzir quantidade de pacotes/dependências do projeto (ver requirement.txt)
 - [x] Remover atualização mandatória dos ads e manter apenas dados mais recentes
 - [x] Encontrar alternativa para api da ViaCEP para substituir na função de parseAddress
+- [x] Investigar geocoding retornando resultados de outros estados do país (baixa precisão)
 - [~] Otimizar busca e geocoding de endereços dos anúncios da OLX.
 - [ ] Normalizar comprimento das coordenadas
 - [ ] Cron jobs/Background worker
 - [ ] Deployment
-- [ ] Investigar geocoding retornando resultados de outros estados do país
 - [ ] Otimização no tempo de execução das atribuições dos geocodes aos ads
 - [ ] Implementar assincronicidade das funções do scraper
-- [ ] Atualizar searchWQ com repositório dos dados
-- [ ] Reduzir quantidade de pacotes/dependências do projeto (ver requirement.txt)
+- [ ] ~~Atualizar searchWQ com repositório dos dados~~
 - [ ] ~~Implementar visualização dos relatórios com insights~~
 - [ ] ~~Implementar clustering dos marcadores~~
 
@@ -51,7 +51,7 @@ Aplicação com a finalidade de agregar anúncios de aluguel de moradias e organ
 
 - lat e lng já estão presentes nos dados da WebQuarto
 - OLX utiliza o CEP para exibição da localização do imóvel no mapa do anúncio
-- O atributo "date" dos dados da OLX pode estar no formato "unix epoch", geralmente
+- O atributo "date" dos dados da OLX está no formato "unix epoch", geralmente
 
 ## Fontes:
 
@@ -80,7 +80,7 @@ Aplicação com a finalidade de agregar anúncios de aluguel de moradias e organ
 
 (*) - *Em uso no scraper*
 
-#### Material de Estudo:
+#### Documentações e tutoriais de dependências:
 
 - [Scraping](https://www.scrapehero.com/web-scraping-with-pandas/)
 - [Selenium](https://selenium-python.readthedocs.io/getting-started.html)
