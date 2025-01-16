@@ -28,6 +28,19 @@ def getCepOLX(url: str):
     cep = re.search(r'"zipcode":"(\d{8})"', data_str).group(1)
     return cep
 
+def getAddressAdOLX(url: str):
+    address = None
+    if url is None or url == "" or url.find("olx.com.br") == -1:
+        print(f"Improper url provided ({url})")
+        return
+    soup = makeSoup(url)
+    address_tag2 = soup.find('span', string=re.compile(', PE, 5'))
+    address_chunk1 = address_tag2.find_previous_sibling().getText(strip=True)
+    address_chunk2 = address_tag2.getText(strip=True)
+    address = f"{address_chunk1}, {address_chunk2}"
+    return address
+
+
 def searchOLX():
     soup = makeSoup(url_olx)
     page_props = findPagePropsOLX(soup)

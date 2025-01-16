@@ -3,8 +3,10 @@ import unittest, re, requests, dotenv
 import plot
 from repository import getAds, toGeojson, makeFeatures
 from geoservices import parseCoords, toGeocode, batchGeocode
+from scraper_olx import getAddressAdOLX
+from utils import normalizeCep
 
-        
+@unittest.skip('Teste não aplicável')        
 class CepToCoordsTests(unittest.TestCase):
     
     def test_coordinates_retrieval(self):
@@ -15,7 +17,7 @@ class CepToCoordsTests(unittest.TestCase):
         # print(res)
         pass
     
-
+@unittest.skip('Teste não aplicável')
 class PlottingTests(unittest.TestCase):
     
     def test_saving_plot(self):
@@ -92,14 +94,14 @@ class OlxScraperTests(unittest.TestCase):
         
         match = results[0]
         # result_type == "street" (ausente se result_type for "suburb")
-        self.expected['address'] = f"""{match['street']}, {match['suburb']}, {match['district']}, {match['state_code']}, {match['postcode']}"""
+        self.expected['address'] = f"""{match['street']}, {match['suburb']}, {match['district']}, {match['state_code']}, {normalizeCep(match['postcode'])}"""
         self.expected['lng'] = match['lon']
         self.expected['lat'] = match['lat']
         
         # todo - Testar se os ads com CEP incompatível com a API da Geoapify retornam o mesmo resultado
         # se a busca incluir o endereço completo
         
-        address = getAddressAdsOLX(ad_url)
+        address = getAddressAdOLX(self.ad_url)
         self.assertEqual(address, self.expected['address'])
         
         coords = toGeocode(address)

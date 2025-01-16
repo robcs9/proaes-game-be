@@ -38,10 +38,11 @@ Aplicação com a finalidade de agregar anúncios de aluguel de moradias e organ
 - [x] Encontrar alternativa para api da ViaCEP para substituir na função de parseAddress
 - [x] Investigar geocoding retornando resultados de outros estados do país (baixa precisão)
 - [~] Otimizar busca e geocoding de endereços dos anúncios da OLX. 
-  - [~] Implementar função para fazer o scrape de endereços dos ads
-  - [ ] Deprecate the following: ceps (line 67), getCepOLX, normalizeCep, parseAddress, parseCoords, batchGeocode, cep_recorded
-  - [ ] Rewrite: getCepOLX -> getAddressOLX, batchGeocode(ceps) -> batchGeocode(addrs)
+  - [x] Implementar função para scrape de endereços dos ads
+  - [~] Refactor/replace: getCepOLX -> getAddressAdOLX, batchGeocode(ceps) -> batchGeocode(addrs)
   - [ ] Integrate changes to searchOLX (lines 73~140)
+  - [ ] Deprecate the following: ceps (scraper_olx - line 67), getCepOLX, normalizeCep, parseAddress, parseCoords, batchGeocode, cep_recorded
+- [ ] Refatorar e separar adequadatamente os testes em test_geocoding_request
 - [ ] Normalizar comprimento das coordenadas
 - [ ] Cron jobs/Background worker
 - [ ] Deployment
