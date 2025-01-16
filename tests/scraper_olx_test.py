@@ -107,3 +107,29 @@ class OlxScraperTests(unittest.TestCase):
         coords = toGeocode(address)
         self.assertEqual(coords['lat'], self.expected['lat'])
         self.assertEqual(coords['lng'], self.expected['lng'])
+
+class GeoservicesTests(unittest.TestCase):
+    
+    def test_batch_geocode(self):
+        addresses = [
+            'Rua Sorocaba, Cordeiro, Recife, PE, 50721530',
+            'Rua Sorocaba, Cordeiro, Recife, PE, 50721530',
+            'Rua Sorocaba, Cordeiro, Recife, PE, 50721530',
+        ]
+        expected = [
+            {
+                'lat': 'lat',
+                'lng': 'lng',
+            },
+            {
+                'lat': 'lat',
+                'lng': 'lng',
+            },
+            {
+                'lat': 'lat',
+                'lng': 'lng',
+            },
+        ]
+        actual = batchGeocode(addresses)
+        msg = ''
+        self.assertListEqual(actual, expected, msg)
