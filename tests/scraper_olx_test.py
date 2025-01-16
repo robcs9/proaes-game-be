@@ -84,7 +84,7 @@ class OlxScraperTests(unittest.TestCase):
         """)
         
         results = self.res_json['results']
-        results_len = len(self.results)
+        results_len = len(results)
         self.assertGreaterEqual(results_len, 1, f"""
             Nenhum resultado encontrado com o texto de busca fornecido.
             Query: "{self.text_query}"
@@ -92,22 +92,16 @@ class OlxScraperTests(unittest.TestCase):
         
         match = results[0]
         # result_type == "street" (ausente se result_type for "suburb")
-        self.expected.address = f"
-            {match['street']}, {match['suburb']}, {match['district']}, \
-            {match['state_code']}, {match['postcode']}
-        "
-        self.expected.lng = match['lon']
-        self.expected.lat = match['lat']
+        self.expected['address'] = f"""{match['street']}, {match['suburb']}, {match['district']}, {match['state_code']}, {match['postcode']}"""
+        self.expected['lng'] = match['lon']
+        self.expected['lat'] = match['lat']
         
-        # Testar se os ads com CEP incompatível com a API da Geoapify retornam o mesmo resultado
+        # todo - Testar se os ads com CEP incompatível com a API da Geoapify retornam o mesmo resultado
         # se a busca incluir o endereço completo
-        address = getAddressOLX(ad_url)
+        
+        address = getAddressAdsOLX(ad_url)
         self.assertEqual(address, self.expected['address'])
         
-        # coords = parseCoords()
-        # coords = toGeocode(address)
-        lat = coords['lat']
-        lng = coords['lng']
-        self.assertEqual(lat, self.expected['lat'])
-        self.assertEqual(lat, self.expected['lng'])
-        
+        coords = toGeocode(address)
+        self.assertEqual(coords['lat'], self.expected['lat'])
+        self.assertEqual(coords['lng'], self.expected['lng'])
