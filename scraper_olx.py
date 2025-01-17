@@ -40,7 +40,7 @@ def getAddressAdOLX(url: str):
     address = f"{address_chunk1}, {address_chunk2}"
     return address
 
-def extractAdsFromPages(url: str):
+def extractAdsFromPages(url: str) -> list[dict]:
     soup = makeSoup(url)
     page_props = findPagePropsOLX(soup)
     pages_count = math.ceil(page_props['totalOfAds'] / page_props['pageSize'])
@@ -75,83 +75,78 @@ def extractAdsFromPages(url: str):
     
     return unfiltereds
 
+def buildAd(unfiltered_ads: list) -> dict:
+    pass
 
 def searchOLX():
     ads = []
     unfiltereds = extractAdsFromPages(url_olx)
     
-    print('Processing ad data...')
-    ceps = []
+    # to-do? - refactor into buildAd()
+    print('Processing raw ad data...')
     unfiltereds_count = len(unfiltereds)
     invalid_count = 0
-    # unfiltereds => unfiltered raw data, actually
+    
+    # addresses = []
     for i, ad in enumerate(unfiltereds):
-        if ad.get("subject") is not None:
-            cep = getCepOLX(ad['url'])
-            cep = geoservices.normalizeCep(cep)
-            addr = parseAddress(cep)
-            # coords = geoservices.parseCoords(cep)
-            # coords_split = coords.split(',') if len(coords) > 0 else [' ', ' ']
-            
-            ad_data = {
-                'url': ad['url'], 
-                'title': ad['subject'],
-                'price': ad['price'],
-                'address': addr if addr is not None else ad['location'],
-                'property_type': ad['category'],
-                'cep': cep if cep is not None else "", # ignore or remove this attr once lat and lng are appended to the dict
-            }
-            
-            try:
-                cep_recorded = True if ceps.index(cep) else False
-                print(f'Skipping CEP ({cep})' if cep_recorded else '???')
-            except Exception as e:
-                cep_recorded = False
-            if not cep_recorded:
-                ceps.append(cep)
-            # print(f'ceps state:\n{ceps}')
-            
-            ads.append(ad_data)
-        else:
+        if ad.get("subject") is None:
             # skip bad results scraped
             invalid_count += 1
             print(f'\nInvalid data (unfiltered) #{i}:\n{ad}\n')
+            print(f'data found:\n{ad}')
+        
+        address = getAddressAdOLX(ad['url'])
+        
+        ad_data = {
+            'url': ad['url'], 
+            'title': ad['subject'],
+            'price': ad['price'],
+            'address': address,
+            'property_type': ad['category'],
+        }
+        # addresses
+        ads.append(ad_data)
         print(f"{i+1}/{unfiltereds_count} items have been processed")
     
-    # todo - check if currently saved ads have changed
-    # validateSavedData()
+    addresses = [ad['address'] for ad in ads]
+    geocodes = geoservices.batchGeocodeAddress(addresses)
     
-    coords = geoservices.batchGeocode(ceps)
-    
-    if coords is None:
-        raise Exception('Erro. Falha na operação de Geocoding - Nenhum resultado obtido')
+    if geocodes is None:
+        raise Exception('Erro: Falha de Geocoding - Nenhum resultado obtido')
 
-    geocoding_count = len(coords)
-    # SEVERE BOTTLENECK
+    notfound_geocoding_count = 0
+    # geocoding_count = len(geocodes) # replace with successfull_geocoding_count?
+    # POSSIBLE BOTTLENECK
     # quick-fix: implement hashmap like: [{'ACTUAL_CEP': GEOCODE_DICT}, ...]
     # e.g. [..., {...}, {'12345-123': latlng_dict}, {...},...]
     print('Assinging geocodes to ads now...')
     proper_ads = []
     for i, ad in enumerate(ads):
-        for coord in coords:
-            
-            if ad.get('cep'):
-                if ad['cep'] == coord['cep']:
-                    ad['lat'] = coord['lat']
-                    ad['lng'] = coord['lng']
-                else:
-                    geocode = geoservices.toGeocode(ad['address'])
-                    if not (geocode['lat'] == '' and geocode['lng'] == ''):
-                        geocoding_count += 1
-                    ad['lat'] = geocode['lat']
-                    ad['lng'] = geocode['lng']
-                ad.pop('cep')
+        # Quick performance optimization: reshape geocode dicts as hashmap
+        # add implementation to batchGeocodeAddress()
+        geocodings = [
+            {
+                'queried-address' : {
+                    'lat':'',
+                    'lng':'',
+                }
+            }
+        ]
+        ad['lat'] = geocodes['queried-address']['lat']
+        ad['lng'] = geocodes['queried-address']['lng']
+        
+        # for geocode in geocodes:
+            # ad['lat'] = geocode['lat']
+            # ad['lng'] = geocode['lng']
+        if ad['lat'] == '' or ad['lng'] == '':
+            notfound_geocoding_count += 1
         proper_ads.append(ad)
         print(f'{i}/{len(ads)} assigned')
     
     print(f'Total scraped ad links: {len(ads)}')
     # print(f'Geocoded CEPs: {len(coords)}/{ads_count}')
-    print(f'Geocoded CEPs: {geocoding_count}/{len(ads)}')
+    # print(f'Geocoded CEPs: {geocoding_count}/{len(ads)}')
+    print(f'Not found address geocodings: {notfound_geocoding_count}/{len(ads)}')
     print(f'Invalid ads: {invalid_count};')
     print(f'Collected {len(proper_ads)} OLX ads')
     return proper_ads
