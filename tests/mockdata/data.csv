@@ -1,0 +1,6 @@
+id,title,price,address,url,property_type,modifiedAt,active,lat,lng,id,cep
+1,Cozy Beachfront Apartment,R$ 750000,"123 Ocean Drive, Recife, PE",http://example.com/property1,Apartment,17/01/2025 08:17:46,True,-8.047562,-34.876964,1.0,50030-000
+2,Spacious Downtown Loft,R$ 1200000,"456 Central Blvd, Recife, PE",http://example.com/property2,Loft,17/01/2025 08:17:46,True,-8.051043,-34.872982,2.0,50050-000
+3,Modern Suburban House,R$ 950000,"789 Greenway Ave, Recife, PE",http://example.com/property3,House,17/01/2025 08:17:46,True,-8.035242,-34.88963,3.0,50040-000
+4,Luxury Penthouse,R$ 2200000,"101 Sky High Road, Recife, PE",http://example.com/property4,Penthouse,17/01/2025 08:17:46,True,-8.033684,-34.894921,4.0,50020-000
+5,Charming Country Cottage,R$ 560000,"202 Tranquil Lane, Recife, PE",http://example.com/property5,Cottage,17/01/2025 08:17:46,True,-8.028374,-34.880914,5.0,50010-000
