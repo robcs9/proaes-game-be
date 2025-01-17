@@ -40,6 +40,42 @@ def getAddressAdOLX(url: str):
     address = f"{address_chunk1}, {address_chunk2}"
     return address
 
+def extractAdsFromPages(url: str):
+    soup = makeSoup(url)
+    page_props = findPagePropsOLX(soup)
+    pages_count = math.ceil(page_props['totalOfAds'] / page_props['pageSize'])
+    
+    ads = []
+    unfiltereds = []
+    for i in range(1, pages_count + 1):
+        data = {}
+        # Evita a repetição do scraper na página inicial
+        if i == 1:
+            data = page_props['ads']
+        else:
+            page_url = f'{url}&o={i}'
+            soup = makeSoup(page_url)
+            page_props = findPagePropsOLX(soup)
+            data = page_props['ads']
+        unfiltereds.append(data)
+        print(f"Got OLX page {i} data")
+        
+    # Flattening nested lists with raw data, not only ads data
+    unfiltereds = [ad for page in unfiltereds for ad in page]
+    # filtereds = unfiltereds
+    
+    # todo - replace csv for json, then sqlite database eventually?
+    # Load previous ads
+    # prev_ads = repo.getAds()
+    # filtereds = filterAds(unfiltereds, prev_ads)
+    
+    # update urls scraped that match any saved ad:
+    # Either remove ads that are missing 'subject' key from the data file or Update fields that might have changed
+    # todo (maybe?) - flag updatable ads to not go through the parseCoords function unless CEP has changed
+    # todo - delete ads with broken url - def removeInvalidAds(); investigate if missing 'subject' key sufficies this check
+    
+    return unfiltereds
+
 
 def searchOLX():
     soup = makeSoup(url_olx)
@@ -76,7 +112,6 @@ def searchOLX():
     # todo - delete ads with broken url - def removeInvalidAds(); investigate if missing 'subject' key sufficies this check
     
     print('Processing ad data...')
-    # print(unfiltereds)
     ceps = []
     unfiltereds_count = len(unfiltereds)
     invalid_count = 0

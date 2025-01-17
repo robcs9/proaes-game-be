@@ -3,7 +3,7 @@ import unittest, re, requests, dotenv
 import plot
 from repository import getAds, toGeojson, makeFeatures
 from geoservices import parseCoords, toGeocode, batchGeocodeAddress
-from scraper_olx import getAddressAdOLX
+from scraper_olx import extractAdsFromPages, getAddressAdOLX, searchOLX
 from utils import normalizeCep
 
 @unittest.skip('Teste não aplicável')        
@@ -107,6 +107,18 @@ class OlxScraperTests(unittest.TestCase):
         coords = toGeocode(address)
         self.assertEqual(coords['lat'], self.expected['lat'])
         self.assertEqual(coords['lng'], self.expected['lng'])
+    
+    
+    def test_extract_ads_from_page_olx(self):
+        params = "pe=1000&ret=1020&ret=1060&ret=1040&sd=3747&sd=3778&sd=3766&sd=3764&sd=3762"
+        url = f"https://www.olx.com.br/imoveis/aluguel/estado-pe/grande-recife/recife?{params}"
+        ads = extractAdsFromPages(url)
+        self.assertGreaterEqual(len(ads), 1, 'No ads found from the search')
+    
+    def test_search_olx(self):
+        ads = searchOLX()
+        print(ads)
+    
 
 class GeoservicesTests(unittest.TestCase):
     
