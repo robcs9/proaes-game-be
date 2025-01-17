@@ -86,6 +86,54 @@ def batchGeocode(ceps: list):
         print(e.response.text)
     # use bias param to improve precision?
 
+def batchGeocodeAddress(addresses: list[dict]):
+    geocodes = []
+    
+    if len(addresses) == 0:
+        print('Erro: Nenhum Endereço informado para requisição de Geocode')
+        return
+    
+    url = f'https://api.geoapify.com/v1/batch/geocode/search?apiKey={GEOAPIFY_API_KEY}&format=json'
+    headers = {'Content-Type': 'application/json; charset=utf-8'}
+    
+    # add bias if extra precision is needed
+    try:
+        job_rq = requests.post(url, headers=headers, json=addresses).json()
+        if job_rq.get('error'):
+            print(f'Error: {job_rq['message']}')
+            return
+        job_url = job_rq['url']
+        print(f'\nGeocoding Batch requested at {job_url}')
+        while True:
+            
+            job = requests.get(job_url)
+            # code 202 -> pending
+            if job.status_code == 200:
+                results = job.json()
+                print(f'\nBatch job done. Geocoded addresses: {len(results)}')
+                
+                for result in results:
+                    # r = result if result.get('place_id') else None
+                    if result.get('place_id'):
+                        geocodes.append({
+                            'address': result['query']['text'],
+                            'lat': result['lat'],
+                            'lng': result['lon']
+                        })
+                    else:
+                        print(f'\nFailed to geocode an adresss from the batch\nError: {result['result']['error']}')
+                        geocodes.append({
+                            'address': result['query']['text'],
+                            'lat': '',
+                            'lng': ''
+                        })
+                # generator one liner: [r for result in results if len(result['result']['results'] )]
+                return geocodes
+            print('\nBatch job ongoing...')
+            sleep(1)
+    except requests.exceptions.HTTPError as e:
+        print(e.response.text)
+    return geocodes
 
 # print(batchGeocode(['54330-075','54000-000','55000-000', '111-789']))
 # if geocoding with CEP fails, try address search

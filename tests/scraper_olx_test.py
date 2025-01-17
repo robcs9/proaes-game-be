@@ -2,7 +2,7 @@ import unittest, re, requests, dotenv
 # import geoservices as ctc
 import plot
 from repository import getAds, toGeojson, makeFeatures
-from geoservices import parseCoords, toGeocode, batchGeocode
+from geoservices import parseCoords, toGeocode, batchGeocodeAddress
 from scraper_olx import getAddressAdOLX
 from utils import normalizeCep
 
@@ -113,23 +113,26 @@ class GeoservicesTests(unittest.TestCase):
     def test_batch_geocode(self):
         addresses = [
             'Rua Sorocaba, Cordeiro, Recife, PE, 50721530',
-            'Rua Sorocaba, Cordeiro, Recife, PE, 50721530',
-            'Rua Sorocaba, Cordeiro, Recife, PE, 50721530',
+            'Rua Salema, Várzea, Recife, PE, 50960040',
+            'Rua General Polidoro, Várzea, Recife, PE, 50740050',
         ]
         expected = [
             {
-                'lat': 'lat',
-                'lng': 'lng',
+                'address': addresses[0],
+                'lat': -8.0518979,
+                'lng': -34.9361836,
             },
             {
-                'lat': 'lat',
-                'lng': 'lng',
+                'address': addresses[1],
+                'lat': -8.0382035,
+                'lng': -34.9773413,
             },
             {
-                'lat': 'lat',
-                'lng': 'lng',
+                'address': addresses[2],
+                'lat': -8.0391645,
+                'lng': -34.9461157,
             },
         ]
-        actual = batchGeocode(addresses)
-        msg = ''
-        self.assertListEqual(actual, expected, msg)
+        
+        actual = batchGeocodeAddress(addresses)
+        self.assertListEqual(actual, expected,)
