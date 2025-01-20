@@ -40,7 +40,7 @@ Aplicação com a finalidade de agregar anúncios de aluguel de moradias e organ
 - [~] Otimizar busca e geocoding de endereços dos anúncios da OLX. 
   - [x] Implementar função para scrape de endereços dos ads
   - [x] Refactor and replace: getCepOLX -> getAddressAdOLX, batchGeocode(ceps) -> batchGeocodeAddress(addrs)
-  - [~] Integrate changes to searchOLX (lines 73~140)
+  - [~] Integrate changes to searchOLX
   - [ ] Deprecate the following: ceps (scraper_olx - line 67), getCepOLX, normalizeCep, parseAddress, parseCoords, batchGeocode, cep_recorded
 - [ ] Refatorar e separar adequadatamente os testes em test_geocoding_request
 - [ ] Normalizar comprimento das coordenadas

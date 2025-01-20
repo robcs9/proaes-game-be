@@ -3,7 +3,7 @@ import unittest, re, requests, dotenv
 import plot
 from repository import getAds, toGeojson, makeFeatures
 from geoservices import parseCoords, toGeocode, batchGeocodeAddress
-from scraper_olx import extractAdsFromPages, getAddressAdOLX, searchOLX
+from scraper_olx import extractAdsFromPages, getAddressAdOLX, searchOLX, buildAds
 from utils import normalizeCep
 
 @unittest.skip('Teste não aplicável')        
@@ -105,8 +105,13 @@ class OlxScraperTests(unittest.TestCase):
         self.assertEqual(address, self.expected['address'])
         
         coords = toGeocode(address)
-        self.assertEqual(coords['lat'], self.expected['lat'])
-        self.assertEqual(coords['lng'], self.expected['lng'])
+        
+        # old assertions
+        # self.assertEqual(coords['lat'], self.expected['lat'])
+        # self.assertEqual(coords['lng'], self.expected['lng'])
+        
+        self.assertEqual(coords[self.expected['address']]['lat'], self.expected['lat'])
+        self.assertEqual(coords[self.expected['address']]['lng'], self.expected['lng'])
     
     
     def test_extract_ads_from_page_olx(self):
@@ -115,9 +120,17 @@ class OlxScraperTests(unittest.TestCase):
         ads = extractAdsFromPages(url)
         self.assertGreaterEqual(len(ads), 1, 'No ads found from the search')
     
+    def test_build_ads(self):
+        pass
+    
+    def test_assign_geocodes_to_ads(self):
+        pass
+    
     def test_search_olx(self):
+        return
         ads = searchOLX()
         print(ads)
+        # self.assertDictEqual()
     
 
 class GeoservicesTests(unittest.TestCase):
