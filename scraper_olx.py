@@ -34,10 +34,14 @@ def getAddressAdOLX(url: str):
         print(f"Improper url provided ({url})")
         return
     soup = makeSoup(url)
-    address_tag2 = soup.find('span', string=re.compile(', PE, 5'))
-    address_chunk1 = address_tag2.find_previous_sibling().getText(strip=True)
-    address_chunk2 = address_tag2.getText(strip=True)
-    address = f"{address_chunk1}, {address_chunk2}"
+    try:
+        address_tag2 = soup.find('span', string=re.compile(', PE, 5'))
+        address_chunk1 = address_tag2.find_previous_sibling().getText(strip=True)
+        address_chunk2 = address_tag2.getText(strip=True)
+        address = f"{address_chunk1}, {address_chunk2}"
+    except Exception as e:
+        print(f'Falha durante scraping de endereços. Error:\n{e}')
+        return
     return address
 
 def extractAdsFromPages(url: str) -> list[dict]:
@@ -75,7 +79,7 @@ def extractAdsFromPages(url: str) -> list[dict]:
     
     return unfiltereds
 
-def buildAds(unfiltered_ads: list[dict]) -> dict:
+def buildAds(unfiltered_ads: list[dict]) -> list[dict]:
     print('Processing raw ad data...')
     unfiltereds_count = len(unfiltered_ads)
     invalid_count = 0
@@ -85,7 +89,7 @@ def buildAds(unfiltered_ads: list[dict]) -> dict:
         if ad.get("subject") is None:
             # skip bad results scraped
             invalid_count += 1
-            print(f'\nInvalid data (unfiltered) #{i}. Found:\n{ad}')
+            print(f'\nInvalid data (unfiltered) #{i+1}. Found:\n{ad}')
             # print(f'Found:\n{ad}')
             continue
         
@@ -102,6 +106,7 @@ def buildAds(unfiltered_ads: list[dict]) -> dict:
         ads.append(ad_data)
         print(f"{i+1}/{unfiltereds_count} items have been processed")
     print(f'Invalid ads: {invalid_count}')
+    return ads
 
 def assignGeocodesToAds(geocodes: list[dict], ads: list[dict]):
     print('Assinging geocodes to ads now...')
