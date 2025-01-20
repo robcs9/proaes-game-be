@@ -127,7 +127,7 @@ def searchOLX():
     
     if geocodes is None:
         raise Exception('Exception: Nenhum resultado encontrado durante o Geocoding dos endereços')
-
+    
     print('Assinging geocodes to ads now...')
     notfound_geocoding_count = 0
     proper_ads = []

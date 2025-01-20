@@ -87,7 +87,7 @@ def batchGeocode(ceps: list):
     # use bias param to improve precision?
 
 def batchGeocodeAddress(addresses: list[dict]):
-    geocodes = []
+    geocodes = {}
     
     if len(addresses) == 0:
         print('Erro: Nenhum Endereço informado para requisição de Geocode')
@@ -104,33 +104,26 @@ def batchGeocodeAddress(addresses: list[dict]):
             return
         job_url = job_rq['url']
         print(f'\nGeocoding Batch requested at {job_url}')
-        while True:
-            
-            job = requests.get(job_url)
-            # code 202 -> pending
-            if job.status_code == 200:
-                results = job.json()
-                print(f'\nBatch job done. Geocoded addresses: {len(results)}')
-                
-                for result in results:
-                    # r = result if result.get('place_id') else None
-                    if result.get('place_id'):
-                        geocodes.append({
-                            'address': result['query']['text'],
-                            'lat': result['lat'],
-                            'lng': result['lon']
-                        })
-                    else:
-                        print(f'\nFailed to geocode an adresss from the batch\nError: {result['result']['error']}')
-                        geocodes.append({
-                            'address': result['query']['text'],
-                            'lat': '',
-                            'lng': ''
-                        })
-                # generator one liner: [r for result in results if len(result['result']['results'] )]
-                return geocodes
+        
+        while requests.get(job_url).status_code == 202: # pending
             print('\nBatch job ongoing...')
             sleep(1)
+
+        job = requests.get(job_url)
+        if job.status_code == 200:
+            results = job.json()
+            print(f'\nBatch job done. Geocoded addresses: {len(results)}')
+            
+            for result in results:
+                if not result.get('place_id'):
+                    print(f'\nFailed to geocode an adresss from the batch\nError: {result['result']['error']}')
+                    result['lat'] = ''
+                    result['lng'] = ''
+                
+                geocodes[result['query']['text']] = {
+                    'lat': result['lat'],
+                    'lng': result['lon']
+                }
     except requests.exceptions.HTTPError as e:
         print(e.response.text)
     return geocodes

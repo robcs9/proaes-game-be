@@ -106,13 +106,8 @@ class OlxScraperTests(unittest.TestCase):
         
         coords = toGeocode(address)
         
-        # old assertions
-        # self.assertEqual(coords['lat'], self.expected['lat'])
-        # self.assertEqual(coords['lng'], self.expected['lng'])
-        
-        self.assertEqual(coords[self.expected['address']]['lat'], self.expected['lat'])
-        self.assertEqual(coords[self.expected['address']]['lng'], self.expected['lng'])
-    
+        self.assertEqual(coords['lat'], self.expected['lat'])
+        self.assertEqual(coords['lng'], self.expected['lng'])
     
     def test_extract_ads_from_page_olx(self):
         params = "pe=1000&ret=1020&ret=1060&ret=1040&sd=3747&sd=3778&sd=3766&sd=3764&sd=3762"
@@ -141,23 +136,21 @@ class GeoservicesTests(unittest.TestCase):
             'Rua Salema, Várzea, Recife, PE, 50960040',
             'Rua General Polidoro, Várzea, Recife, PE, 50740050',
         ]
-        expected = [
-            {
-                'address': addresses[0],
-                'lat': -8.0518979,
+        expected = {
+            addresses[0]: {
+                'lat': -8.0518979 ,
                 'lng': -34.9361836,
             },
-            {
-                'address': addresses[1],
+            addresses[1]: {
                 'lat': -8.0382035,
                 'lng': -34.9773413,
             },
-            {
-                'address': addresses[2],
+            addresses[2]: {
                 'lat': -8.0391645,
                 'lng': -34.9461157,
             },
-        ]
-        
+        }
         actual = batchGeocodeAddress(addresses)
-        self.assertListEqual(actual, expected,)
+        self.assertDictEqual(actual, expected,)
+        # self.assertEqual(coords[self.expected['address']]['lat'], self.expected['lat'])
+        # self.assertEqual(coords[self.expected['address']]['lng'], self.expected['lng'])
