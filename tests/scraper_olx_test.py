@@ -1,10 +1,13 @@
 import unittest, re, requests, dotenv
 # import geoservices as ctc
+import tests.mockdata
 import plot, copy
 from repository import getAds, toGeojson, makeFeatures
 from geoservices import parseCoords, toGeocode, batchGeocodeAddress
 from scraper_olx import assignGeocodesToAds, extractAdsFromPages, getAddressAdOLX, searchOLX, buildAds
 from utils import normalizeCep
+from mockdata import mock_addresses, mock_ads, mock_geocoded_ads
+from mockdata import mock_geocodes, mock_unfiltered_ads
 
 @unittest.skip('Teste não aplicável')        
 class CepToCoordsTests(unittest.TestCase):
@@ -59,111 +62,6 @@ class PlottingTests(unittest.TestCase):
                 break
         self.assertTrue(found_active, 'Nenhum anúncio com status ativo verdadeiro encontrado')
 
-
-mock_unfiltered_ads = [
-    {
-        'subject': 'Cozy Beachfront Apartment',
-        'url': 'http://example.com/property1',
-        'title': 'Cozy Beachfront Apartment',
-        'price': 'R$ 750000',
-        'address': 'Rua Sorocaba, Cordeiro, Recife, PE, 50721530',
-        'category': 'Apartment',
-    },
-    {
-        'foo': 'bar'
-    },
-    {
-        'subject': 'Spacious Downtown Loft',
-        'url': 'http://example.com/property2',
-        'title': 'Spacious Downtown Loft',
-        'price': 'R$ 1200000',
-        'address': 'Rua Salema, Várzea, Recife, PE, 50960040',
-        'category': 'Loft',
-    },
-    {
-        'subject': 'Loft at Rua General Polidoro',
-        'url': 'http://example.com/property3',
-        'title': 'Loft at Rua General Polidoro',
-        'price': 'R$ 3200000',
-        'address': 'Rua General Polidoro, Várzea, Recife, PE, 50740050',
-        'category': 'Loft',
-    },
-    {
-        'fizz': 'buzz'
-    },
-]
-mock_addresses = [
-    'Rua Sorocaba, Cordeiro, Recife, PE, 50721530',
-    'Rua Salema, Várzea, Recife, PE, 50960040',
-    'Rua General Polidoro, Várzea, Recife, PE, 50740050',
-]
-mock_geocodes = {
-    mock_addresses[0]: {
-        'lat': -8.0518979 ,
-        'lng': -34.9361836,
-    },
-    mock_addresses[1]: {
-        'lat': -8.0382035,
-        'lng': -34.9773413,
-    },
-    mock_addresses[2]: {
-        'lat': -8.0391645,
-        'lng': -34.9461157,
-    },
-}
-
-mock_ads = [
-    {
-        'url': 'http://example.com/property1',
-        'title': 'Cozy Beachfront Apartment',
-        'price': 'R$ 750000',
-        'address': 'Rua Sorocaba, Cordeiro, Recife, PE, 50721530',
-        'property_type': 'Apartment',
-    },
-    {
-        'url': 'http://example.com/property2',
-        'title': 'Spacious Downtown Loft',
-        'price': 'R$ 1200000',
-        'address': 'Rua Salema, Várzea, Recife, PE, 50960040',
-        'property_type': 'Loft',
-    },
-    {
-        'url': 'http://example.com/property3',
-        'title': 'Loft at Rua General Polidoro',
-        'price': 'R$ 3200000',
-        'address': 'Rua General Polidoro, Várzea, Recife, PE, 50740050',
-        'property_type': 'Loft',
-    },
-]
-mock_geocoded_ads = [
-    {
-        'url': 'http://example.com/property1',
-        'title': 'Cozy Beachfront Apartment',
-        'price': 'R$ 750000',
-        'address': 'Rua Sorocaba, Cordeiro, Recife, PE, 50721530',
-        'property_type': 'Apartment',
-        'lat': -8.0518979 ,
-        'lng': -34.9361836,
-    },
-    {
-        'url': 'http://example.com/property2',
-        'title': 'Spacious Downtown Loft',
-        'price': 'R$ 1200000',
-        'address': 'Rua Salema, Várzea, Recife, PE, 50960040',
-        'property_type': 'Loft',
-        'lat': -8.0382035,
-        'lng': -34.9773413,
-    },
-    {
-        'url': 'http://example.com/property3',
-        'title': 'Loft at Rua General Polidoro',
-        'price': 'R$ 3200000',
-        'address': 'Rua General Polidoro, Várzea, Recife, PE, 50740050',
-        'property_type': 'Loft',
-        'lat': -8.0391645,
-        'lng': -34.9461157,
-    },
-]
 class OlxScraperTests(unittest.TestCase):
     config = dotenv.dotenv_values('.env')
     GEOAPIFY_API_KEY = config['GEOAPIFY_API_KEY']
@@ -204,9 +102,6 @@ class OlxScraperTests(unittest.TestCase):
         self.expected['lng'] = match['lon']
         self.expected['lat'] = match['lat']
         
-        # todo - Testar se os ads com CEP incompatível com a API da Geoapify retornam o mesmo resultado
-        # se a busca incluir o endereço completo
-        
         address = getAddressAdOLX(self.ad_url)
         self.assertEqual(address, self.expected['address'])
         
@@ -239,11 +134,6 @@ class OlxScraperTests(unittest.TestCase):
     
     def test_search_olx(self):
         pass
-        # return
-        # ads = searchOLX()
-        # print(ads)
-        # self.assertDictEqual()
-    
 
 class GeoservicesTests(unittest.TestCase):
     
@@ -252,5 +142,3 @@ class GeoservicesTests(unittest.TestCase):
         expected = copy.deepcopy(mock_geocodes)
         actual = batchGeocodeAddress(addresses)
         self.assertDictEqual(actual, expected,)
-        # self.assertEqual(coords[self.expected['address']]['lat'], self.expected['lat'])
-        # self.assertEqual(coords[self.expected['address']]['lng'], self.expected['lng'])

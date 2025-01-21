@@ -7,7 +7,7 @@ import json
 from plot import scatterOverlaps
 
 # todo - use Ad class for dicts
-from model import Ad
+from data.model import Ad
 
 ATTRS = ['id', 'title', 'price', 'address', 'url', 'property_type', 'modifiedAt','active', 'lat', 'lng',]
 

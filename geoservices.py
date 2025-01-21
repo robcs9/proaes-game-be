@@ -96,11 +96,11 @@ def batchGeocodeAddress(addresses: list[dict]):
     url = f'https://api.geoapify.com/v1/batch/geocode/search?apiKey={GEOAPIFY_API_KEY}&format=json'
     headers = {'Content-Type': 'application/json; charset=utf-8'}
     
-    # add bias if extra precision is needed
+    # add bias params if extra precision is needed
     try:
         job_rq = requests.post(url, headers=headers, json=addresses).json()
         if job_rq.get('error'):
-            print(f'Error: {job_rq['message']}')
+            print(f'Erro durante a resolução do job request: {job_rq['message']}')
             return
         job_url = job_rq['url']
         print(f'\nGeocoding Batch requested at {job_url}')
@@ -124,8 +124,9 @@ def batchGeocodeAddress(addresses: list[dict]):
                     'lat': result['lat'],
                     'lng': result['lon']
                 }
-    except requests.exceptions.HTTPError as e:
-        print(e.response.text)
+            print('Geocode assigments finished')
+    except Exception as e:
+        print(f'Falha durante o processo de batch requests. Erro:\n{e}')
     return geocodes
 
 # print(batchGeocode(['54330-075','54000-000','55000-000', '111-789']))
@@ -150,25 +151,3 @@ def toGeocode(addr: str):
     else:
         print('\nAddress text geocoding has failed. No results found\n')
     return geocode
-
-
-# Debugging
-# import json
-
-# ads_path = './data/debug_ads.json'
-# coords_path = './data/debug_coords.json'
-
-# with open(ads_path) as fd:
-#     ads = json.load(fd)['ads']
-# with open(coords_path) as fd:
-#     coords = json.load(fd)['coords']
-
-# for ad in ads:
-#     for coord in coords:
-#         print(f'\ncoord {coord}')
-#         print(f'\nad {ad}\n')
-#         if coord['cep'] == ad['cep']:
-#             ad['lat'] = coord['lat']
-#             ad['lng'] = coord['lng']
-#             ad.pop('cep')
-            

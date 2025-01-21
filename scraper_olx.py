@@ -1,5 +1,5 @@
 import json, math, re, geoservices
-from utils import makeSoup, parseAddress
+from utils import makeSoup
 # Constants
 # todo - Rename to URL
 url_olx = "https://www.olx.com.br/imoveis/aluguel/estado-pe/grande-recife/recife?pe=1000&ret=1020&ret=1060&ret=1040&sd=3747&sd=3778&sd=3766&sd=3764&sd=3762"
@@ -9,24 +9,6 @@ def findPagePropsOLX(soup):
     data_str = soup.find("script", {"id": "__NEXT_DATA__"}).get_text()
     props = json.loads(data_str)['props']['pageProps']
     return props
-
-# Bottleneck here
-# Rework: utilizar o endereço completo, CEP incluso, para melhorar a precisão do geocoding
-def getCepOLX(url: str):
-    if url is None or url == "" or url.find("olx.com.br") == -1:
-        print(f"Improper url provided to getCepOLX. No results found at the url ({url})")
-        return
-    soup = makeSoup(url)
-    script_tag = soup.find('script', string=re.compile(r'(?:dataLayer = )(\[(.*)\])'))
-    data_str = ""
-    if script_tag is not None:
-        data_str = script_tag.get_text(strip=True)
-    cep_str = re.search(r'"zipcode":"(\d{8})"', data_str)
-    if cep_str is None:
-        print(f"Nenhum CEP encontrado na URL: {url}")
-        return
-    cep = re.search(r'"zipcode":"(\d{8})"', data_str).group(1)
-    return cep
 
 def getAddressAdOLX(url: str):
     address = None
@@ -131,7 +113,20 @@ def searchOLX():
     geocodes = geoservices.batchGeocodeAddress(addresses)
     
     if geocodes is None:
-        raise Exception('Exception: Nenhum resultado encontrado durante o Geocoding dos endereços')
+        print('\n--------------------------------------')
+        print('| Geocoding Resulting Logs beginning |')
+        print('--------------------------------------\n')
+        
+        print('\n***')
+        print('Ads:')
+        print(ads)
+        print('***\n')
+        
+        print('\n--------------------------------')
+        print('| Geocoding Resulting Logs end |')
+        print('--------------------------------\n')
+        # raise Exception('Nenhum resultado encontrado durante o Geocoding dos endereços')
+        print('Nenhum resultado encontrado durante o Geocoding dos endereços')
     
     print('Assinging geocodes to ads now...')
     notfound_geocoding_count = 0
