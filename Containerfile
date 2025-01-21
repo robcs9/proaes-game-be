@@ -22,4 +22,4 @@ CMD [ "python3", "./main.py" ]
 # Requires multithreading through bash scripting to run both API and scraper OR running detached containers
 # CMD [ "fastapi", "dev", "./api/main.py" ]
 
-EXPOSE 8000
+# EXPOSE 8000
