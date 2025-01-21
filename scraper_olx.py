@@ -119,28 +119,30 @@ def searchOLX():
         
         print('\n***')
         print('Ads:')
-        print(ads)
         print('***\n')
+        print(ads)
         
         print('\n--------------------------------')
         print('| Geocoding Resulting Logs end |')
         print('--------------------------------\n')
         # raise Exception('Nenhum resultado encontrado durante o Geocoding dos endereços')
         print('Nenhum resultado encontrado durante o Geocoding dos endereços')
+        return
     
     print('Assinging geocodes to ads now...')
     notfound_geocoding_count = 0
     proper_ads = []
     for i, ad in enumerate(ads):
-        ad['lat'] = geocodes[ad['address']]['lat']
-        ad['lng'] = geocodes[ad['address']]['lng']
+        if geocodes is not None and geocodes[ad['address']] is not None:
+            ad['lat'] = geocodes[ad['address']]['lat']
+            ad['lng'] = geocodes[ad['address']]['lng']
 
-        if ad['lat'] == '' or ad['lng'] == '':
+        if ad['lat'] == '' or ad['lng'] == '' or ad['lat'] == None or ad['lng'] == None:
             notfound_geocoding_count += 1
         proper_ads.append(ad)
         print(f'{i}/{len(ads)} assigned')
     
-    print(f'Not found address geocodings: {notfound_geocoding_count}/{len(ads)}')
+    print(f'Address geocodings not found: {notfound_geocoding_count}/{len(ads)}')
     print(f'Total scraped ad links: {len(ads)}')
     print(f'Collected {len(proper_ads)} OLX ads')
     return proper_ads
