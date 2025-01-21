@@ -1,0 +1,75 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 1,
+        "title": "Cozy Beachfront Apartment",
+        "price": "R$ 750000",
+        "address": "123 Ocean Drive, Recife, PE",
+        "url": "http://example.com/property1",
+        "property_type": "Apartment",
+        "modifiedAt": "17/01/2025 08:17:46",
+        "active": true
+      },
+      "geometry": { "type": "Point", "coordinates": [-34.876964, -8.047562] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 2,
+        "title": "Spacious Downtown Loft",
+        "price": "R$ 1200000",
+        "address": "456 Central Blvd, Recife, PE",
+        "url": "http://example.com/property2",
+        "property_type": "Loft",
+        "modifiedAt": "17/01/2025 08:17:46",
+        "active": true
+      },
+      "geometry": { "type": "Point", "coordinates": [-34.872982, -8.051043] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 3,
+        "title": "Modern Suburban House",
+        "price": "R$ 950000",
+        "address": "789 Greenway Ave, Recife, PE",
+        "url": "http://example.com/property3",
+        "property_type": "House",
+        "modifiedAt": "17/01/2025 08:17:46",
+        "active": true
+      },
+      "geometry": { "type": "Point", "coordinates": [-34.88963, -8.035242] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 4,
+        "title": "Luxury Penthouse",
+        "price": "R$ 2200000",
+        "address": "101 Sky High Road, Recife, PE",
+        "url": "http://example.com/property4",
+        "property_type": "Penthouse",
+        "modifiedAt": "17/01/2025 08:17:46",
+        "active": true
+      },
+      "geometry": { "type": "Point", "coordinates": [-34.894921, -8.033684] }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 5,
+        "title": "Charming Country Cottage",
+        "price": "R$ 560000",
+        "address": "202 Tranquil Lane, Recife, PE",
+        "url": "http://example.com/property5",
+        "property_type": "Cottage",
+        "modifiedAt": "17/01/2025 08:17:46",
+        "active": true
+      },
+      "geometry": { "type": "Point", "coordinates": [-34.880914, -8.028374] }
+    }
+  ]
+}

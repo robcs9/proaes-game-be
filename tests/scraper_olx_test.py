@@ -1,10 +1,15 @@
 import unittest, re, requests, dotenv
 # import geoservices as ctc
-import plot
+import tests.mockdata
+import plot, copy
 from repository import getAds, toGeojson, makeFeatures
-from geoservices import parseCoords, toGeocode, batchGeocode
+from geoservices import parseCoords, toGeocode, batchGeocodeAddress
+from scraper_olx import assignGeocodesToAds, extractAdsFromPages, getAddressAdOLX, searchOLX, buildAds
+from utils import normalizeCep
+from mockdata import mock_addresses, mock_ads, mock_geocoded_ads
+from mockdata import mock_geocodes, mock_unfiltered_ads
 
-        
+@unittest.skip('Teste não aplicável')        
 class CepToCoordsTests(unittest.TestCase):
     
     def test_coordinates_retrieval(self):
@@ -15,7 +20,7 @@ class CepToCoordsTests(unittest.TestCase):
         # print(res)
         pass
     
-
+@unittest.skip('Teste não aplicável')
 class PlottingTests(unittest.TestCase):
     
     def test_saving_plot(self):
@@ -75,6 +80,7 @@ class OlxScraperTests(unittest.TestCase):
     # results = res_json['results']
     # match = results[0]
     
+    
     def test_geocoding_request(self):
         
         status_code = self.res.status_code
@@ -92,16 +98,47 @@ class OlxScraperTests(unittest.TestCase):
         
         match = results[0]
         # result_type == "street" (ausente se result_type for "suburb")
-        self.expected['address'] = f"""{match['street']}, {match['suburb']}, {match['district']}, {match['state_code']}, {match['postcode']}"""
+        self.expected['address'] = f"""{match['street']}, {match['suburb']}, {match['district']}, {match['state_code']}, {normalizeCep(match['postcode'])}"""
         self.expected['lng'] = match['lon']
         self.expected['lat'] = match['lat']
         
-        # todo - Testar se os ads com CEP incompatível com a API da Geoapify retornam o mesmo resultado
-        # se a busca incluir o endereço completo
-        
-        address = getAddressAdsOLX(ad_url)
+        address = getAddressAdOLX(self.ad_url)
         self.assertEqual(address, self.expected['address'])
         
         coords = toGeocode(address)
+        
         self.assertEqual(coords['lat'], self.expected['lat'])
         self.assertEqual(coords['lng'], self.expected['lng'])
+    
+    def test_extract_ads_from_page_olx(self):
+        params = "pe=1000&ret=1020&ret=1060&ret=1040&sd=3747&sd=3778&sd=3766&sd=3764&sd=3762"
+        url = f"https://www.olx.com.br/imoveis/aluguel/estado-pe/grande-recife/recife?{params}"
+        ads = extractAdsFromPages(url)
+        self.assertGreaterEqual(len(ads), 1, 'No ads found from the search')
+    
+
+    def test_build_ads(self):
+        unfiltered_ads = copy.deepcopy(mock_unfiltered_ads)
+        expected = copy.deepcopy(mock_ads)
+        for ad in expected:    
+            ad['address'] = None
+        actual = buildAds(unfiltered_ads)
+        self.assertListEqual(actual, expected)
+    
+    def test_assign_geocodes_to_ads(self):
+        ads = copy.deepcopy(mock_ads)
+        geocodes = copy.deepcopy(mock_geocodes)
+        expected = copy.deepcopy(mock_geocoded_ads)
+        actual = assignGeocodesToAds(geocodes, ads)
+        self.assertListEqual(actual, expected)
+    
+    def test_search_olx(self):
+        pass
+
+class GeoservicesTests(unittest.TestCase):
+    
+    def test_batch_geocode(self):
+        addresses = copy.deepcopy(mock_addresses)
+        expected = copy.deepcopy(mock_geocodes)
+        actual = batchGeocodeAddress(addresses)
+        self.assertDictEqual(actual, expected,)

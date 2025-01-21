@@ -86,6 +86,48 @@ def batchGeocode(ceps: list):
         print(e.response.text)
     # use bias param to improve precision?
 
+def batchGeocodeAddress(addresses: list[dict]):
+    geocodes = {}
+    
+    if len(addresses) == 0:
+        print('Erro: Nenhum Endereço informado para requisição de Geocode')
+        return
+    
+    url = f'https://api.geoapify.com/v1/batch/geocode/search?apiKey={GEOAPIFY_API_KEY}&format=json'
+    headers = {'Content-Type': 'application/json; charset=utf-8'}
+    
+    # add bias params if extra precision is needed
+    try:
+        job_rq = requests.post(url, headers=headers, json=addresses).json()
+        if job_rq.get('error'):
+            print(f'Erro durante a resolução do job request: {job_rq['message']}')
+            return
+        job_url = job_rq['url']
+        print(f'\nGeocoding Batch requested at {job_url}')
+        
+        while requests.get(job_url).status_code == 202: # pending
+            print('\nBatch job ongoing...')
+            sleep(1)
+
+        job = requests.get(job_url)
+        if job.status_code == 200:
+            results = job.json()
+            print(f'\nBatch job done. Geocoded addresses: {len(results)}')
+            
+            for result in results:
+                if not result.get('place_id'):
+                    print(f'\nFailed to geocode an adresss from the batch\nError: {result['result']['error']}')
+                    result['lat'] = ''
+                    result['lng'] = ''
+                
+                geocodes[result['query']['text']] = {
+                    'lat': result['lat'],
+                    'lng': result['lon']
+                }
+            print('Geocode assigments finished')
+    except Exception as e:
+        print(f'Falha durante o processo de batch requests. Erro:\n{e}')
+    return geocodes
 
 # print(batchGeocode(['54330-075','54000-000','55000-000', '111-789']))
 # if geocoding with CEP fails, try address search
@@ -109,25 +151,3 @@ def toGeocode(addr: str):
     else:
         print('\nAddress text geocoding has failed. No results found\n')
     return geocode
-
-
-# Debugging
-# import json
-
-# ads_path = './data/debug_ads.json'
-# coords_path = './data/debug_coords.json'
-
-# with open(ads_path) as fd:
-#     ads = json.load(fd)['ads']
-# with open(coords_path) as fd:
-#     coords = json.load(fd)['coords']
-
-# for ad in ads:
-#     for coord in coords:
-#         print(f'\ncoord {coord}')
-#         print(f'\nad {ad}\n')
-#         if coord['cep'] == ad['cep']:
-#             ad['lat'] = coord['lat']
-#             ad['lng'] = coord['lng']
-#             ad.pop('cep')
-            

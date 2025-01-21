@@ -78,6 +78,6 @@ class RepositoryTests(unittest.TestCase):
     # implement assertion for the resulting file and its contents
     
   def test_saveAll(self):
-    saveAll(self.ads, dir='./tests/data')
+    saveAll(self.ads, dir='./tests/mockdata')
     # self.assertLogs()
     # implement assertion for the resulting file and its contents

@@ -142,3 +142,8 @@ def validateSavedData():
             repo.delete(idx)
         # else: make ad active again?
         print(f'\nValidated ads: {i+1}/{count}')
+
+def normalizeCep(cep: str):
+    if cep.find('-') > -1:
+        cep = ''.join(cep.split('-'))
+    return cep

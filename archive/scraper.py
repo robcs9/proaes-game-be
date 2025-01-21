@@ -10,7 +10,7 @@ import asyncio
 import re
 import geoservices
 import utils
-from model import Ad
+from data.model import Ad
 import repository as repo
 import plot
 # mostly constants

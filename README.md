@@ -37,16 +37,18 @@ Aplicação com a finalidade de agregar anúncios de aluguel de moradias e organ
 - [x] Remover atualização mandatória dos ads e manter apenas dados mais recentes
 - [x] Encontrar alternativa para api da ViaCEP para substituir na função de parseAddress
 - [x] Investigar geocoding retornando resultados de outros estados do país (baixa precisão)
-- [~] Otimizar busca e geocoding de endereços dos anúncios da OLX. 
-  - [~] Implementar função para fazer o scrape de endereços dos ads
-  - [ ] Deprecate the following: ceps (line 67), getCepOLX, normalizeCep, parseAddress, parseCoords, batchGeocode, cep_recorded
-  - [ ] Rewrite: getCepOLX -> getAddressOLX, batchGeocode(ceps) -> batchGeocode(addrs)
-  - [ ] Integrate changes to searchOLX (lines 73~140)
+- [x] Otimizar busca e geocoding de endereços dos anúncios da OLX. 
+  - [x] Implementar função para scrape de endereços dos ads
+  - [x] Refactor and replace: getCepOLX -> getAddressAdOLX, batchGeocode(ceps) -> batchGeocodeAddress(addrs)
+  - [x] Integrate changes to searchOLX
+  - [x] Cleanup deprecated functions: ceps (scraper_olx - line 67), getCepOLX, normalizeCep, parseAddress, parseCoords, batchGeocode, cep_recorded
+- [x] Otimização no tempo de execução das atribuições dos geocodes aos ads
+- [~] Deployment
+  - [ ] Cron jobs/Background worker
 - [ ] Normalizar comprimento das coordenadas
-- [ ] Cron jobs/Background worker
-- [ ] Deployment
-- [ ] Otimização no tempo de execução das atribuições dos geocodes aos ads
 - [ ] Implementar assincronicidade das funções do scraper
+- [ ] Refatorar e separar adequadatamente os testes em test_geocoding_request
+- [ ] Melhorar distribuição de ícones sobrepostos no mapa
 - [ ] ~~Atualizar searchWQ com repositório dos dados~~
 - [ ] ~~Implementar visualização dos relatórios com insights~~
 - [ ] ~~Implementar clustering dos marcadores~~
