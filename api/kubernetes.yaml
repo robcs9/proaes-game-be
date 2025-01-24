@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gmme-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gmme-api
+  template:
+    metadata:
+      labels:
+        app: gmme-api
+    spec:
+      containers:
+      - name: gmme-api
+        image: docker.io/robcs9/gmme-api
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8123
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: gmme-api
+spec:
+  selector:
+    app: gmme-api
+  ports:
+  - port: 8123
+    targetPort: 8123
+  type: LoadBalancer
+

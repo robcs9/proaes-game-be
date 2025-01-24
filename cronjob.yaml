@@ -1,0 +1,14 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: gmme
+spec:
+  schedule: "0 * * * *"  # Runs at the top of every hour
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: gmme
+            image: docker.io/robcs9/gmme
+          restartPolicy: OnFailure
