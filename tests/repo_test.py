@@ -80,7 +80,7 @@ class RepositoryTests(unittest.TestCase):
     
   def test_saveAll(self):
     dir = './tests/test-saved-data'
-    if not pathlib.Path(dir).exists():
+    if not os.path.exists(dir):
       print('O diretório test_saved_data não existe. Criando agora...')
       os.mkdir(dir)
     saveAll(self.ads, dir=dir)

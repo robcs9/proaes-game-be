@@ -1,25 +1,20 @@
-FROM python
+FROM python:3.9
 
-WORKDIR /usr/app
+WORKDIR /code
 
+# COPY ./requirements.txt /code/requirements.txt
 COPY requirements.txt requirements.txt
 
-# RUN apt update
-RUN pip3 install --no-cache-dir -r requirements.txt
-# RUN sudo apt install python3-pip
+RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
-# pipx for virtualenv with WSL!
-# RUN sudo apt install python3 python3-pip pipx
-# pipx install pandas --include-deps
-
+# COPY ./app /code/app
+# COPY . /code/app
 COPY . .
 
+# CMD ["fastapi", "run", "app/main.py", "--port", "8123"]
+CMD ["fastapi", "run", "main.py", "--port", "8123"]
 
-# CMD [ "fastapi", "dev", "./api/main.py" ]
-CMD [ "python3", "./main.py" ]
+EXPOSE 8123
 
-# RUN python3 ./main.py
-# Requires multithreading through bash scripting to run both API and scraper OR running detached containers
-# CMD [ "fastapi", "dev", "./api/main.py" ]
-
-# EXPOSE 8000
+# If running behind a proxy like Nginx or Traefik add --proxy-headers e.g.:
+# CMD ["fastapi", "run", "app/main.py", "--port", "80", "--proxy-headers"]

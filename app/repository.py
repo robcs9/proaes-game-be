@@ -1,14 +1,11 @@
 # todo - sqlite implementation
 import pandas as pd
-import os
+import os, json
 import os.path as path
-import utils
-import json
 from plot import scatterOverlaps
+import utils as utils
 
-# todo - use Ad class for dicts
-from data.model import Ad
-
+DATA_DIR = './app/data'
 ATTRS = ['id', 'title', 'price', 'address', 'url', 'property_type', 'modifiedAt','active', 'lat', 'lng',]
 
 # Initializes empty DataFrame properly and saves it to CSV
@@ -16,7 +13,9 @@ def initDF():
   # attrs = Ad.__dict__['__static_attributes__']
   df = pd.DataFrame(columns=ATTRS)
   df.set_index('id', inplace=True)
-  df.to_csv('./data/data.csv')
+  if not path.exists(DATA_DIR):
+    os.mkdir(DATA_DIR)
+  df.to_csv(f'{DATA_DIR}/data.csv')
   # pd.concat([df, new_df], ignore_index=True)
   print('\nNew empty DataFrame for ads initialized successfully')
   return df
@@ -26,7 +25,7 @@ def getAds(active_only=False):
   file_name = 'data.csv'
   
   try:
-    ads_df = pd.read_csv(f'./data/{file_name}', index_col=0)
+    ads_df = pd.read_csv(f'{DATA_DIR}/{file_name}', index_col=0)
     print('\nAds retrieved successfully')
   # except FileNotFoundError as e:
   except Exception as e:
@@ -51,7 +50,7 @@ def save(ad: dict):
   ads_df.loc[idx, 'active'] = True
   
   # ads_df.to_json('./data/data.json',force_ascii=False)
-  ads_df.to_csv('./data/data.csv',encoding='utf-8')
+  ads_df.to_csv(f'{DATA_DIR}/data.csv',encoding='utf-8')
   print('\nNew ad saved!')
   last_ad = ads_df.tail(1)
   print(last_ad)
@@ -73,7 +72,7 @@ def saveAdDF(ads_df: pd.DataFrame, ad: dict):
   return ads_df
 
 # Saves into new file or appends to current file
-def saveAll(ads: list[dict], dir='./data'):
+def saveAll(ads: list[dict], dir=DATA_DIR):
   ads_df = initDF()
   # Remove previously saved data
   # print('Removendo dados salvos previamente')
@@ -141,7 +140,7 @@ def update(updated_ad: dict, idx: int):
   if did_update:
     # ads_df.to_json('./data/data.json',force_ascii=False)
     # ads_df.set_index('id', inplace=True)
-    ads_df.to_csv('./data/data.csv')
+    ads_df.to_csv(f'{DATA_DIR}/data.csv')
     # print(ads_df)
   else:
     print('\nThere were no updates to be performed.')
@@ -158,7 +157,7 @@ def delete(idx: int):
     # idx = found.index[0]
     ads_df.loc[idx, 'active'] = False
     ads_df.loc[idx, 'modifiedAt'] = utils.dateTimeNow()
-    ads_df.to_csv('./data/data.csv')
+    ads_df.to_csv(f'{DATA_DIR}/data.csv')
     print(f'\nAd with id {idx} has been (soft) deleted successfully')
     return
   print('\nAd removal has failed')
@@ -238,7 +237,7 @@ def makeFeatures(df: pd.DataFrame):
   # geo_features[0]['properties']['active'] = True
   return geo_features
 
-def toGeojson(df:pd.DataFrame=None, dir='./data'):
+def toGeojson(df:pd.DataFrame=None, dir=DATA_DIR):
   # import numpy as np
   # df['active'] = df['active'].astype('bool')
   # print(type(df.loc[1,"active"]))

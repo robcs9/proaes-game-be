@@ -1,22 +1,50 @@
-import repository as repo
+from enum import Enum
+from fastapi import FastAPI
+# from fastapi.staticfiles import StaticFiles
+import json
+import uvicorn
+import app
 import time
-from scraper_olx import searchOLX
-from utils import validateSavedData
 
-def main():
-    # validateSavedData()
-    curr_time = time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime())
-    begin_timestamp = curr_time
-    print(f"\nScraping now... ({curr_time})\n")
-    
-    repo.saveAll(searchOLX())
-    
-    finish_timestamp = time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime())
-    print(f"\nScraping began at {begin_timestamp} and finished at ({finish_timestamp})\n")
+API_V1 = "/api/v1"
+app = FastAPI()
 
-# [O.K] - for tests only
-# with open('./data/olx_ads_testbase.json') as fd:
-#     olx_ads = json.load(fd)['olx_ads']
+async def scrape():
+  print('API calling scraper now')
+  app()
 
-if __name__ == "__main__":
-    main()
+# scrape()
+
+# app.mount("/static", StaticFiles(directory="static", name="static"))
+@app.get(API_V1)
+async def root():  
+  return {"message": "Hello!"}
+
+# @app.get("/files/{file_path:path}")
+# async def read_file(file_path: str):
+    # return {"file_path": file_path}
+
+@app.get(f"{API_V1}/geojson")
+async def geojson():
+  print("Opening data.geojson")
+  
+  # check for the correct path
+  # print(Path.cwd())
+  # print(Path('./app/data/data.geojson').resolve(strict=True))
+  
+  try:
+    with open("./app/data/data.geojson", encoding="utf-8") as file:
+      print("GeoJSON found")
+      content = file.read()
+      geojson = json.loads(content)
+      return {"data": geojson}
+  except Exception as e:
+    print(f"Error.\n{e}")
+    return { "error": "Falha ao recuperar o arquivo GeoJSON."}
+
+# listening on custom PORT
+# if __name__ == "__main__":
+  # uvicorn.run("main:app", host="0.0.0.0", port=3000)
+
+# run on custom port. default host: 127.0.0.1, default port: 8000
+# $ uvicorn main:app --host 127.0.0.1 --port 3000

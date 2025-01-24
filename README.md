@@ -43,6 +43,7 @@ Aplicação com a finalidade de agregar anúncios de aluguel de moradias e organ
   - [x] Integrate changes to searchOLX
   - [x] Cleanup deprecated functions: ceps (scraper_olx - line 67), getCepOLX, normalizeCep, parseAddress, parseCoords, batchGeocode, cep_recorded
 - [x] Otimização no tempo de execução das atribuições dos geocodes aos ads
+- [~] Resolver bug nos imports feitos pelos arquivos de teste
 - [~] Deployment
   - [ ] Cron jobs/Background worker
 - [ ] Normalizar comprimento das coordenadas

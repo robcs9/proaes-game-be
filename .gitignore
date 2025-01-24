@@ -2,8 +2,8 @@
 archived/
 
 # Data
-data/
-api/data/
+data/*
+app/data/*
 tests/test-saved-data/*
 
 # Byte-compiled / optimized / DLL files

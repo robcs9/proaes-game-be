@@ -1,11 +1,10 @@
-import unittest, re, requests, dotenv
+import unittest, re, requests, dotenv, copy
 # import geoservices as ctc
-import tests.mockdata
-import plot, copy
-from repository import getAds, toGeojson, makeFeatures
-from geoservices import parseCoords, toGeocode, batchGeocodeAddress
-from scraper_olx import assignGeocodesToAds, extractAdsFromPages, getAddressAdOLX, searchOLX, buildAds
-from utils import normalizeCep
+import app.plot as plot
+from app.repository import getAds, toGeojson, makeFeatures
+from app.geoservices import parseCoords, toGeocode, batchGeocodeAddress
+from app.scraper_olx import assignGeocodesToAds, extractAdsFromPages, getAddressAdOLX, searchOLX, buildAds
+from app.utils import normalizeCep
 from mockdata import mock_addresses, mock_ads, mock_geocoded_ads
 from mockdata import mock_geocodes, mock_unfiltered_ads
 
