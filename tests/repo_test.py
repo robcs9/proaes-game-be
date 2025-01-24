@@ -1,4 +1,5 @@
-import unittest
+import pathlib
+import unittest, os
 from repository import saveAll, saveAdDF, initDF
 
 class RepositoryTests(unittest.TestCase):
@@ -78,6 +79,10 @@ class RepositoryTests(unittest.TestCase):
     # implement assertion for the resulting file and its contents
     
   def test_saveAll(self):
-    saveAll(self.ads, dir='./tests/mockdata')
+    dir = './tests/test-saved-data'
+    if not pathlib.Path(dir).exists():
+      print('O diretório test_saved_data não existe. Criando agora...')
+      os.mkdir(dir)
+    saveAll(self.ads, dir=dir)
     # self.assertLogs()
     # implement assertion for the resulting file and its contents

@@ -1,6 +1,7 @@
 # Data
 data/
 api/data/
+tests/test-saved-data/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
