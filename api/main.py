@@ -3,13 +3,12 @@ from fastapi import FastAPI
 # from fastapi.staticfiles import StaticFiles
 import json
 import uvicorn
-from pathlib import Path
 
+API_V1 = "/api/v1"
 app = FastAPI()
 
 # app.mount("/static", StaticFiles(directory="static", name="static"))
-
-@app.get("/api")
+@app.get(API_V1)
 async def root():  
   return {"message": "Hello!"}
 
@@ -17,7 +16,7 @@ async def root():
 # async def read_file(file_path: str):
     # return {"file_path": file_path}
 
-@app.get("/api/geojson")
+@app.get(f"{API_V1}/geojson")
 async def geojson():
   print("Opening data.geojson")
   
