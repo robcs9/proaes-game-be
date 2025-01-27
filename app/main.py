@@ -1,7 +1,11 @@
+# import sys
+# sys.path.append('..')
+
 import repository as repo
 import time
 from scraper_olx import searchOLX
 from utils import validateSavedData
+
 
 def main():
     # validateSavedData()

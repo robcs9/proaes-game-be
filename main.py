@@ -3,22 +3,24 @@ from fastapi import FastAPI
 # from fastapi.staticfiles import StaticFiles
 import json
 import uvicorn
-import app
 import time
+# import app.main as scraper
 
 API_V1 = "/api/v1"
 app = FastAPI()
-
-async def scrape():
-  print('API calling scraper now')
-  app()
-
-# scrape()
 
 # app.mount("/static", StaticFiles(directory="static", name="static"))
 @app.get(API_V1)
 async def root():  
   return {"message": "Hello!"}
+
+# import app.main as scraper
+@app.get(f'{API_V1}/scrape')
+async def scrape():
+  print('API calling scraper now')
+  # scraper()
+  return {'status code': 200}
+
 
 # @app.get("/files/{file_path:path}")
 # async def read_file(file_path: str):
