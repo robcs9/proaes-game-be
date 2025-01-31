@@ -14,12 +14,4 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-
-# CMD [ "fastapi", "dev", "./api/main.py" ]
-CMD [ "python3", "./main.py" ]
-
-# RUN python3 ./main.py
-# Requires multithreading through bash scripting to run both API and scraper OR running detached containers
-# CMD [ "fastapi", "dev", "./api/main.py" ]
-
-# EXPOSE 8000
+CMD [ "python3", "./main.py", ]
