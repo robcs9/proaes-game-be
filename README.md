@@ -46,6 +46,7 @@ Aplicação com a finalidade de agregar anúncios de aluguel de moradias e organ
 - [x] Resolver bug nos imports feitos pelos arquivos de teste
 - [~] Implementar fastapi cronjob para API ou endpoint de execução do scraper (request scrape -> ... <- 202 pending ... request result -> ... <- 200 ok)
 - [~] Deployment
+  - [~] Bug: falha ao tentar encontra os dados do .env durante o processo de build do compose
   - [ ] Cron jobs/Background worker
 - [ ] Normalizar comprimento das coordenadas
 - [ ] Implementar assincronicidade das funções do scraper
