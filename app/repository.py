@@ -73,6 +73,9 @@ def saveAdDF(ads_df: pd.DataFrame, ad: dict):
 
 # Saves into new file or appends to current file
 def saveAll(ads: list[dict], dir=DATA_DIR):
+  if ads is None:
+    print(f'Error. No ads were provided. Ads:\n{ads}')
+    return
   ads_df = initDF()
   # Remove previously saved data
   # print('Removendo dados salvos previamente')
