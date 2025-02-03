@@ -52,6 +52,8 @@ Aplicação com a finalidade de agregar anúncios de aluguel de moradias e organ
 - [ ] Implementar assincronicidade das funções do scraper
 - [ ] Refatorar e separar adequadatamente os testes em test_geocoding_request
 - [ ] Melhorar distribuição de ícones sobrepostos no mapa
+- [ ] Implementar otimização do scraper com SoupStrainer e testes
+- [ ] Implementar otimização de scraper utilizando lxml diretamente
 - [ ] ~~Atualizar searchWQ com repositório dos dados~~
 - [ ] ~~Implementar visualização dos relatórios com insights~~
 - [ ] ~~Implementar clustering dos marcadores~~
