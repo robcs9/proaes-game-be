@@ -12,6 +12,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from mockdata import mock_addresses, mock_ads, mock_geocoded_ads
 from mockdata import mock_geocodes, mock_unfiltered_ads
 
+# Outdated
 @unittest.skip('Teste não aplicável')        
 class CepToCoordsTests(unittest.TestCase):
     
@@ -22,7 +23,8 @@ class CepToCoordsTests(unittest.TestCase):
         # res = ctc.batchGeocode(['54330-075','54000-000','55000-000'])
         # print(res)
         pass
-    
+
+# Somewhat outdated    
 @unittest.skip('Teste não aplicável')
 class PlottingTests(unittest.TestCase):
     
