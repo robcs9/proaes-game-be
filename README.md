@@ -58,7 +58,7 @@ Aplicação com a finalidade de agregar anúncios de aluguel de moradias e organ
 - [ ] ~~Implementar visualização dos relatórios com insights~~
 - [ ] ~~Implementar clustering dos marcadores~~
 
-## Misc & Dev notes
+## Misc
 
 - lat e lng já estão presentes nos dados da WebQuarto
 - OLX utiliza o CEP para exibição da localização do imóvel no mapa do anúncio

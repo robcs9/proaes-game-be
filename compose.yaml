@@ -26,6 +26,6 @@ volumes:
 secrets:
   # env_secrets:
   .env:
-    file: .env
+    file: ./app/.env
   # GEOAPIFY_API_KEY:
   #   environment: GEOAPIFY_API_KEY
