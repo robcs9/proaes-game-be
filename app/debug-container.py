@@ -2,9 +2,10 @@
 
 import curl_cffi.requests as curlrq
 from bs4 import BeautifulSoup
-import re
+import re, dotenv
 
-url = 'https://pe.olx.com.br/grande-recife/imoveis/alugo-casa-estilo-kitnet-1355828350'
+config = dotenv.dotenv_values('.env')
+url = config['LIVE_AD_URL']
 content = curlrq.get(url, impersonate="chrome")
 soup = BeautifulSoup(content.text, "lxml")
 # from bs4.diagnose import diagnose
