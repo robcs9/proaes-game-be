@@ -1,4 +1,4 @@
-import unittest, re, requests, dotenv, copy
+import unittest, re, requests, dotenv, copy, sys, os
 # import geoservices as ctc
 import app.plot as plot
 from app.repository import getAds, toGeojson, makeFeatures
@@ -6,11 +6,11 @@ from app.geoservices import parseCoords, toGeocode, batchGeocodeAddress
 from app.scraper_olx import assignGeocodesToAds, extractAdsFromPages, getAddressAdOLX, searchOLX, buildAds
 from app.utils import normalizeCep
 
-import sys
-import os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from mockdata import mock_addresses, mock_ads, mock_geocoded_ads
 from mockdata import mock_geocodes, mock_unfiltered_ads
+
+LIVE_TEST = True
 
 # Outdated
 @unittest.skip('Teste não aplicável')        
@@ -140,6 +140,14 @@ class OlxScraperTests(unittest.TestCase):
     
     def test_search_olx(self):
         pass
+    
+    @unittest.skipIf(LIVE_TEST is False, 'Only testable with live ads')
+    def test_get_address_ad_olx(self):
+        env = dotenv.dotenv_values('.env')
+        expected_address = env['LIVE_AD_ADDRESS']
+        url = env['LIVE_AD_URL']
+        address = getAddressAdOLX(url)
+        self.assertTrue(address == expected_address)
 
 class GeoservicesTests(unittest.TestCase):
     
