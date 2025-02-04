@@ -19,7 +19,7 @@ def getAddressAdOLX(url: str):
     soup = makeSoup(url)
     try:
         address_tag2 = soup.find('span', string=re.compile(', PE, 5'))
-        address_chunk1 = address_tag2.find_previous_sibling().getText(strip=True)
+        address_chunk1 = address_tag2.previous_sibling.getText(strip=True)
         address_chunk2 = address_tag2.getText(strip=True)
         address = f"{address_chunk1}, {address_chunk2}"
     except Exception as e:
