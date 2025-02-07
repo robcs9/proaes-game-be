@@ -44,9 +44,10 @@ Aplicação com a finalidade de agregar anúncios de aluguel de moradias e organ
   - [x] Cleanup deprecated functions: ceps (scraper_olx - line 67), getCepOLX, normalizeCep, parseAddress, parseCoords, batchGeocode, cep_recorded
 - [x] Otimização no tempo de execução das atribuições dos geocodes aos ads
 - [~] Implementar fastapi cronjob para API ou endpoint de execução do scraper (request scrape -> ... <- 202 pending ... request result -> ... <- 200 ok)
-- [~] Resolver bug nos imports feitos pelos arquivos de teste
+- [x] Resolver bug nos imports feitos pelos arquivos de teste - path issues
 - [~] Deployment
   - [x] Bug: falha ao tentar encontra os dados do .env durante o processo de build do compose
+  - [~] Confirmar compartilhamento de geojson do scraper com a api
   - [ ] Cron jobs/Background worker
 - [ ] Normalizar comprimento das coordenadas
 - [ ] Implementar assincronicidade das funções do scraper
