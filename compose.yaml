@@ -6,15 +6,17 @@ services:
     ports:
       - "8123:8123"
     volumes:
-      - shared_data:/app/data
+      - shared_data:/code/shared
+    depends_on:
+      scraper:
+        condition: service_started
 
   scraper:
     build: ./app
     volumes:
-      - shared_data:/app/data
+      - shared_data:/code/shared
     secrets:
-      - .env
-      # - env_secrets
+      - env_secrets
     # env_file:
     #   - .env
     # environment:
@@ -24,8 +26,7 @@ volumes:
   shared_data:
 
 secrets:
-  # env_secrets:
-  .env:
+  env_secrets:
     file: ./app/.env
   # GEOAPIFY_API_KEY:
   #   environment: GEOAPIFY_API_KEY

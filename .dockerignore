@@ -1,1 +1,2 @@
-# exclude data, secrets, .env files
+# exclude data, secrets, .env files, etc.
+app/
