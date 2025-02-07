@@ -35,7 +35,8 @@ async def geojson():
   # print(Path('./app/data/data.geojson').resolve(strict=True))
   
   try:
-    with open("./app/data/data.geojson", encoding="utf-8") as file:
+    # with open("./data/data.geojson", encoding="utf-8") as file:
+    with open("./shared/data.geojson", encoding="utf-8") as file:
       print("GeoJSON found")
       content = file.read()
       geojson = json.loads(content)

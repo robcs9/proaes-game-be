@@ -47,7 +47,7 @@ Aplicação com a finalidade de agregar anúncios de aluguel de moradias e organ
 - [x] Resolver bug nos imports feitos pelos arquivos de teste - path issues
 - [~] Deployment
   - [x] Bug: falha ao tentar encontra os dados do .env durante o processo de build do compose
-  - [~] Confirmar compartilhamento de geojson do scraper com a api
+  - [~] Confirmar compartilhamento de geojson do scraper com a api através do volume compartilhado do compose
   - [ ] Cron jobs/Background worker
 - [ ] Normalizar comprimento das coordenadas
 - [ ] Implementar assincronicidade das funções do scraper
