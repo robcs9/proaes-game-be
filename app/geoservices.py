@@ -9,7 +9,7 @@ import json
 
 # Loads config without altering the environment
 from dotenv import dotenv_values
-config = dotenv_values('.env')
+config = dotenv_values('./app/.env')
 GEOAPIFY_API_KEY = config['GEOAPIFY_API_KEY']
 
 def normalizeCep(cep: str):

@@ -10,7 +10,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from mockdata import mock_addresses, mock_ads, mock_geocoded_ads
 from mockdata import mock_geocodes, mock_unfiltered_ads
 
-LIVE_TEST = True
+LIVE_TEST = False
 
 # Outdated
 @unittest.skip('Teste não aplicável')        
@@ -68,7 +68,7 @@ class PlottingTests(unittest.TestCase):
         self.assertTrue(found_active, 'Nenhum anúncio com status ativo verdadeiro encontrado')
 
 class OlxScraperTests(unittest.TestCase):
-    config = dotenv.dotenv_values('.env')
+    config = dotenv.dotenv_values('./app/.env')
     GEOAPIFY_API_KEY = config['GEOAPIFY_API_KEY']
     
     ad_url = 'https://pe.olx.com.br/grande-recife/imoveis/casa-a-venda-na-r-sorocaba-9-cordeiro-recife-1369887103'
