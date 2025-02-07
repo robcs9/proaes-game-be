@@ -5,7 +5,7 @@ import os.path as path
 from plot import scatterOverlaps
 import utils as utils
 
-DATA_DIR = './app/data'
+DATA_DIR = './data'
 ATTRS = ['id', 'title', 'price', 'address', 'url', 'property_type', 'modifiedAt','active', 'lat', 'lng',]
 
 # Initializes empty DataFrame properly and saves it to CSV
