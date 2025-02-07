@@ -10,17 +10,22 @@ services:
     depends_on:
       scraper:
         condition: service_started
+    # command: cat ./shared/bar.txt
+    # command: ls ./shared -a
 
   scraper:
     build: ./app
     volumes:
-      - shared_data:/code/shared
+      # - shared_data:/code/shared
+      - shared_data:/usr/share/geojson
     secrets:
       - env_secrets
-    # env_file:
-    #   - .env
-    # environment:
-    #   GEOAPIFY_API_KEY: /run/secrets/env_secrets
+    restart: on-failure
+    # command: sh foo.sh
+    # command: cp ./data/data.geojson ./shared 
+    # command: echo 'done'
+    # command: sh ./entrypoint.sh && cat /usr/share/geojson/data.geojson
+
 
 volumes:
   shared_data:
@@ -28,5 +33,3 @@ volumes:
 secrets:
   env_secrets:
     file: ./app/.env
-  # GEOAPIFY_API_KEY:
-  #   environment: GEOAPIFY_API_KEY
