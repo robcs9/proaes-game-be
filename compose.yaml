@@ -21,10 +21,7 @@ services:
     secrets:
       - env_secrets
     restart: on-failure
-    # command: sh foo.sh
-    # command: cp ./data/data.geojson ./shared 
-    # command: echo 'done'
-    # command: sh ./entrypoint.sh && cat /usr/share/geojson/data.geojson
+    # command: sh ./entrypoint.sh
 
 
 volumes:

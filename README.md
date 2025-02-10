@@ -58,6 +58,8 @@ Aplicação com a finalidade de agregar anúncios de aluguel de moradias e organ
 - [ ] ~~Atualizar searchWQ com repositório dos dados~~
 - [ ] ~~Implementar visualização dos relatórios com insights~~
 - [ ] ~~Implementar clustering dos marcadores~~
+- [ ] ~~Rootless containers~~
+
 
 ## Misc
 

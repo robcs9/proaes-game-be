@@ -1,9 +1,7 @@
 from enum import Enum
 from fastapi import FastAPI
 # from fastapi.staticfiles import StaticFiles
-import json
-import uvicorn
-import time
+import json, uvicorn, time, os
 # import app.main as scraper
 
 API_V1 = "/api/v1"
@@ -42,8 +40,9 @@ async def geojson():
       geojson = json.loads(content)
       return {"data": geojson}
   except Exception as e:
+    shared_path = os.path.abspath('./shared/data.geojson')
     print(f"Error.\n{e}")
-    return { "error": "Falha ao recuperar o arquivo GeoJSON."}
+    return { "error": f"Falha ao recuperar o arquivo GeoJSON em {shared_path}"}
 
 # listening on custom PORT
 # if __name__ == "__main__":
