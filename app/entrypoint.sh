@@ -7,4 +7,7 @@
 # crontab -l
 # cat /etc/crontabs/root
 # ls /etc/cron.d
-crond
+# crond
+echo "Running scraper python script now..."
+python3 /code/main.py
+cp /code/data/data.geojson /usr/share/geojson/

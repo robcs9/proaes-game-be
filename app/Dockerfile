@@ -35,5 +35,11 @@ RUN mkdir /usr/share/geojson && \
 # New CMD: crontab running the main script and copying 
 # the data.geojson to /usr/share/geojson/ right after
 # CMD ["sh", "entrypoint.sh"]
-RUN echo "* * * * *    python3 /code/main.py >> /code/crontab_log.txt" >> /etc/crontabs/root
-CMD [ "crond","-n" ]
+# RUN echo "* * * * *    python3 /code/main.py >> /code/crontab_log.txt" >> /etc/crontabs/root
+# RUN echo "* * * * *    sh /code/entrypoint" >> /etc/crontabs/root
+# RUN echo "* * * * *    echo 'Hello world!'" >> /etc/crontabs/root
+
+RUN cp ./.env /run/secrets/env_secrets && sh ./entrypoint.sh
+
+COPY ./crontabs_root /etc/crontabs/root
+CMD [ "busybox", "crond", "-l", "2", "-f" ]

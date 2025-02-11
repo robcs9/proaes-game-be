@@ -55,10 +55,12 @@ Aplicação com a finalidade de agregar anúncios de aluguel de moradias e organ
 - [ ] Melhorar distribuição de ícones sobrepostos no mapa
 - [ ] Implementar otimização do scraper com SoupStrainer e testes
 - [ ] Implementar otimização de scraper utilizando lxml diretamente
+- [ ] Retry scraper on failure due to scraping, geocoding, etc. errors
+- [ ] Healthcheck do scraper no compose garantindo a saída "data.geojson" atualizada
 - [ ] ~~Atualizar searchWQ com repositório dos dados~~
 - [ ] ~~Implementar visualização dos relatórios com insights~~
 - [ ] ~~Implementar clustering dos marcadores~~
-- [ ] ~~Rootless containers~~
+- [ ] ~~Use rootless containers, fix timezone~~
 
 
 ## Misc

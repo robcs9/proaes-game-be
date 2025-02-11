@@ -1,15 +1,15 @@
-import os
+import os, requests, json
 from time import sleep
-import requests
-import json
+from dotenv import dotenv_values, load_dotenv
+
 # Loads config altering the env 
-# from dotenv import load_dotenv
 # load_dotenv()
 # print(os.getenv('DOMAIN'))
 
 # Loads config without altering the environment
-from dotenv import dotenv_values
-config = dotenv_values('./app/.env')
+# to-do: use env variable for the file path
+# config = dotenv_values('./app/.env') # uncomment this line when running locally
+config = dotenv_values('/run/secrets/env_secrets') # uncomment this line when running in containers
 GEOAPIFY_API_KEY = config['GEOAPIFY_API_KEY']
 
 def normalizeCep(cep: str):
