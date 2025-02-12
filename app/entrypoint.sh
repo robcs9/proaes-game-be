@@ -9,5 +9,4 @@
 # ls /etc/cron.d
 # crond
 echo "Running scraper python script now..."
-python3 /code/main.py
-cp /code/data/data.geojson /usr/share/geojson/
+python3 /code/main.py #&& cp /code/data/data.geojson /usr/share/geojson/
