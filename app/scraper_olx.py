@@ -134,7 +134,11 @@ def searchOLX():
     notfound_geocoding_count = 0
     proper_ads = []
     for i, ad in enumerate(ads):
-        if geocodes is not None and geocodes[ad['address']] is not None:
+        if geocodes.get(ad['address']) is None:
+            print(f'Failed to geocode {ad['address']}')
+            ad['lat'] = ''
+            ad['lng'] = ''
+        else:
             ad['lat'] = geocodes[ad['address']]['lat']
             ad['lng'] = geocodes[ad['address']]['lng']
 
