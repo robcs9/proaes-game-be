@@ -41,8 +41,12 @@ async def geojson():
       return {"data": geojson}
   except Exception as e:
     shared_path = os.path.abspath('./shared/data.geojson')
-    print(f"Error.\n{e}")
-    return { "error": f"Falha ao recuperar o arquivo GeoJSON em {shared_path}"}
+    print(f"Error.\n{e}\nPath: {shared_path}")
+    msg = ""
+    err = "No such file or directory"
+    if str(e).find(err) != -1:
+      msg = "Arquivo não encontrado"
+    return { "error": f"Falha ao recuperar os dados GeoJSON. {msg}"}
 
 # listening on custom PORT
 # if __name__ == "__main__":
