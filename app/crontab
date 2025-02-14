@@ -5,5 +5,4 @@
 # 0	2	*	*	*	run-parts /etc/periodic/daily
 # 0	3	*	*	6	run-parts /etc/periodic/weekly
 # 0	5	1	*	*	run-parts /etc/periodic/monthly
-# * * * * * sh /code/entrypoint.sh
 * * * * * sh /code/entrypoint.sh && sh /code/update_shared_data.sh

@@ -40,8 +40,7 @@ RUN mkdir /usr/share/geojson && \
 # RUN echo "* * * * *    echo 'Hello world!'" >> /etc/crontabs/root
 
 RUN cp ./.env /run/secrets/env_secrets
-#RUN cp ./.env /run/secrets/env_secrets && sh ./entrypoint.sh
-COPY ./crontabs_root /etc/crontabs/root
+COPY ./crontab /etc/crontabs/root
 RUN chmod +x ./entrypoint.sh ./update_shared_data.sh
 
 CMD [ "busybox", "crond", "-l", "2", "-f" ]
