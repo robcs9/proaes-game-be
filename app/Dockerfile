@@ -24,8 +24,9 @@ COPY . .
 RUN mkdir ./app && \
     cp ./.env ./app/
 
-RUN mkdir /usr/share/geojson && \
-    cp ./data/data.geojson /usr/share/geojson/
+RUN mkdir /usr/share/geojson
+# RUN mkdir /usr/share/geojson && \
+#     cp ./data/data.geojson /usr/share/geojson/
 
 # RUN echo "*/1 * * * * echo 'Hi... again?'" >> /var/spool/cron/crontabs/root
 # RUN echo "* * * * *    echo 'Hi... again?'" >> /etc/crontabs/root # flawed

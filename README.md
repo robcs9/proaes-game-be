@@ -49,6 +49,8 @@ Aplicação com a finalidade de agregar anúncios de aluguel de moradias e organ
   - [x] Bug: falha ao tentar encontra os dados do .env durante o processo de build do compose
   - [x] Confirmar compartilhamento de geojson do scraper com a api através do volume compartilhado do compose
   - [x] Cron jobs
+  - [x] Bug: data.geojson não atualiza corretamente após execução dos cron jobs. Scraper não está salvando resultados.
+  - [~] Bug: Geocode batch jobs não são processados corretamente frequentemente
 - [ ] Normalizar comprimento das coordenadas
 - [ ] Implementar assincronicidade das funções do scraper
 - [ ] Refatorar e separar adequadatamente os testes em test_geocoding_request
