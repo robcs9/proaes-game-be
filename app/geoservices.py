@@ -95,15 +95,20 @@ def batchGeocodeAddress(addresses: list[dict]):
     
     url = f'https://api.geoapify.com/v1/batch/geocode/search?apiKey={GEOAPIFY_API_KEY}&format=json'
     headers = {'Content-Type': 'application/json; charset=utf-8'}
-    
     # add bias params if extra precision is needed
     try:
-        TESTING = True
+        job_url = ''
+
+        TESTING = False
         if TESTING:
             # Performing test with batch request already done to prevent overspending API credits
             GEOCODE_BATCH_TEST_URL = config['GEOCODE_BATCH_TEST_URL']
+            print('\n-------------------------------------------------------------------------------------------------------')
             print('This is a test run reusing a previously batch geocode request. Change the flag "TESTING" to turn it off')
-            job_rq = requests.get(GEOCODE_BATCH_TEST_URL)
+            print('-------------------------------------------------------------------------------------------------------\n')
+            # job_rq = requests.get(GEOCODE_BATCH_TEST_URL)
+            job_url = GEOCODE_BATCH_TEST_URL
+            
         else:
             job_rq = requests.post(url, headers=headers, json=addresses).json()
             if job_rq.get('error'):
