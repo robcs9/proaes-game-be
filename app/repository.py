@@ -5,7 +5,8 @@ import os.path as path
 from plot import scatterOverlaps
 import utils as utils
 
-DATA_DIR = './data'
+# DATA_DIR = './data' # when running on local machine
+DATA_DIR = '/code/data' # when running on containers
 ATTRS = ['id', 'title', 'price', 'address', 'url', 'property_type', 'modifiedAt','active', 'lat', 'lng',]
 
 # Initializes empty DataFrame properly and saves it to CSV
@@ -86,9 +87,8 @@ def saveAll(ads: list[dict], dir=DATA_DIR):
   # except Exception as e:
   #   print(f"Error:\n{e}")
     # handle error?
-  
+
   for ad in ads:
-    # save(ad)
     ads_df = saveAdDF(ads_df, ad)
   ads_df.to_csv(f"{dir}/data.csv",encoding='utf-8')
   print('\nAll ads saved to data.csv successfully')
@@ -267,6 +267,7 @@ def toGeojson(df:pd.DataFrame=None, dir=DATA_DIR):
     print(f'Falha ao salvar geojson. Error: {e}. ')
 
 def export():
+  print('Scattering overlapping points and exporting geojson data now...')
   ads_df = getAds(active_only=True)
   ads_df = scatterOverlaps(ads_df)
   toGeojson(ads_df)

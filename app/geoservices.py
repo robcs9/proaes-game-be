@@ -98,12 +98,19 @@ def batchGeocodeAddress(addresses: list[dict]):
     
     # add bias params if extra precision is needed
     try:
-        job_rq = requests.post(url, headers=headers, json=addresses).json()
-        if job_rq.get('error'):
-            print(f'Erro durante a resolução do job request: {job_rq['message']}')
-            return
-        job_url = job_rq['url']
-        print(f'\nGeocoding Batch requested at {job_url}')
+        TESTING = True
+        if TESTING:
+            # Performing test with batch request already done to prevent overspending API credits
+            GEOCODE_BATCH_TEST_URL = config['GEOCODE_BATCH_TEST_URL']
+            print('This is a test run reusing a previously batch geocode request. Change the flag "TESTING" to turn it off')
+            job_rq = requests.get(GEOCODE_BATCH_TEST_URL)
+        else:
+            job_rq = requests.post(url, headers=headers, json=addresses).json()
+            if job_rq.get('error'):
+                print(f'Erro durante a resolução do job request: {job_rq['message']}')
+                return
+            job_url = job_rq['url']
+            print(f'\nGeocoding Batch requested at {job_url}')
         
         while requests.get(job_url).status_code == 202: # pending
             print('\nBatch job ongoing...')
@@ -115,7 +122,7 @@ def batchGeocodeAddress(addresses: list[dict]):
             print(f'\nBatch job done. Geocoded addresses: {len(results)}')
             
             for result in results:
-                if not result.get('place_id'):
+                if result.get('place_id') is None:
                     print(f'\nFailed to geocode an adresss from the batch\nError: {result['result']['error']}')
                     result['lat'] = ''
                     result['lng'] = ''
@@ -126,6 +133,7 @@ def batchGeocodeAddress(addresses: list[dict]):
                 }
             print('Geocode assigments finished')
     except Exception as e:
+        # to-do: return geocodes as None instead of an empty dict?
         print(f'Falha durante o processo de batch requests. Erro:\n{e}')
     return geocodes
 

@@ -7,7 +7,14 @@ url_olx = "https://www.olx.com.br/imoveis/aluguel/estado-pe/grande-recife/recife
 
 # Retorna a quantidade de páginas de resultados da busca
 def findPagePropsOLX(soup):
-    data_str = soup.find("script", {"id": "__NEXT_DATA__"}).get_text()
+    script_tag = soup.find("script", {"id": "__NEXT_DATA__"})
+    if script_tag is None:
+        print(
+            f'\nScript tag containing the id attr "__NEXT_DATA__" not found\n\
+            {soup.find_all("script")}\n'
+        )
+        return
+    data_str = script_tag.get_text()
     props = json.loads(data_str)['props']['pageProps']
     return props
 
@@ -113,7 +120,7 @@ def searchOLX():
     addresses = [ad['address'] for ad in ads]
     geocodes = geoservices.batchGeocodeAddress(addresses)
     
-    if geocodes is None:
+    if geocodes is None or {}:
         print('\n--------------------------------------')
         print('| Geocoding Resulting Logs beginning |')
         print('--------------------------------------\n')
@@ -135,7 +142,7 @@ def searchOLX():
     proper_ads = []
     for i, ad in enumerate(ads):
         if geocodes.get(ad['address']) is None:
-            print(f'Failed to geocode {ad['address']}')
+            print(f'Failed to geocode "{ad['address']}"')
             ad['lat'] = ''
             ad['lng'] = ''
         else:
