@@ -137,9 +137,12 @@ def batchGeocodeAddress(addresses: list[dict]):
                     'lng': result['lon']
                 }
             print('Geocode assigments finished')
+        else:
+            print(f'Job status code: {job.status_code}')
     except Exception as e:
-        # to-do: return geocodes as None instead of an empty dict?
         print(f'Falha durante o processo de batch requests. Erro:\n{e}')
+        return batchGeocodeAddress(addresses)
+        # raise Exception(f'Falha durante o processo de batch requests. Erro:\n{e}')
     return geocodes
 
 # print(batchGeocode(['54330-075','54000-000','55000-000', '111-789']))
