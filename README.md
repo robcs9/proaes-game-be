@@ -1,6 +1,7 @@
 # Guia de Acomodações para Moradia Estudantil (GAME)
 
 Backend do Guia de Acomodações para Moradia Estudantil (GAME) que possui a finalidade de agregar anúncios de aluguel de moradias e organizá-los com insights relevantes para estudantes e demais interessados em morar no entorno da Cidade Universitária em Recife, Pernambuco.
+
 O scraper é responsável por obter e organizar os dados em formato geojson funciona uma vez a cada hora e necessita de uma chave token da [Geoapify](https://myprojects.geoapify.com) obtível de forma gratuíta.
 
 ## Uso
