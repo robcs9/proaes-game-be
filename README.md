@@ -4,11 +4,23 @@ Backend do Guia de Acomodações para Moradia Estudantil (GAME) que possui a fin
 
 O scraper é responsável por obter e organizar os dados em formato geojson funciona uma vez a cada hora e necessita de uma chave token da [Geoapify](https://myprojects.geoapify.com) obtível de forma gratuíta.
 
+## Configurações iniciais
+
+### Variáveis de ambiente (.env)
+
+- TBD
+
+### Docker
+
+- TBD
+
+
 ## Uso
 
 No diretório/pasta do projeto, execute os comandos em um terminal/prompt de comando:
 
 #### Iniciando a aplicação:
+
 
 ```
 docker compose up -d --build
