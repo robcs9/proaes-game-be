@@ -23,7 +23,7 @@ No diretório/pasta do projeto, execute os comandos em um terminal/prompt de com
 
 
 ```
-docker compose up -d --build
+docker compose up -d
 ```
 
 #### Acessando a aplicação:
