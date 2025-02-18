@@ -1,2 +1,3 @@
 # exclude data, secrets, .env files
 data/
+.env

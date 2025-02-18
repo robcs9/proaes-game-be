@@ -14,12 +14,13 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 COPY . .
 
 # fixing .env file path (should be using env PATH vars to avoid using the commands below)
-RUN mkdir ./app && \
-    cp ./.env ./app/
+# RUN mkdir ./app && \
+    # cp ./.env ./app/
+    # cp /run/secrets/env_secrets ./app/.env
 
-RUN mkdir /usr/share/geojson
+RUN mkdir /usr/share/geojson /code/app
 
-RUN cp ./.env /run/secrets/env_secrets
+# RUN cp ./.env /run/secrets/env_secrets
 COPY ./crontab /etc/crontabs/root
 RUN chmod +x ./entrypoint.sh ./update_shared_data.sh
 

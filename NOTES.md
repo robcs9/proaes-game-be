@@ -39,10 +39,12 @@
 - [x] Resolver bug nos imports feitos pelos arquivos de teste - path issues
 - [~] Deployment
   - [x] Bug: falha ao tentar encontra os dados do .env durante o processo de build do compose
-  - [x] Confirmar compartilhamento de geojson do scraper com a api através do volume compartilhado do compose
+  - [x] Confirmar compartilhamento de geojson do scraper com a api através do volume compartilhado do docker compose
   - [x] Cron jobs
   - [x] Bug: data.geojson não atualiza corretamente após execução dos cron jobs. Scraper não está salvando resultados.
   - [x] Bug: Geocode batch jobs não são processados corretamente frequentemente
+  - [~] Cloud hosting
+- [~] Implementação de novas variáveis no .env para desenvolvimento mais consistente
 - [ ] Normalizar comprimento das coordenadas
 - [ ] Implementar assincronicidade das funções do scraper
 - [ ] Refatorar e separar adequadatamente os testes em test_geocoding_request
