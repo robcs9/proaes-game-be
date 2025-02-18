@@ -11,9 +11,10 @@ def findPagePropsOLX(soup):
     if script_tag is None:
         print(
             f'\nScript tag containing the id attr "__NEXT_DATA__" not found\n\
+            Only found the tags:\n\
             {soup.find_all("script")}\n'
         )
-        return
+        return findPagePropsOLX(soup)
     data_str = script_tag.get_text()
     props = json.loads(data_str)['props']['pageProps']
     return props
