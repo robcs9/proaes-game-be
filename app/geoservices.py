@@ -9,7 +9,10 @@ from dotenv import dotenv_values, load_dotenv
 # Loads config without altering the environment
 # to-do: use env variable for the file path
 # config = dotenv_values('./app/.env') # uncomment this line when running locally
-config = dotenv_values('/run/secrets/env_secrets') # uncomment this line when running in containers
+# config = dotenv_values('/run/secrets/env_secrets') # uncomment this line when running in containers
+# GEOAPIFY_API_KEY = config['GEOAPIFY_API_KEY']
+ENV_PATH = os.path.join(os.getcwd(), 'app/.env')
+config = dotenv_values(ENV_PATH)
 GEOAPIFY_API_KEY = config['GEOAPIFY_API_KEY']
 
 def normalizeCep(cep: str):
