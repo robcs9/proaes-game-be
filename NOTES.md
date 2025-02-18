@@ -51,6 +51,7 @@
 - [ ] Implementar otimização de scraper utilizando lxml diretamente
 - [ ] Retry scraper on failure due to scraping, geocoding, etc. errors
 - [ ] Healthcheck do scraper no compose garantindo a saída "data.geojson" atualizada
+- [ ] Reajustar error handlers para repetirem as operações após o registro de contagem da falha dentro de um limite fixo
 - [ ] ~~Atualizar searchWQ com repositório dos dados~~
 - [ ] ~~Implementar visualização dos relatórios com insights~~
 - [ ] ~~Implementar clustering dos marcadores~~

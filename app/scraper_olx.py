@@ -1,4 +1,4 @@
-import json, math, re
+import json, math, re, time
 import geoservices
 from utils import makeSoup
 # Constants
@@ -14,6 +14,8 @@ def findPagePropsOLX(soup):
             Only found the tags:\n\
             {soup.find_all("script")}\n'
         )
+        print('Retrying in 5 secs...')
+        time.sleep(5)
         return findPagePropsOLX(soup)
     data_str = script_tag.get_text()
     props = json.loads(data_str)['props']['pageProps']
