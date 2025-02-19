@@ -7,7 +7,8 @@ import utils as utils
 
 # DATA_DIR = './data' # when running on local machine
 # DATA_DIR = '/code/data' # when running on containers
-DATA_DIR = os.path.join(os.getcwd(), 'data')
+DATA_PATH = os.path.join(os.getcwd(), 'data')
+DATA_DIR = DATA_PATH if not os.getcwd() == '/root' else '/code/data'
 ATTRS = ['id', 'title', 'price', 'address', 'url', 'property_type', 'modifiedAt','active', 'lat', 'lng',]
 
 # Initializes empty DataFrame properly and saves it to CSV

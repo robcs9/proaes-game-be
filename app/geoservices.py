@@ -11,9 +11,17 @@ from dotenv import dotenv_values, load_dotenv
 # config = dotenv_values('./app/.env') # uncomment this line when running locally
 # config = dotenv_values('/run/secrets/env_secrets') # uncomment this line when running in containers
 # GEOAPIFY_API_KEY = config['GEOAPIFY_API_KEY']
-ENV_PATH = os.path.join(os.getcwd(), 'app/.env')
+ENV_PATH = os.path.join(os.getcwd(), '.env')
+if os.getcwd() == '/root':
+    ENV_PATH = '/code/app/.env'
+print(f'PROAES-GAME (scraper) reading .env from: {ENV_PATH}')
 config = dotenv_values(ENV_PATH)
-GEOAPIFY_API_KEY = config['GEOAPIFY_API_KEY']
+GEOAPIFY_API_KEY = ''
+try:
+    GEOAPIFY_API_KEY = config['GEOAPIFY_API_KEY']
+except Exception as e:
+    print(f'Erro: GEOAPIFY_API_KEY não encontrada.')
+    raise e
 
 def normalizeCep(cep: str):
     if cep is None or len(cep) < 8 or len(cep) > 9:
@@ -90,12 +98,16 @@ def batchGeocode(ceps: list):
     # use bias param to improve precision?
 
 def batchGeocodeAddress(addresses: list[dict]):
+    
+    if addresses is None or len(addresses) == 0:
+        raise Exception('Erro. Nenhum Endereço informado para requisição de Geocode')
+    addrs = addresses.copy()
+    addresses = []
+    for addr in addrs:
+        if addr is not None:
+            addresses.append(addr)
+
     geocodes = {}
-    
-    if len(addresses) == 0:
-        print('Erro: Nenhum Endereço informado para requisição de Geocode')
-        return
-    
     url = f'https://api.geoapify.com/v1/batch/geocode/search?apiKey={GEOAPIFY_API_KEY}&format=json'
     headers = {'Content-Type': 'application/json; charset=utf-8'}
     # add bias params if extra precision is needed
@@ -115,8 +127,10 @@ def batchGeocodeAddress(addresses: list[dict]):
         else:
             job_rq = requests.post(url, headers=headers, json=addresses).json()
             if job_rq.get('error'):
-                print(f'Erro durante a resolução do job request: {job_rq['message']}')
-                return
+                raise Exception(
+                    f'Erro durante a resolução do job request:\n{job_rq['message']}\n\
+                    Adresses provided:\n{addresses}\n'
+                )
             job_url = job_rq['url']
             print(f'\nGeocoding Batch requested at {job_url}')
         
@@ -143,8 +157,9 @@ def batchGeocodeAddress(addresses: list[dict]):
         else:
             print(f'Job status code: {job.status_code}')
     except Exception as e:
-        print(f'Falha durante o processo de batch requests. Erro:\n{e}')
-        return batchGeocodeAddress(addresses)
+        print(f'Falha durante o processo de batch requests.')
+        raise e
+        # return batchGeocodeAddress(addresses)
         # raise Exception(f'Falha durante o processo de batch requests. Erro:\n{e}')
     return geocodes
 

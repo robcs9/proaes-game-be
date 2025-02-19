@@ -14,9 +14,7 @@ def findPagePropsOLX(soup):
             Only found the tags:\n\
             {soup.find_all("script")}\n'
         )
-        print('Retrying in 5 secs...')
-        time.sleep(5)
-        return findPagePropsOLX(soup)
+        return
     data_str = script_tag.get_text()
     props = json.loads(data_str)['props']['pageProps']
     return props
@@ -40,6 +38,9 @@ def getAddressAdOLX(url: str):
 def extractAdsFromPages(url: str) -> list[dict]:
     soup = makeSoup(url)
     page_props = findPagePropsOLX(soup)
+    if page_props is None:
+        print(f'No ad data found at the url {url}')
+        return
     pages_count = math.ceil(page_props['totalOfAds'] / page_props['pageSize'])
     
     unfiltereds = []
@@ -74,13 +75,15 @@ def extractAdsFromPages(url: str) -> list[dict]:
 
 def buildAds(unfiltered_ads: list[dict]) -> list[dict]:
     print('Processing raw ad data...')
+    if unfiltered_ads is None:
+        raise Exception(f'No unfiltered ads were provided to be built into ads.\nUnfiltered ads: {unfiltered_ads}')
     unfiltereds_count = len(unfiltered_ads)
     invalid_count = 0
     ads = []
     # addresses = []
     for i, ad in enumerate(unfiltered_ads):
-        if ad.get("subject") is None:
-            # skip bad results scraped
+        # skip bad results scraped
+        if ad is None or ad.get("subject") is None:
             invalid_count += 1
             print(f'\nInvalid data (unfiltered) #{i+1}. Found:\n{ad}')
             # print(f'Found:\n{ad}')
@@ -119,6 +122,16 @@ def assignGeocodesToAds(geocodes: list[dict], ads: list[dict]):
 
 def searchOLX():
     unfiltereds = extractAdsFromPages(url_olx)
+
+    retries = 1
+    if unfiltereds is None and retries <= 3:
+        print('No relevant data scraped.\nRetry attempts: {retries}/3...')
+        unfiltereds = extractAdsFromPages(url_olx)
+        retries += 1
+    if retries > 3:
+        print(f'The application did not find any scrappable data. Exiting the application now.\nSource url: {url_olx}')
+        quit()
+
     ads = buildAds(unfiltereds)
     addresses = [ad['address'] for ad in ads]
     geocodes = geoservices.batchGeocodeAddress(addresses)
