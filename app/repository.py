@@ -98,20 +98,8 @@ def saveAll(ads: list[dict], dir=DATA_DIR):
   # Exporting to geojson as well
   # ads_df = getAds(active_only=True)
   ads_df = scatterOverlaps(ads_df)
-  toGeojson(ads_df, dir)
-  
-  # ads_df = getAds()
-  # if len(ads_df) > 0:
-  #   for ad in ads:
-  #     save(ad)
-  #   print('All ads appended to data.csv successfully')
-  #   return
-  
-  # df = utils.makeDataFrame(ads)
-  # df.to_csv('./data/data.csv')
-  # print('save op msg2')
-
-# def saveAll(ads_df: pd.DataFrame):
+  geojson = toGeojson(ads_df, dir)
+  return geojson
 
 def find(url: str):
   ads_df = getAds()
@@ -264,9 +252,9 @@ def toGeojson(df:pd.DataFrame=None, dir=DATA_DIR):
     with open(f"{dir}/data.geojson", 'w', encoding='utf-8') as fd:
       fd.write(geojson)
       print("GEOJSON saved successfully!")
-
   except Exception as e:
     print(f'Falha ao salvar geojson. Error: {e}. ')
+  return geojson
 
 def export():
   print('Scattering overlapping points and exporting geojson data now...')

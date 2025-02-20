@@ -60,6 +60,39 @@
 - [ ] ~~Use rootless containers, fix timezone~~
 
 
+---
+
+## Deployment
+
+### IBM Cloud
+
+#### Container Registry
+
+```podman tag <image>[:tag] br.icr.io/<namespace>/<repository>[:tag]
+```
+
+```ibmcloud login -a https://cloud.ibm.com -u <user> -p <password>
+```
+
+```ibmcloud cr login --client podman
+```
+
+```podman push br.icr.io/<namespace>/<repository>[:tag]
+```
+
+```ibmcloud cr images
+```
+
+- [] is optional
+
+#### Cloud Object Storage
+
+TBD
+
+#### Serverless function (scraper)
+
+TBD
+
 ## Misc
 
 - lat e lng já estão presentes nos dados da WebQuarto
