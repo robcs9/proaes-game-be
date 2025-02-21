@@ -1,28 +1,32 @@
 from enum import Enum
-from fastapi import FastAPI
+from fastapi import FastAPI, BackgroundTasks
 # from fastapi.staticfiles import StaticFiles
-import json, uvicorn, time, os
+import json, uvicorn, time, os, sys
 # import app.main as scraper
-
 API_V1 = "/api/v1"
+DATA_PATH = './data'
+
+# to-do: replace with importing of the env var for DATA_PATH
+if os.getcwd().find('code') > -1:
+  # sys.path.append('/code/app')
+  DATA_PATH = './shared'
+else:
+  sys.path.append('./app')
+  import app.main as scraper
+
 app = FastAPI()
 
 # app.mount("/static", StaticFiles(directory="static", name="static"))
 @app.get(API_V1)
 async def root():  
-  return {"message": "Hello!"}
+  return {"message": "Welcome! Please, access /docs to learn more about this API."}
 
-# import app.main as scraper
 @app.get(f'{API_V1}/scrape')
 async def scrape():
   print('API calling scraper now')
-  # scraper()
-  return {'status code': 200}
-
-
-# @app.get("/files/{file_path:path}")
-# async def read_file(file_path: str):
-    # return {"file_path": file_path}
+  if scraper is not None:
+    scraper.main()
+  return { "msg": "API calling scraper now" }
 
 @app.get(f"{API_V1}/geojson")
 async def geojson():
@@ -34,13 +38,13 @@ async def geojson():
   
   try:
     # with open("./data/data.geojson", encoding="utf-8") as file:
-    with open("./shared/data.geojson", encoding="utf-8") as file:
+    with open(f"{DATA_PATH}/data.geojson", encoding="utf-8") as file:
       print("GeoJSON found")
       content = file.read()
       geojson = json.loads(content)
       return {"data": geojson}
   except Exception as e:
-    shared_path = os.path.abspath('./shared/data.geojson')
+    shared_path = os.path.abspath(f'{DATA_PATH}/data.geojson')
     print(f"Error.\n{e}\nPath: {shared_path}")
     msg = ""
     err = "No such file or directory"

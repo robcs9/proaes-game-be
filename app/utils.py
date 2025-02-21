@@ -19,7 +19,7 @@ def search(url):
     print(soup.find('script', {"id": "__NEXT_DATA__"}).get_text())
 
 
-from selenium import webdriver
+# from selenium import webdriver
 def makeSeleniumSoup(url):
     driver = webdriver.Firefox()
     driver.get(url)
