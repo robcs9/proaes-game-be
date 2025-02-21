@@ -20,7 +20,7 @@ def main():
 
     # Data output
     print(f'Output GeoJSON:\n{data}')
-    # return data
+    return data
     
 # [O.K] - for tests only
 # with open('./data/olx_ads_testbase.json') as fd:
