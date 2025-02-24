@@ -22,10 +22,13 @@ async def root():
   return {"message": "Welcome! Please, access /docs to learn more about this API."}
 
 @app.get(f'{API_V1}/scrape')
-async def scrape():
+async def scrape(background_tasks: BackgroundTasks):
   print('API calling scraper now')
   if scraper is not None:
-    scraper.main()
+    res = None
+    while res is None:
+      res = await scraper.main()
+    return { "data": res }
   return { "msg": "API calling scraper now" }
 
 @app.get(f"{API_V1}/geojson")

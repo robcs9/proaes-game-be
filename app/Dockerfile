@@ -11,6 +11,9 @@ RUN apk add --update --no-cache build-base geos geos-dev openrc cronie && \
 RUN pip install shapely 
 RUN pip3 install --no-cache-dir -r requirements.txt
 
+# AWS SDK
+# RUN pip install --no-cache-dir boto3
+
 COPY . .
 
 # fixing .env file path (should be using env PATH vars to avoid using the commands below)

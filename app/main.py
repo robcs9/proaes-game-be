@@ -6,6 +6,12 @@ import time, os
 from scraper_olx import searchOLX
 from utils import validateSavedData
 
+def aws():
+    import boto3
+    db = boto3.resource('dynamodb')
+    table = db.Table('geojson')
+
+    print(table.creation_date_time)
 
 def main():
     curr_time = time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime())
@@ -27,4 +33,5 @@ def main():
 #     olx_ads = json.load(fd)['olx_ads']
 
 if __name__ == "__main__":
-    main()
+    # main()
+    aws()
