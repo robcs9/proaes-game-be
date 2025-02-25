@@ -261,5 +261,3 @@ def export():
   ads_df = getAds(active_only=True)
   ads_df = scatterOverlaps(ads_df)
   toGeojson(ads_df)
-
-# export()

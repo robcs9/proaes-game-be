@@ -1,7 +1,12 @@
 from enum import Enum
 from fastapi import FastAPI, BackgroundTasks
 # from fastapi.staticfiles import StaticFiles
-import json, uvicorn, time, os, sys
+import json, uvicorn, time, os, sys, dotenv
+import boto3
+
+# Load or read dotenv values for AWS access if necessary
+# dotenv.dotenv_values('AWS_...')
+
 # import app.main as scraper
 API_V1 = "/api/v1"
 DATA_PATH = './data'
@@ -21,15 +26,22 @@ app = FastAPI()
 async def root():  
   return {"message": "Welcome! Please, access /docs to learn more about this API."}
 
-@app.get(f'{API_V1}/scrape')
-async def scrape(background_tasks: BackgroundTasks):
-  print('API calling scraper now')
-  if scraper is not None:
-    res = None
-    while res is None:
-      res = await scraper.main()
-    return { "data": res }
-  return { "msg": "API calling scraper now" }
+UPDATED = False
+# @app.get(f'{API_V1}/geojson/update')
+  
+@app.get(f'{API_V1}/db/geojson')
+def readGeojsonFromDB():
+  # if UPDATED:
+  #   return { 'msg': 'geojson already updated' }
+  geojson = {'error': 'Failed to retrieve geojson data'}
+  print('Updating geojson data now')
+  db = boto3.resource('dynamodb')
+  table = db.Table('geojson')
+  res = table.scan()
+  items = res['Items']
+  if len(items) > 0:
+    geojson = items[0]['json']
+  return json.loads(geojson)
 
 @app.get(f"{API_V1}/geojson")
 async def geojson():

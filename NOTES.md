@@ -35,7 +35,7 @@
   - [x] Integrate changes to searchOLX
   - [x] Cleanup deprecated functions: ceps (scraper_olx - line 67), getCepOLX, normalizeCep, parseAddress, parseCoords, batchGeocode, cep_recorded
 - [x] Otimização no tempo de execução das atribuições dos geocodes aos ads
-- [~] Implementar fastapi cronjob para API ou endpoint de execução do scraper (request scrape -> ... <- 202 pending ... request result -> ... <- 200 ok)
+- [~] ~~Implementar fastapi cronjob para API ou endpoint de execução do scraper (request scrape -> ... <- 202 pending ... request result -> ... <- 200 ok)~~
 - [x] Resolver bug nos imports feitos pelos arquivos de teste - path issues
 - [~] Deployment
   - [x] Bug: falha ao tentar encontra os dados do .env durante o processo de build do compose
