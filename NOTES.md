@@ -43,7 +43,8 @@
   - [x] Cron jobs
   - [x] Bug: data.geojson não atualiza corretamente após execução dos cron jobs. Scraper não está salvando resultados.
   - [x] Bug: Geocode batch jobs não são processados corretamente frequentemente
-  - [~] Cloud hosting
+  - [~] Cloud hosting (IBM, AWS...)
+  - [~] Atualizar Dockerfiles com dados de acesso ao dynamodb
 - [~] Implementação de novas variáveis no .env para desenvolvimento mais consistente
 - [ ] Normalizar comprimento das coordenadas
 - [ ] Implementar assincronicidade das funções do scraper
