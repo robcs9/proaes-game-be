@@ -6,6 +6,10 @@ data/*
 app/data/*
 tests/test-saved-data/*
 
+# Secrets
+app/.aws/config
+app/.aws/credentials
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

@@ -2,7 +2,18 @@ from enum import Enum
 from fastapi import FastAPI, BackgroundTasks
 # from fastapi.staticfiles import StaticFiles
 import json, uvicorn, time, os, sys, dotenv
+
 import boto3
+""" from botocore.config import Config
+my_config = Config(
+  region_name = 'sa-east-1',
+  # signature_version = 'v4',
+  retries = {
+      'max_attempts': 10,
+      'mode': 'standard'
+  }
+)
+client = boto3.client('kinesis', config=my_config) """
 
 # Load or read dotenv values for AWS access if necessary
 # dotenv.dotenv_values('AWS_...')

@@ -12,6 +12,9 @@ RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 # COPY . /code/app
 COPY . .
 
+# RUN cp -r /code/app/.aws /code/
+# RUN source ./app/.aws/credentials
+
 # CMD ["fastapi", "run", "app/main.py", "--port", "8123"]
 CMD ["fastapi", "run", "main.py", "--port", "8123"]
 
