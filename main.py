@@ -26,9 +26,12 @@ app = FastAPI()
 async def root():  
   return {"message": "Welcome! Please, access /docs to learn more about this API."}
 
-UPDATED = False
-# @app.get(f'{API_V1}/geojson/update')
+@app.get(f'{API_V1}/scrape')
+def scrapeAds():
+  scraper.main()
+  return { "msg": "Scrape request received. Geojson data will be updated in around 5 minutes." }
   
+UPDATED = False
 @app.get(f'{API_V1}/db/geojson')
 def readGeojsonFromDB():
   # if UPDATED:
