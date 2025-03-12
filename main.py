@@ -2,9 +2,11 @@ from enum import Enum
 from fastapi import FastAPI, BackgroundTasks
 # from fastapi.staticfiles import StaticFiles
 import json, uvicorn, time, os, sys, dotenv
+import boto3
+
+sys.path.append('./app')
 import app.main as scraper
 
-import boto3
 """ from botocore.config import Config
 my_config = Config(
   region_name = 'sa-east-1',
