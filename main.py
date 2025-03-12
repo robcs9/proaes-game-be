@@ -2,6 +2,7 @@ from enum import Enum
 from fastapi import FastAPI, BackgroundTasks
 # from fastapi.staticfiles import StaticFiles
 import json, uvicorn, time, os, sys, dotenv
+import app.main as scraper
 
 import boto3
 """ from botocore.config import Config
@@ -28,7 +29,7 @@ if os.getcwd().find('code') > -1:
   DATA_PATH = './shared'
 else:
   sys.path.append('./app')
-  import app.main as scraper
+  # import app.main as scraper
 
 app = FastAPI()
 
