@@ -16,7 +16,7 @@ COPY . .
 # RUN source ./app/.aws/credentials
 
 # CMD ["fastapi", "run", "main.py", "--port", "8123"]
-CMD [ "ls", "-alh" ]
+CMD [ "ls", "-alh", "./" ]
 
 EXPOSE 8123
 
