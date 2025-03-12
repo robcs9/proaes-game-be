@@ -29,7 +29,7 @@ async def root():
 @app.get(f'{API_V1}/scrape')
 def scrapeAds():
   scraper.main()
-  return { "msg": "Scrape request received. Geojson data will be updated in around 5 minutes." }
+  return { "msg": "Scrape request received." }
   
 UPDATED = False
 @app.get(f'{API_V1}/db/geojson')
