@@ -8,8 +8,10 @@ from utils import validateSavedData
 
 import boto3
 from boto3.dynamodb.conditions import Key, Attr
+import dynamodb
 def saveToAWS(geojson: dict):
-    db = boto3.resource('dynamodb')
+    # db = boto3.resource('dynamodb')
+    db = dynamodb.getSession()
     table = db.Table('geojson')
     
     # Replacing previously stored geojson in table

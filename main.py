@@ -3,25 +3,11 @@ from fastapi import FastAPI, BackgroundTasks
 # from fastapi.staticfiles import StaticFiles
 import json, uvicorn, time, os, sys, dotenv
 import boto3
+import dynamodb
 
 sys.path.append('./app')
 import app.main as scraper
 
-""" from botocore.config import Config
-my_config = Config(
-  region_name = 'sa-east-1',
-  # signature_version = 'v4',
-  retries = {
-      'max_attempts': 10,
-      'mode': 'standard'
-  }
-)
-client = boto3.client('kinesis', config=my_config) """
-
-# Load or read dotenv values for AWS access if necessary
-# dotenv.dotenv_values('AWS_...')
-
-# import app.main as scraper
 API_V1 = "/api/v1"
 DATA_PATH = './data'
 
@@ -52,7 +38,10 @@ def readGeojsonFromDB():
   #   return { 'msg': 'geojson already updated' }
   geojson = {'error': 'Failed to retrieve geojson data'}
   print('Updating geojson data now')
-  db = boto3.resource('dynamodb')
+
+  # db = boto3.resource('dynamodb', **aws_config)
+  db = dynamodb.getSession()
+  
   table = db.Table('geojson')
   res = table.scan()
   items = res['Items']
