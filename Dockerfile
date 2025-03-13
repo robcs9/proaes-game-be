@@ -15,8 +15,10 @@ COPY . .
 # RUN cp -r /code/app/.aws /code/
 # RUN source ./app/.aws/credentials
 
-CMD ["fastapi", "run", "main.py", "--port", "8123"]
+# CMD ["fastapi", "run", "main.py", "--port", "8123"]
 # CMD [ "ls", "-alh", "/etc/secrets" ] # to-do: implement path to the .env from this directory
+RUN ls -alh /
+CMD [ "pwd" ]
 
 EXPOSE 8123
 
