@@ -3,7 +3,6 @@ FROM python:alpine3.21
 
 WORKDIR /code
 
-# COPY ./requirements.txt /code/requirements.txt
 COPY requirements.txt requirements.txt
 
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
@@ -12,13 +11,17 @@ RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 # COPY . /code/app
 COPY . .
 
+# AWS config steps
 # RUN cp -r /code/app/.aws /code/
 # RUN source ./app/.aws/credentials
 
-# CMD ["fastapi", "run", "main.py", "--port", "8123"]
+
+# Render-exclusive steps
 # CMD [ "ls", "-alh", "/etc/secrets" ] # to-do: implement path to the .env from this directory
-RUN ls -alh /
-CMD [ "pwd" ]
+RUN cp /etc/secrets/.env /code/
+
+
+CMD ["fastapi", "run", "main.py", "--port", "8123"]
 
 EXPOSE 8123
 
