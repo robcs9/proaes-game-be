@@ -9,6 +9,7 @@ from utils import validateSavedData
 import boto3
 from boto3.dynamodb.conditions import Key, Attr
 import dynamodb
+
 def saveToAWS(geojson: dict):
     # db = boto3.resource('dynamodb')
     db = dynamodb.getSession()
@@ -20,12 +21,12 @@ def saveToAWS(geojson: dict):
         UpdateExpression='SET json = :val1',
         ExpressionAttributeValues={ ':val1': geojson }
     )
-    print(f'\nUpdate geojson statement response:\n{res}')
+    print(f'\ngeojson update statement response:\n{res}')
 
     # Listing geojson stored in table
-    print('\nScanning for updated geojson')
-    res = table.scan()
-    print(res['Items'][0]['json'])
+    # print('\nScanning for updated geojson')
+    # res = table.scan()
+    # print(res['Items'][0]['json'])
 
 def main():
     curr_time = time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime())
