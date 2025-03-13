@@ -1,6 +1,5 @@
 from enum import Enum
 from fastapi import FastAPI, BackgroundTasks
-from fastapi.middleware.cors import CORSMiddleware
 # from fastapi.staticfiles import StaticFiles
 import json, uvicorn, time, os, sys, dotenv
 import boto3
@@ -22,16 +21,6 @@ else:
 
 app = FastAPI()
 
-origins = [
-  'https://proaes-game-be-scraper.onrender.com',
-]
-app.add_middleware(
-  CORSMiddleware,
-  allow_origins=origins,
-  allow_credentials=True,
-  allow_methods=["*"],
-  allow_headers=["*"],
-)
 
 # app.mount("/static", StaticFiles(directory="static", name="static"))
 @app.get(API_V1)
