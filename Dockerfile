@@ -18,7 +18,6 @@ COPY . .
 
 # Render-exclusive steps
 # CMD [ "ls", "-alh", "/etc/secrets" ] # to-do: implement path to the .env from this directory
-COPY /etc/secrets/.env /code/
 
 CMD ["fastapi", "run", "main.py", "--port", "8123"]
 
