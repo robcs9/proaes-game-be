@@ -35,16 +35,15 @@
   - [x] Integrate changes to searchOLX
   - [x] Cleanup deprecated functions: ceps (scraper_olx - line 67), getCepOLX, normalizeCep, parseAddress, parseCoords, batchGeocode, cep_recorded
 - [x] Otimização no tempo de execução das atribuições dos geocodes aos ads
-- [~] ~~Implementar fastapi cronjob para API ou endpoint de execução do scraper (request scrape -> ... <- 202 pending ... request result -> ... <- 200 ok)~~
 - [x] Resolver bug nos imports feitos pelos arquivos de teste - path issues
-- [~] Deployment
+- [x] Deployment
   - [x] Bug: falha ao tentar encontra os dados do .env durante o processo de build do compose
   - [x] Confirmar compartilhamento de geojson do scraper com a api através do volume compartilhado do docker compose
   - [x] Cron jobs
   - [x] Bug: data.geojson não atualiza corretamente após execução dos cron jobs. Scraper não está salvando resultados.
   - [x] Bug: Geocode batch jobs não são processados corretamente frequentemente
-  - [~] Cloud hosting (IBM, AWS...)
-  - [~] Atualizar Dockerfiles com dados de acesso ao dynamodb
+  - [x] Cloud hosting (AWS, Render)
+  - [x] Atualizar Dockerfiles com dados de acesso ao dynamodb
 - [~] Implementação de novas variáveis no .env para desenvolvimento mais consistente
 - [ ] Normalizar comprimento das coordenadas
 - [ ] Implementar assincronicidade das funções do scraper
@@ -55,6 +54,7 @@
 - [ ] Retry scraper on failure due to scraping, geocoding, etc. errors
 - [ ] Healthcheck do scraper no compose garantindo a saída "data.geojson" atualizada
 - [ ] Reajustar error handlers para repetirem as operações após o registro de contagem da falha dentro de um limite fixo
+- [ ] ~~Implementar fastapi cronjob para API ou endpoint de execução do scraper (request scrape -> ... <- 202 pending ... request result -> ... <- 200 ok)~~
 - [ ] ~~Atualizar searchWQ com repositório dos dados~~
 - [ ] ~~Implementar visualização dos relatórios com insights~~
 - [ ] ~~Implementar clustering dos marcadores~~
