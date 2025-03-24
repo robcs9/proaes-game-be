@@ -125,7 +125,7 @@ def searchOLX():
 
     retries = 1
     if unfiltereds is None and retries <= 3:
-        print('No relevant data scraped.\nRetry attempts: {retries}/3...')
+        print(f'No relevant data scraped.\nRetry attempts: {retries}/3...')
         unfiltereds = extractAdsFromPages(url_olx)
         retries += 1
     if retries > 3:

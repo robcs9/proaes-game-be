@@ -35,10 +35,10 @@ def scrapeAds():
 UPDATED = False
 @app.get(f'{API_V1}/db/geojson')
 def readGeojsonFromDB():
+  print('Reading geojson data from db now...')
   # if UPDATED:
   #   return { 'msg': 'geojson already updated' }
-  geojson = {'error': 'Failed to retrieve geojson data'}
-  print('Updating geojson data now')
+  geojson = {'error': 'Failed to retrieve geojson data from the database'}
 
   # db = boto3.resource('dynamodb', **aws_config)
   db = dynamodb.getSession()
