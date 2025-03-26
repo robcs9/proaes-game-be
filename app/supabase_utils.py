@@ -15,34 +15,33 @@ supabase: Client = create_client(
   )
 )
 
-DATA_PATH = os.path.join(os.getcwd(), 'data')
-DATA_DIR = DATA_PATH if not os.getcwd() == '/root' else '/code/data'
+def getGeojson():
+  print('Retrieving data.geojson from the Supabase bucket')
+  res = supabase.storage.from_('geojson').download('data.geojson')
+  try:
+    geojson: dict = json.loads(res)
+    print('data.geojson has been retrieved successfully from the supabase bucket')
+    return geojson
+  except Exception as e:
+    print(f'Error retrieving data.geojson from the supabase bucket\n{e}')
+    return
 
-def saveToSupa(geojson: str, f):
-  # res = supabase.storage.get_bucket('geojson')
-  res = supabase.storage.from_('geojson').upload(
-    file=geojson,
-    path='./foo.txt',
-    file_options={
-      "upsert": "true"
-    }
-  )
-  print(res)
+def saveToSupabase(geojson: dict = None):
+  DATA_PATH = os.path.join(os.getcwd(), 'data')
+  DATA_DIR = DATA_PATH if not os.getcwd() == '/root' else '/code/data'
+  file_location = f'{DATA_DIR}/data.geojson'
+  if not os.path.exists(file_location):
+    print(f'Failed to find the geojson file at {file_location}')
+    return
 
-# saveToSupa(data, f)
-# Testing
-print(DATA_DIR)
-
-with open(f'{DATA_DIR}/data.geojson', 'rb') as f:
-  # print(type(f.read()))
-  # data = json.dumps({'foo': 'bar'})
-
-  res = supabase.storage.from_('geojson').upload(
-    file=f.read(),
-    path='./data.geojson',
-    file_options={
-      "content-type": "application/json",
-      "upsert": "true"
-    }
-  )
-  print(res)
+  print('Uploading data.geojson to the Supabase bucket')
+  with open(file_location, 'rb') as f:
+    res = supabase.storage.from_('geojson').upload(
+      file=f.read(),
+      path='./data.geojson',
+      file_options={
+        "content-type": "application/json",
+        "upsert": "true"
+      }
+    )
+    print('data.geojson upload has finished')

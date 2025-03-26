@@ -10,7 +10,8 @@ import dotenv, boto3
 )
 client = boto3.client('dynamodb', config=aws_config) """
 
-def getSession():
+# Initialize client connection
+def init():
   # Load or read dotenv values for AWS access
   env_config = dotenv.dotenv_values('.env')
   aws_config = dict(
@@ -22,3 +23,14 @@ def getSession():
 
   return session
 
+def saveToAWS(geojson: dict):
+  db = init()
+  table = db.Table('geojson')
+  
+  # Replacing previously stored geojson in table
+  res = table.update_item(
+      Key={ 'type': 'json' },
+      UpdateExpression='SET json = :val1',
+      ExpressionAttributeValues={ ':val1': geojson }
+  )
+  print(f'\ngeojson update statement response:\n{res}')

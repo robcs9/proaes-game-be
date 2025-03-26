@@ -10,5 +10,5 @@ requests
 urllib3
 python-dotenv
 pandas
-boto3
+boto3 # for AWS dynamodb connection (optional)
 supabase
