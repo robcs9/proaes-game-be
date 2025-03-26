@@ -7,6 +7,7 @@ import dynamodb
 
 sys.path.append('./app')
 import app.main as scraper
+import app.supabase_utils as supa_utils
 
 API_V1 = "/api/v1"
 DATA_PATH = './data'
@@ -36,30 +37,20 @@ UPDATED = False
 @app.get(f'{API_V1}/db/geojson')
 def readGeojsonFromDB():
   print('Reading geojson data from db now...')
-  # if UPDATED:
-  #   return { 'msg': 'geojson already updated' }
-  geojson = {'error': 'Failed to retrieve geojson data from the database'}
-
-  # db = boto3.resource('dynamodb', **aws_config)
-  db = dynamodb.getSession()
-  
-  table = db.Table('geojson')
-  res = table.scan()
-  items = res['Items']
-  if len(items) > 0:
-    geojson = items[0]['json']
-  return json.loads(geojson)
+  try:
+    # geojson = json.loads(dynamodb.getGeojson())
+    geojson = supa_utils.getGeojson()
+    return geojson
+  except Exception as e:
+    return {
+      'error': 'Failed to retrieve geojson data from the database'
+    }
 
 @app.get(f"{API_V1}/geojson")
 async def geojson():
   print("Opening data.geojson")
   
-  # check for the correct path
-  # print(Path.cwd())
-  # print(Path('./app/data/data.geojson').resolve(strict=True))
-  
   try:
-    # with open("./data/data.geojson", encoding="utf-8") as file:
     with open(f"{DATA_PATH}/data.geojson", encoding="utf-8") as file:
       print("GeoJSON found")
       content = file.read()
@@ -73,10 +64,3 @@ async def geojson():
     if str(e).find(err) != -1:
       msg = "Arquivo não encontrado"
     return { "error": f"Falha ao recuperar os dados GeoJSON. {msg}"}
-
-# listening on custom PORT
-# if __name__ == "__main__":
-  # uvicorn.run("main:app", host="0.0.0.0", port=3000)
-
-# run on custom port. default host: 127.0.0.1, default port: 8000
-# $ uvicorn main:app --host 127.0.0.1 --port 3000

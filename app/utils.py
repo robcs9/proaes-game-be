@@ -147,3 +147,15 @@ def normalizeCep(cep: str):
     if cep.find('-') > -1:
         cep = ''.join(cep.split('-'))
     return cep
+
+# check for the correct path
+# print(Path.cwd())
+# print(Path('./app/data/data.geojson').resolve(strict=True))
+
+# FastAPI
+# listening on custom PORT
+# if __name__ == "__main__":
+  # uvicorn.run("main:app", host="0.0.0.0", port=3000)
+
+# run on custom port. default host: 127.0.0.1, default port: 8000
+# $ uvicorn main:app --host 127.0.0.1 --port 3000
