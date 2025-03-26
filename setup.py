@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
   name='Guia de Acomodações para Moradia Estudantil',
-  version='1.1',
+  version='1.2',
   author='Robson Cicero da Silva',
   author_email='rcs9@proton.me',
   description='Backend service for https://proaes-game.deno.dev',
