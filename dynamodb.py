@@ -34,3 +34,17 @@ def saveToAWS(geojson: dict):
       ExpressionAttributeValues={ ':val1': geojson }
   )
   print(f'\ngeojson update statement response:\n{res}')
+
+def getGeojson():
+  db = init()
+  geojson = None
+  try:
+    table = db.Table('geojson')
+    res = table.scan()
+    items = res['Items']
+    if len(items) > 0:
+      geojson = items[0]['json']
+    return geojson
+  except Exception as e:
+    print(f'Failed to retrieve geojson data from the dynamodb database\n{e}')
+    return
